@@ -1,0 +1,58 @@
+package org.geelato.core.api;
+
+/**
+ * 分页查询的返回结果
+ *
+ * @author geemeta
+ */
+public class ApiPagedResult<E> extends ApiResult<E> implements ApiMeta {
+    private long total;
+    private long page;
+    private int size;
+    private int dataSize;
+
+    /**
+     * 元数据信息，一般用于实体查询，对查询结果字段的定义信息
+     */
+    private Object meta;
+
+    public Object getMeta() {
+        return meta;
+    }
+
+    public void setMeta(Object meta) {
+        this.meta = meta;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public long getPage() {
+        return page;
+    }
+
+    public void setPage(long page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getDataSize() {
+        return dataSize;
+    }
+
+    public void setDataSize(int dataSize) {
+        this.dataSize = dataSize;
+    }
+}
