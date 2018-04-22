@@ -165,7 +165,7 @@ public class FilterGroup {
 
 
     public enum Operator {
-        eq("eq"), neq("neq"), lt("lt"), lte("lte"), gt("gt"), gte("gte"), startWith("startwith"), endWith("endwith"), contains("contains");
+        eq("eq"), neq("neq"), lt("lt"), lte("lte"), gt("gt"), gte("gte"), startWith("startwith"), endWith("endwith"), contains("contains"), in("in");
 
         private String text;
 

@@ -1,23 +1,19 @@
 package org.geelato.core.sql.provider;
 
-import org.geelato.core.meta.MetaManager;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.gql.execute.BoundSql;
-import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.gql.parser.BaseCommand;
 import org.geelato.core.gql.parser.FilterGroup;
+import org.geelato.core.meta.MetaManager;
+import org.geelato.core.meta.model.entity.EntityMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author geemeta
- *
  */
 public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     private static Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
@@ -31,6 +27,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         else if (operator == FilterGroup.Operator.lte) return "<=";
         else if (operator == FilterGroup.Operator.gt) return ">";
         else if (operator == FilterGroup.Operator.gte) return ">=";
+        else if (operator == FilterGroup.Operator.in) return "in";
         return "=";
     }
 
@@ -90,13 +87,25 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     protected Object[] buildWhereParams(E command) {
         if (command.getWhere() == null || command.getWhere().getFilters() == null || command.getWhere().getFilters().size() == 0)
             return new Object[0];
-        Object[] params = new Object[command.getWhere().getFilters().size()];
-        int i = 0;
+        List<Object> list = new ArrayList<>();
         for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
-            params[i] = filter.getValue();
-            i++;
+            // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
+            if (filter.getOperator().equals(FilterGroup.Operator.in)) {
+                String[] ary = filter.getValue().split(",");
+                for (String s : ary) {
+                    list.add(s);
+                }
+            } else {
+                list.add(filter.getValue());
+            }
         }
-        return params;
+//        Object[] params = new Object[command.getWhere().getFilters().size()];
+//        int i = 0;
+//        for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
+//            params[i] = filter.getValue();
+//            i++;
+//        }
+        return list.toArray();
     }
 
     /**
@@ -107,7 +116,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * @return
      */
     protected int[] buildWhereTypes(E command) {
-        if(command.getWhere()==null||command.getWhere().getFilters()==null)
+        if (command.getWhere() == null || command.getWhere().getFilters() == null)
             return new int[0];
         EntityMeta em = getEntityMeta(command);
         int[] types = new int[command.getWhere().getFilters().size()];
@@ -164,6 +173,14 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         } else if (operator == FilterGroup.Operator.contains) {
             sb.append(columnName);
             sb.append(" like CONCAT('%',?,'%')");
+        } else if (operator == FilterGroup.Operator.in) {
+            sb.append(columnName);
+            String[] ary = filter.getValue().split(",");
+            sb.append(" in(");
+            sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
+            sb.append(")");
+        } else {
+            throw new RuntimeException("未实现Operator：" + operator);
         }
     }
 
