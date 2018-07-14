@@ -75,7 +75,6 @@ public class MetaManager {
     }
 
     /**
-     *
      * @param columnName
      * @return
      */
@@ -169,6 +168,10 @@ public class MetaManager {
 
     public Collection<EntityMeta> getAll() {
         return entityMetadataMap.values();
+    }
+
+    public Collection<String> getAllEntityNames() {
+        return entityMetadataMap.keySet();
     }
 
 //    public Class getMappedEntity(String tableName) {
@@ -268,6 +271,7 @@ public class MetaManager {
 
     /**
      * 解析一个类，并将其加入到实体元数据缓存中
+     *
      * @param clazz 待解析的类
      */
     public void parseOne(Class clazz) {

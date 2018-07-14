@@ -147,7 +147,8 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-        result.setData(convertLongToString(list));
+//        result.setData(convertLongToString(list));
+        result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
@@ -166,7 +167,8 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiMultiPagedResult.PageData result = new ApiMultiPagedResult.PageData();
-        result.setData(convertLongToString(list));
+//        result.setData(convertLongToString(list));
+        result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
@@ -174,22 +176,6 @@ public class Dao {
         if (withMeta)
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         return result;
-    }
-
-    /**
-     * 将主键数值转成字符串，避免数据返回前端时，javascript json转换精度失准问题
-     * TODO 这是临时方案
-     *
-     * @param list
-     * @return
-     */
-    private List<Map<String, Object>> convertLongToString(List<Map<String, Object>> list) {
-        if (list.size() > 0 && list.get(0).containsKey("id")) {
-            for (Map<String, Object> map : list) {
-                map.put("id", map.get("id").toString());
-            }
-        }
-        return list;
     }
 
     public <T> List<T> queryForOneColumnList(BoundSql boundSql, Class<T> elementType) throws DataAccessException {

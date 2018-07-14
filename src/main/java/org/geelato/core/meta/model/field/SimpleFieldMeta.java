@@ -13,7 +13,7 @@ public class SimpleFieldMeta implements Serializable {
     private String title;
     private String comment;
     private boolean nullable;
-    private int charMaxLength;
+    private long charMaxLength;
     private int precision;
     private int scale;
 
@@ -57,11 +57,11 @@ public class SimpleFieldMeta implements Serializable {
         this.nullable = nullable;
     }
 
-    public int getCharMaxLength() {
+    public long getCharMaxLength() {
         return charMaxLength;
     }
 
-    public void setCharMaxLength(int charMaxLength) {
+    public void setCharMaxLength(long charMaxLength) {
         this.charMaxLength = charMaxLength;
     }
 

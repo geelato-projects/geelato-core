@@ -26,7 +26,7 @@ public class EntityMeta {
     //冗余，用于快速获取列信息
     private Map<String, FieldMeta> fieldMetaMap;
     //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
-    private Map<String, SimpleFieldMeta> fieldMetaForViewMap;
+    private Map<String, SimpleFieldMeta> simpleFieldMetaMap;
     //不更新的字段
     private Map<String, Boolean> ignoreUpdateFieldMap;
 
@@ -104,8 +104,8 @@ public class EntityMeta {
             fieldMetaMap.put(fm.getFieldName(), fm);
             this.fieldNames[i++] = fm.getFieldName();
 
-            if (fieldMetaForViewMap == null) fieldMetaForViewMap = new HashMap<>(fieldMetas.size());
-            fieldMetaForViewMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
+            if (simpleFieldMetaMap == null) simpleFieldMetaMap = new HashMap<>(fieldMetas.size());
+            simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
         }
     }
 
@@ -154,15 +154,23 @@ public class EntityMeta {
 
     /**
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
-     * @param fieldNames
+     * @param fieldNames 指定需获取元数据的字段
      * @return
      */
     public SimpleFieldMeta[] getSimpleFieldMetas(String[] fieldNames) {
         SimpleFieldMeta[] metas = new SimpleFieldMeta[fieldNames.length];
         for (int i = 0; i < fieldNames.length; i++) {
-            metas[i] = fieldMetaForViewMap.get(fieldNames[i]);
+            metas[i] = simpleFieldMetaMap.get(fieldNames[i]);
         }
         return metas;
+    }
+
+    /**
+     * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
+     * @return
+     */
+    public Collection<SimpleFieldMeta> getAllSimpleFieldMetas() {
+        return simpleFieldMetaMap.values();
     }
 
     public boolean containsField(String fieldName) {

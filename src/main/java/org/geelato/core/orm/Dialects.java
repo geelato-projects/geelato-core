@@ -5,5 +5,6 @@ package org.geelato.core.orm;
  */
 public enum Dialects {
     Mysql,
-    SqlServer
+    SqlServer,
+    Oracle
 }

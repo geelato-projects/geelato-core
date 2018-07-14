@@ -49,7 +49,7 @@ public class ColumnMeta extends BaseEntity implements Serializable{
     private boolean unique;
 
     //CHARACTER_MAXIMUM_LENGTH
-    private int charMaxLength = 64;//默认长度
+    private long charMaxLength = 64;//默认长度
     //NUMERIC_PRECISION
     private int numericPrecision = 19; //默认长度
     //NUMERIC_SCALE
@@ -249,11 +249,11 @@ public class ColumnMeta extends BaseEntity implements Serializable{
 
     @Col(name = "character_maxinum_length")
     @Title(title = "长度")
-    public int getCharMaxLength() {
+    public long getCharMaxLength() {
         return charMaxLength;
     }
 
-    public void setCharMaxLength(int charMaxLength) {
+    public void setCharMaxLength(long charMaxLength) {
         this.charMaxLength = charMaxLength;
     }
 

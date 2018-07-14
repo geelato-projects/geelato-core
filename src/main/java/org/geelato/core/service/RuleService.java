@@ -97,6 +97,7 @@ public class RuleService {
         SaveCommand command = gqlManager.generateSaveSql(gql, getSessionCtx());
         Facts facts = new Facts();
         facts.put("saveCommand", command);
+        // TODO 通过biz获取业务规则，包括：内置的规则（实体检查），自定义规则（script脚本）
         Rules rules = new Rules();
         rules.register(new EntityValidateRule());
 
@@ -135,5 +136,9 @@ public class RuleService {
         // TODO 从会话中获取
         ctx.put("userId", String.valueOf(1));
         return ctx;
+    }
+
+    public static void main(String[] args){
+
     }
 }

@@ -1,6 +1,8 @@
 package org.geelato.core.meta;
 
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.meta.annotation.*;
 import org.geelato.core.meta.model.field.FieldMeta;
@@ -29,6 +31,19 @@ public class MetaRelf {
     private static ApplicationContext applicationContext;
     private static Logger logger = LoggerFactory.getLogger(MetaRelf.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // 一些类型默认的长度
+    public static Map<String, Long> dataTypeDefaultMaxLengthMap = new HashedMap();
+
+    static {
+        // 最大长度255个字元(2^8-1)
+        dataTypeDefaultMaxLengthMap.put("tinyText", 65535L);
+        // 最大长度65535个字元(2^16-1)
+        dataTypeDefaultMaxLengthMap.put("text", 65535L);
+        // 最大长度 16777215 个字元(2^24-1)
+        dataTypeDefaultMaxLengthMap.put("mediumText", 16777215L);
+        // 最大长度4294967295个字元 (2^32-1)
+        dataTypeDefaultMaxLengthMap.put("longText", 4294967295L);
+    }
 
     /**
      * 如果在spring环境下，可以设置该值，以便可直接获取spring中已创建的bean，不需重新创建
@@ -214,7 +229,8 @@ public class MetaRelf {
                                 cfm.getColumn().setName(column.name());
                                 cfm.getColumn().setNumericPrecision(column.numericPrecision());
                                 cfm.getColumn().setNumericScale(column.numericScale());
-                                cfm.getColumn().setCharMaxLength(column.charMaxlength());
+                                // charMaxlength 未设置值时，则依据dataType的获取length默认值
+                                cfm.getColumn().setCharMaxLength(column.charMaxlength() > 0 ? column.charMaxlength() : MapUtils.getLong(dataTypeDefaultMaxLengthMap, column.dataType(), 64L));
                                 cfm.getColumn().setDataType(column.dataType());
                                 try {
                                     Object defaultValue = method.invoke(bean);
@@ -344,4 +360,5 @@ public class MetaRelf {
         //首字符变小写
         return firstCharToLow(fieldName);
     }
+
 }

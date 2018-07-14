@@ -156,6 +156,12 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     }
 
 
+    /**
+     * 构建单个过滤条件
+     * @param sb
+     * @param md
+     * @param filter
+     */
     protected void buildConditionSegment(StringBuilder sb, EntityMeta md, FilterGroup.Filter filter) {
 
         String columnName = md.getColumnName(filter.getField());

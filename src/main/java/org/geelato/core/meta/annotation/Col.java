@@ -13,6 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface Col {
+
     /**
      * @return (Optional) The name of the column. Defaults to the property or field name.
      */
@@ -25,26 +26,27 @@ public @interface Col {
      * corresponds to only a single column. This constraint applies
      * in addition to any constraint entailed by primary key mapping and
      * to constraints specified at the entity level.
+     *
      * @return unique
      */
     boolean unique() default false;
 
     /**
      * (Optional) Whether the database column is nullable.
+     *
      * @return nullable
      */
     boolean nullable() default true;
 
     /**
-     *
      * @return 数据类型
      */
     String dataType() default "";
 
     /**
-     * @return charMaxlength
+     * @return charMaxlength 这里不设置默认值，在管理类中结合dataType进行默认值设定
      */
-    int charMaxlength() default 64;
+    long charMaxlength() default 0;
 
     /**
      * @return numericPrecision
