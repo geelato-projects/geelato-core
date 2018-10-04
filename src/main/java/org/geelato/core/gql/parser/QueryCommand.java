@@ -1,5 +1,9 @@
 package org.geelato.core.gql.parser;
 
+import org.apache.commons.collections.map.HashedMap;
+
+import java.util.Map;
+
 /**
  * @author geemeta
  */
@@ -14,9 +18,14 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
      */
     private int pageNum = -1;
     /**
-     * @param pageSize 每页记录数，pageSize(客户端请求参数中)=limit(in mysql)
+     * @param pageSize 每页最大展示记录数，pageSize(客户端请求参数中)=limit(in mysql)
      */
     private int pageSize = -1;
+
+    /**
+     * 查询字段重命名
+     */
+    private Map alias = new HashedMap(10);
 
     private String groupBy;
     private String orderBy;
@@ -91,4 +100,11 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
         this.having = having;
     }
 
+    public Map getAlias() {
+        return alias;
+    }
+
+    public void setAlias(Map alias) {
+        this.alias = alias;
+    }
 }

@@ -25,6 +25,8 @@ public class JsonTextQueryParser {
     //page_num即offset，记录位置
     private final static String KEYWORD_FLAG = "@";
     private final static String FILTER_FLAG = "\\|";
+    // 可对@fs中的字段进行重命名，字段原名+一到多个空格+字段重命名
+    private final static String ALIAS_FLAG = "[\\s]+";
     private final static String SUB_ENTITY_FLAG = "~";
     private final static String KW_PAGE = "@p";
     private final static String KW_FIELDS = "@fs";
@@ -65,6 +67,7 @@ public class JsonTextQueryParser {
 
     /**
      * 单查询解析
+     *
      * @param queryJsonText
      * @return
      */
@@ -97,8 +100,22 @@ public class JsonTextQueryParser {
                 //关键字
                 switch (key) {
                     case KW_FIELDS:
-                        validator.validateField(segments, KW_FIELDS);
-                        command.setFields(segments);
+                        String[] fieldNames = new String[segments.length];
+                        for (int i = 0; i < segments.length; i++) {
+                            String[] ary = segments[i].split(ALIAS_FLAG);
+                            if (ary.length == 1) {
+                                validator.validateField(ary[0], KW_FIELDS);
+                                fieldNames[i] = ary[0];
+                            }else if (ary.length == 2) {
+                                validator.validateField(ary[0], KW_FIELDS);
+                                fieldNames[i] = ary[0];
+                                command.getAlias().put(ary[0],ary[1]);
+                            } else {
+                                validator.appendMessage(KW_FIELDS);
+                                validator.appendMessage("的值格式有误，正确如：name userName,age,sex，其中userName为重命名。");
+                            }
+                        }
+                        command.setFields(fieldNames);
                         break;
                     case KW_ORDER_BY:
                         StringBuilder sb = new StringBuilder();

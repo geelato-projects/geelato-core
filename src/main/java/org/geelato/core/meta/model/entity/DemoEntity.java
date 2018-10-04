@@ -10,7 +10,7 @@ import org.geelato.core.meta.annotation.Title;
  */
 @Entity(name = "platform_demo_entity", table = "platform_demo_entity")
 @Title(title = "示例实体")
-public class DemoEntity extends BaseEntity {
+public class DemoEntity extends BaseSortableEntity {
 
     private String name;
     private String type;

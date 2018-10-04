@@ -20,8 +20,8 @@ public abstract class AbstractManager {
 
     protected Dao dao;
     private static Logger logger = LoggerFactory.getLogger(AbstractManager.class);
-    protected final static String RN_WIN = "\r\n"; //in WinOS
-    protected final static String RN_LINUX = "\n";    //in Linux
+    protected final static String RN_WIN = "\r\n";   // in WinOS
+    protected final static String RN_LINUX = "\n";    // in Linux
     protected ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
     /**
@@ -79,7 +79,7 @@ public abstract class AbstractManager {
         try {
             Resource[] resources = resolver.getResources(locationPattern);
             for (Resource resource : resources) {
-                //获得文件流，因为在jar文件中，不能直接通过文件资源路径拿到文件，但是可以在jar包中拿到文件流
+                // 获得文件流，因为在jar文件中，不能直接通过文件资源路径拿到文件，但是可以在jar包中拿到文件流
                 InputStream is = resource.getInputStream();
                 parseStream(is);
             }
@@ -94,7 +94,7 @@ public abstract class AbstractManager {
         String line = null;
         while ((line = reader.readLine()) != null) {
             lineList.add(line);
-            logger.info("line:{}", line);
+            logger.debug("line:{}", line);
         }
         return lineList;
     }

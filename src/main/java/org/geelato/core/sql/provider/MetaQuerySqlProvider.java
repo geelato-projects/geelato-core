@@ -1,17 +1,18 @@
 package org.geelato.core.sql.provider;
 
-import org.geelato.core.meta.model.entity.EntityMeta;
-import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.gql.parser.QueryCommand;
+import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.field.FieldMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
+
 /**
  * @author geemeta
- *
  */
 @Component
 public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
@@ -32,7 +33,7 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
         sb.append("select ");
-        buildSelectFields(sb, md, command.getFields());
+        buildSelectFields(sb, md, command.getFields(), command.getAlias());
         sb.append(" from ");
         sb.append(md.getTableName());
         // where
@@ -78,7 +79,8 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         EntityMeta md = getEntityMeta(command);
         sb.append("select count(*) from (");
         sb.append("select ");
-        buildSelectFields(sb, md, command.getFields());
+        // fields
+        buildSelectFields(sb, md, command.getFields(), command.getAlias());
         sb.append(" from ");
         sb.append(md.getTableName());
         //where
@@ -118,7 +120,7 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         }
     }
 
-    private void buildSelectFields(StringBuilder sb, EntityMeta md, String[] fields) {
+    private void buildSelectFields(StringBuilder sb, EntityMeta md, String[] fields, Map alias) {
         if (fields == null || fields.length == 0) {
             sb.append("*");
             return;
@@ -129,12 +131,20 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         //重命名查询的结果列表为实体字段名
         for (String fieldName : fields) {
             FieldMeta fm = md.getFieldMeta(fieldName);
-            if (fm.isEquals()) {
-                sb.append(fm.getColumnName());
-            } else {
+            if (alias.containsKey(fieldName)) {
+                // 有指定的重命名要求时
                 sb.append(fm.getColumnName());
                 sb.append(" ");
-                sb.append(fm.getFieldName());
+                sb.append(alias.get(fieldName));
+            } else {
+                // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
+                if (fm.isEquals()) {
+                    sb.append(fm.getColumnName());
+                } else {
+                    sb.append(fm.getColumnName());
+                    sb.append(" ");
+                    sb.append(fm.getFieldName());
+                }
             }
             sb.append(",");
         }
