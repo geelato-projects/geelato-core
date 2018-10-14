@@ -17,6 +17,22 @@ import java.util.Map;
 public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
     private static Logger logger = LoggerFactory.getLogger(MetaInsertSqlProvider.class);
 
+//    @Override
+//    protected Object[] buildParams(SaveCommand command) {
+//        Assert.notNull(command.getValueMap(), "必须有指的插入字段。");
+//
+//        Object[] objects = new Object[command.getValueMap().size()];
+//        int i = 0;
+//        //值部分
+//        for (Map.Entry<String, Object> entry : command.getValueMap().entrySet()) {
+//            // 当entry.getValue() == null时，objects[i]，未设置值，导致后续执行insert语句时，因值为null，不知数据类型，尝试取元数据出错
+//            // 故这里默认为空字符串值
+////            objects[i] = entry.getValue() == null ? "" : entry.getValue();
+//            objects[i] = entry.getValue();
+//            i++;
+//        }
+//        return objects;
+//    }
     @Override
     protected Object[] buildParams(SaveCommand command) {
         Assert.notNull(command.getValueMap(), "必须有指的插入字段。");
@@ -25,6 +41,9 @@ public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
         int i = 0;
         //值部分
         for (Map.Entry<String, Object> entry : command.getValueMap().entrySet()) {
+            // 当entry.getValue() == null时，objects[i]，未设置值，导致后续执行insert语句时，因值为null，不知数据类型，尝试取元数据出错
+            // 故这里默认为空字符串值
+//            objects[i] = entry.getValue() == null ? "" : entry.getValue();
             objects[i] = entry.getValue();
             i++;
         }
@@ -48,6 +67,7 @@ public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
     /**
      * INSERT INTO 表名称 VALUES (值1, 值2,....)
      * INSERT INTO table_name (列1, 列2,...) VALUES (值1, 值2,....)
+     *
      * @param command
      * @return
      */
@@ -68,7 +88,7 @@ public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
 
     protected void buildFields(StringBuilder sb, EntityMeta md, String[] fields) {
         //重命名查询的结果列表为实体字段名
-        for (String fieldName:fields) {
+        for (String fieldName : fields) {
             sb.append(md.getColumnName(fieldName));
             sb.append(",");
         }

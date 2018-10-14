@@ -24,17 +24,11 @@ public class JsonTextSaveParser {
     private static Logger logger = LoggerFactory.getLogger(JsonTextSaveParser.class);
     private MetaManager metaManager = MetaManager.singleInstance();
 
-    private final static String SUB_ENTITY_FLAG = "~";
+    private final static String SUB_ENTITY_FLAG = "#";
     private final static String KW_BIZ = "@biz";
 
     /**
-     * @param jsonText {
-     *                 '@biz':'xxxxx'
-     *                 'platform_page_config':{
-     *                 'code':'IUJDYWGS',
-     *                 'content':''
-     *                 }
-     *                 }
+     * @param jsonText
      * @param ctx
      * @return
      */
@@ -45,13 +39,22 @@ public class JsonTextSaveParser {
             validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
             Assert.isTrue(validator.isSuccess(), validator.getMessage());
         }
-        // TODO biz怎么用起来
+        // TODO biz暂未实现
         String biz = jo.getString(KW_BIZ);
         jo.remove(KW_BIZ);
-        String entityNmae = jo.keySet().iterator().next();
-        return parse(ctx, entityNmae, jo.getJSONObject(entityNmae), validator);
+        String entityName = jo.keySet().iterator().next();
+        return parse(ctx, entityName, jo.getJSONObject(entityName), validator);
     }
 
+    /**
+     * 递归解析保存操作命令，里面变更在执行期再解析，不在此解析
+     *
+     * @param ctx
+     * @param commandName
+     * @param jo
+     * @param validator
+     * @return
+     */
     private SaveCommand parse(Ctx ctx, String commandName, JSONObject jo, CommandValidator validator) {
         Assert.isTrue(validator.validateEntity(commandName), validator.getMessage());
         SaveCommand command = new SaveCommand();
@@ -63,12 +66,16 @@ public class JsonTextSaveParser {
             if (key.startsWith(SUB_ENTITY_FLAG)) {
                 // 解析子实体
                 // 子实体是数组还是实体
-                Object sub = jo.getJSONObject(key);
+                Object sub = jo.get(key);
                 if (sub instanceof JSONObject) {
-                    command.getCommands().add(parse(ctx, key.substring(1), jo.getJSONObject(key), validator));
+                    SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) sub, validator);
+                    subCommand.setParentCommand(command);
+                    command.getCommands().add(subCommand);
                 } else if (sub instanceof JSONArray) {
-                    jo.getJSONArray(key).forEach(subJo -> {
-                        command.getCommands().add(parse(ctx, key.substring(1), (JSONObject) subJo, validator));
+                    ((JSONArray) sub).forEach(subJo -> {
+                        SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) subJo, validator);
+                        subCommand.setParentCommand(command);
+                        command.getCommands().add(subCommand);
                     });
                 } else {
                     validator.appendMessage(key + "的值应为object或array");

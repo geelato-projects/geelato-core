@@ -5,10 +5,10 @@ import java.util.List;
 
 /**
  * @author geemeta
- *
  */
-public class BaseCommand<E> {
+public class BaseCommand<E extends BaseCommand> {
 
+    protected BaseCommand<E> parentCommand;
 
     protected CommandType commandType;
     // 命令对应实体名称
@@ -44,6 +44,20 @@ public class BaseCommand<E> {
         this.where = where;
     }
 
+    /**
+     * @return 如果是根命令，则返回null
+     */
+    public BaseCommand<E> getParentCommand() {
+        return parentCommand;
+    }
+
+    public void setParentCommand(BaseCommand<E> parentCommand) {
+        this.parentCommand = parentCommand;
+    }
+
+    /**
+     * @return 获取子命令，若不存在，则创建一个空的命令列表
+     */
     public List<E> getCommands() {
         if (commands == null) commands = new ArrayList<>();
         return commands;
@@ -51,6 +65,10 @@ public class BaseCommand<E> {
 
     public void setCommands(List<E> commands) {
         this.commands = commands;
+    }
+
+    public boolean hasCommands() {
+        return commands == null || commands.size() == 0 ? false : true;
     }
 
     public CommandType getCommandType() {

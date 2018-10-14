@@ -33,6 +33,7 @@ public class RuleService {
     private GqlManager gqlManager = GqlManager.singleInstance();
     private SqlManager sqlManager = SqlManager.singleInstance();
     private RulesEngine rulesEngine = new DefaultRulesEngine();
+    private final static String VARS_PARENT = "$parent";
 
     /**
      * <p>注意: 在使用之前，需先设置dao
@@ -91,7 +92,7 @@ public class RuleService {
      *
      * @param biz 业务代码
      * @param gql geelato query language
-     * @return 主健值
+     * @return 第一个saveCommand执行的返回主健值（saveCommand内可能有子saveCommand）
      */
     public String save(String biz, String gql) {
         SaveCommand command = gqlManager.generateSaveSql(gql, getSessionCtx());
@@ -100,11 +101,57 @@ public class RuleService {
         // TODO 通过biz获取业务规则，包括：内置的规则（实体检查），自定义规则（script脚本）
         Rules rules = new Rules();
         rules.register(new EntityValidateRule());
-
         rulesEngine.fire(rules, facts);
+        // 存在子命令
+        return recursiveSave(command);
+    }
 
+    /**
+     * 递归执行，存在需解析依赖变更的情况
+     * 不执行业务规则检查
+     *
+     * @param command
+     * @return
+     */
+    public String recursiveSave(SaveCommand command) {
         BoundSql boundSql = sqlManager.generateSaveSql(command);
-        return dao.save(boundSql);
+        String pkValue = dao.save(boundSql);
+        // 存在子command，需执行
+        if (command.hasCommands()) {
+            command.getCommands().forEach(subCommand -> {
+                // 保存之前需先替换subCommand中的变量值，如依赖于父command执行的返回id：$parent.id
+                subCommand.getValueMap().forEach((key, value) -> {
+                    if (value != null) {
+                        subCommand.getValueMap().put(key, parseValueExp(subCommand, value.toString(), 0));
+                    }
+                });
+                recursiveSave(subCommand);
+            });
+        }
+        return pkValue;
+    }
+
+    /**
+     * 解析值表达式
+     *
+     * @param currentCommand
+     * @param valueExp       e.g. $parent.name
+     * @param times          递归调用的次数，在该方法外部调用时，传入0；之后该方法内部递归调用，自增该值
+     * @return
+     */
+    private Object parseValueExp(SaveCommand currentCommand, String valueExp, int times) {
+        String valueExpTrim = valueExp.trim();
+        // 检查是否存在变量$parent
+        if (valueExpTrim.startsWith(VARS_PARENT)) {
+            return parseValueExp((SaveCommand) currentCommand.getParentCommand(), valueExpTrim.substring(VARS_PARENT.length() + 1), times + 1);
+        } else {
+            if (times == 0) {
+                //如果是第一次且无VARS_PARENT关键字，则直接返回值
+                return valueExp;
+            } else {
+                return currentCommand.getValueMap().get(valueExpTrim);
+            }
+        }
     }
 
     /**
@@ -138,7 +185,7 @@ public class RuleService {
         return ctx;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
     }
 }
