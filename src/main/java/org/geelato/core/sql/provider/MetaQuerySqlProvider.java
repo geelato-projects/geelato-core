@@ -178,7 +178,7 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
 //        FilterGroup.Operator operator = filter.getOperator();
 //        if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
 //            sb.append(columnName);
-//            sb.append(enumToSignString.get(operator));
+//            sb.append(enumToSignString.getBizRuleScriptManager(operator));
 //            sb.append("?");
 //        } else if (operator == FilterGroup.Operator.startWith) {
 //            sb.append(columnName);

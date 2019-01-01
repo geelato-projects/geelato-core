@@ -316,13 +316,13 @@ public class Dao {
 //            } catch (IllegalAccessException e) {
 //                logger.error("创建实例失败。", e);
 //            }
-//        return beanCache.get(clazz.toString());
+//        return beanCache.getBizRuleScriptManager(clazz.toString());
 //
 //    }
 
 
 //    private <E extends IdEntity> DataDynamic genDataDynamic(E model) {
-//        EntityMeta entityMeta = metaManager.get(model.getClass());
+//        EntityMeta entityMeta = metaManager.getBizRuleScriptManager(model.getClass());
 //        DataDynamic dd = new DataDynamic();
 //        dd.setIdField("id");
 //        dd.setIdValue(model.getId());

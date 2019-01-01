@@ -1,5 +1,6 @@
 package org.geelato.core.biz.rules;
 
+import org.geelato.core.script.rule.BizMvelRuleManager;
 import org.geelato.core.script.rule.BizRuleScriptManager;
 
 import java.util.HashMap;
@@ -8,20 +9,28 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author geemeta
- *
  */
 public class BizManagerFactory {
     private static Lock lock = new ReentrantLock();
-    private static HashMap<String, BizRuleScriptManager> map = new HashMap<>();
+    private static HashMap<String, BizRuleScriptManager> bizRuleScriptManagerHashMap = new HashMap<>();
+    private static HashMap<String, BizMvelRuleManager> bizMvelRuleManagerHashMap = new HashMap<>();
 
     private BizManagerFactory() {
     }
 
-    public static BizRuleScriptManager get(String name) {
+    public static BizRuleScriptManager getBizRuleScriptManager(String name) {
         lock.lock();
-        if (!map.containsKey(name))
-            map.put(name, new BizRuleScriptManager());
+        if (!bizRuleScriptManagerHashMap.containsKey(name))
+            bizRuleScriptManagerHashMap.put(name, new BizRuleScriptManager());
         lock.unlock();
-        return map.get(name);
+        return bizRuleScriptManagerHashMap.get(name);
+    }
+
+    public static BizMvelRuleManager getBizMvelRuleManager(String name) {
+        lock.lock();
+        if (!bizMvelRuleManagerHashMap.containsKey(name))
+            bizMvelRuleManagerHashMap.put(name, new BizMvelRuleManager());
+        lock.unlock();
+        return bizMvelRuleManagerHashMap.get(name);
     }
 }

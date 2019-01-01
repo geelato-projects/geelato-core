@@ -176,7 +176,7 @@ public class MetaManager {
 
 //    public Class getMappedEntity(String tableName) {
 //        if (tableNameMetadataMap.containsKey(tableName)) {
-//            return tableNameMetadataMap.get(tableName).getEntityType();
+//            return tableNameMetadataMap.getBizRuleScriptManager(tableName).getEntityType();
 //        } else {
 //            Iterator<String> it = tableNameMetadataMap.keySet().iterator();
 //            logger.warn("Key({}) not found in tableNameMetadataMap.keySet:", tableName);
@@ -230,7 +230,7 @@ public class MetaManager {
                     break;
                 }
             }
-//                Metadata metadata = entityMetadataMap.values().stream().filter(p -> p.getTableName().equalsIgnoreCase(TABLE_NAME)).findFirst().get();
+//                Metadata metadata = entityMetadataMap.values().stream().filter(p -> p.getTableName().equalsIgnoreCase(TABLE_NAME)).findFirst().getBizRuleScriptManager();
             if (entityMapping == null) {
                 continue;
             }
@@ -294,10 +294,4 @@ public class MetaManager {
         }
     }
 
-
-//    public String toTitle(String field) {
-//        if (defaultNameTitleMap.containsKey(field)) return defaultNameTitleMap.get(field);
-//        if (entityFieldNameTitleMap.containsKey(field)) return entityFieldNameTitleMap.get(field);
-//        return field;
-//    }
 }

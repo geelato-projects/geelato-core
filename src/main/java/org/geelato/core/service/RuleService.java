@@ -2,6 +2,7 @@ package org.geelato.core.service;
 
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
+import org.geelato.core.biz.rules.BizManagerFactory;
 import org.geelato.core.biz.rules.common.EntityValidateRule;
 import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
@@ -11,6 +12,7 @@ import org.geelato.core.gql.parser.QueryCommand;
 import org.geelato.core.gql.parser.SaveCommand;
 import org.geelato.core.mvc.Ctx;
 import org.geelato.core.orm.Dao;
+import org.geelato.core.script.rule.BizMvelRuleManager;
 import org.geelato.core.sql.SqlManager;
 import org.jeasy.rules.api.Facts;
 import org.jeasy.rules.api.Rules;
@@ -32,6 +34,7 @@ public class RuleService {
     private Dao dao;
     private GqlManager gqlManager = GqlManager.singleInstance();
     private SqlManager sqlManager = SqlManager.singleInstance();
+    private BizMvelRuleManager bizMvelRuleManager = BizManagerFactory.getBizMvelRuleManager("mvelRule");
     private RulesEngine rulesEngine = new DefaultRulesEngine();
     private final static String VARS_PARENT = "$parent";
 
@@ -100,6 +103,7 @@ public class RuleService {
         facts.put("saveCommand", command);
         // TODO 通过biz获取业务规则，包括：内置的规则（实体检查），自定义规则（script脚本）
         Rules rules = new Rules();
+        bizMvelRuleManager.getRule(biz);
         rules.register(new EntityValidateRule());
         rulesEngine.fire(rules, facts);
         // 存在子命令

@@ -25,9 +25,9 @@ public class ResultSetMapper<T> {
             if (rs != null) {
                 // check if outputClass has 'Entity' annotation
                 if (outputClass.isAnnotationPresent(Entity.class)) {
-                    // get the resultset metadata
+                    // getBizRuleScriptManager the resultset metadata
                     ResultSetMetaData rsmd = rs.getMetaData();
-                    // get all the attributes of outputClass
+                    // getBizRuleScriptManager all the attributes of outputClass
                     Field[] fields = outputClass.getDeclaredFields();
                     while (rs.next()) {
                         T bean = (T) outputClass.newInstance();

@@ -85,8 +85,8 @@ public class TestApplication implements CommandLineRunner, InitializingBean {
         //--1、sql
         SqlScriptManagerFactory.get(Dao.SQL_TEMPLATE_MANAGER).loadFiles(path + "/geelato/core/sql/");
         //--2、业务规则
-        BizManagerFactory.get("rule").setDao(dao);
-        BizManagerFactory.get("rule").loadFiles(path + "/geelato/core/rule/");
+        BizManagerFactory.getBizRuleScriptManager("rule").setDao(dao);
+        BizManagerFactory.getBizRuleScriptManager("rule").loadFiles(path + "/geelato/core/rule/");
         //--3、创建表结构
         dbGenerateDao.createAllTables(true);
         //--4、初始化表数据
@@ -103,8 +103,8 @@ public class TestApplication implements CommandLineRunner, InitializingBean {
         //--1、sql
         SqlScriptManagerFactory.get(Dao.SQL_TEMPLATE_MANAGER).loadResource("/geelato/core/sql/**/*.sql");
         //--2、业务规则
-        BizManagerFactory.get("rule").setDao(dao);
-        BizManagerFactory.get("rule").loadResource("/geelato/core/rule/**/*.js");
+        BizManagerFactory.getBizRuleScriptManager("rule").setDao(dao);
+        BizManagerFactory.getBizRuleScriptManager("rule").loadResource("/geelato/core/rule/**/*.js");
         //--3、创建表结构
         dbGenerateDao.createAllTables(true);
         //--4、初始化表数据
