@@ -1,5 +1,6 @@
 package org.geelato.core.sql.provider;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.BaseCommand;
@@ -17,8 +18,17 @@ import java.util.*;
  */
 public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     private static Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
+    protected static final Map<String, Boolean> keywordsMap = new HashedMap();
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
     protected MetaManager metaManager = MetaManager.singleInstance();
+
+    static {
+        // TODO 待添加所有的关键字、保留字
+        keywordsMap.put("index", true);
+        keywordsMap.put("indexs", true);
+        keywordsMap.put("inner", true);
+        keywordsMap.put("enable", true);
+    }
 
     protected static String convertToSignString(FilterGroup.Operator operator) {
         if (operator == FilterGroup.Operator.eq) return "=";
@@ -158,6 +168,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
 
     /**
      * 构建单个过滤条件
+     *
      * @param sb
      * @param md
      * @param filter
@@ -167,20 +178,20 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         String columnName = md.getColumnName(filter.getField());
         FilterGroup.Operator operator = filter.getOperator();
         if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
-            sb.append(columnName);
+            tryAppendKeywords(sb, columnName);
             sb.append(enumToSignString.get(operator));
             sb.append("?");
         } else if (operator == FilterGroup.Operator.startWith) {
-            sb.append(columnName);
+            tryAppendKeywords(sb, columnName);
             sb.append(" like CONCAT('',?,'%')");
         } else if (operator == FilterGroup.Operator.endWith) {
-            sb.append(columnName);
+            tryAppendKeywords(sb, columnName);
             sb.append(" like CONCAT('%',?,'')");
         } else if (operator == FilterGroup.Operator.contains) {
-            sb.append(columnName);
+            tryAppendKeywords(sb, columnName);
             sb.append(" like CONCAT('%',?,'%')");
         } else if (operator == FilterGroup.Operator.in) {
-            sb.append(columnName);
+            tryAppendKeywords(sb, columnName);
             String[] ary = filter.getValue().split(",");
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
@@ -188,6 +199,23 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         } else {
             throw new RuntimeException("未实现Operator：" + operator);
         }
+    }
+
+    protected boolean isKeywords(String field) {
+        if (field == null)
+            return false;
+        return keywordsMap.containsKey(field);
+    }
+
+    protected StringBuilder tryAppendKeywords(StringBuilder sb, String field) {
+        if (isKeywords(field)) {
+            sb.append("'");
+            sb.append(field);
+            sb.append("'");
+        } else {
+            sb.append(field);
+        }
+        return sb;
     }
 
     public EntityMeta getEntityMeta(E command) {

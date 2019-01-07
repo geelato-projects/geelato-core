@@ -35,13 +35,18 @@ public class JsonTextSaveParser {
     public SaveCommand parse(String jsonText, Ctx ctx) {
         JSONObject jo = JSON.parseObject(jsonText);
         CommandValidator validator = new CommandValidator();
-        if (jo.size() != 2 || !jo.containsKey(KW_BIZ)) {
-            validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
-            Assert.isTrue(validator.isSuccess(), validator.getMessage());
+
+        // KW_BIZ 不在SaveCommand内，改为放到外部，为兼容之前的数据格式，直接jo.remove(KW_BIZ)
+        if (jo.containsKey(KW_BIZ)) {
+            jo.remove(KW_BIZ);
         }
-        // TODO biz暂未实现
-        String biz = jo.getString(KW_BIZ);
-        jo.remove(KW_BIZ);
+//        if (jo.size() != 2 || !jo.containsKey(KW_BIZ)) {
+//            validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
+//            Assert.isTrue(validator.isSuccess(), validator.getMessage());
+//        }
+//        String biz = jo.getString(KW_BIZ);
+//        jo.remove(KW_BIZ);
+
         String entityName = jo.keySet().iterator().next();
         return parse(ctx, entityName, jo.getJSONObject(entityName), validator);
     }

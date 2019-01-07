@@ -92,7 +92,8 @@ public class MetaUpdateSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
         //重命名查询的结果列表为实体字段名
         for (String fieldName : fields) {
             if (md.isIgnoreUpdateField(fieldName)) continue;
-            sb.append(md.getColumnName(fieldName));
+            tryAppendKeywords(sb, md.getColumnName(fieldName));
+//            sb.append(md.getColumnName(fieldName));
             sb.append("=?,");
         }
         sb.deleteCharAt(sb.length() - 1);

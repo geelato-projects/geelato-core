@@ -17,7 +17,7 @@ import java.util.Map;
 public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
     private static Logger logger = LoggerFactory.getLogger(MetaInsertSqlProvider.class);
 
-//    @Override
+    //    @Override
 //    protected Object[] buildParams(SaveCommand command) {
 //        Assert.notNull(command.getValueMap(), "必须有指的插入字段。");
 //
@@ -89,6 +89,8 @@ public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
     protected void buildFields(StringBuilder sb, EntityMeta md, String[] fields) {
         //重命名查询的结果列表为实体字段名
         for (String fieldName : fields) {
+            // 插入字段可以为关键字、保留字
+//            tryAppendKeywords(sb, md.getColumnName(fieldName));
             sb.append(md.getColumnName(fieldName));
             sb.append(",");
         }
