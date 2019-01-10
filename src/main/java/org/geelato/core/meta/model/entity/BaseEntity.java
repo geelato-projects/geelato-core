@@ -14,7 +14,7 @@ public class BaseEntity extends IdEntity {
     private Date updateAt;
     private Long creator;
     private Long updater;
-    private int checkStatus;
+    private int checkState;
 
     public BaseEntity() {
     }
@@ -63,14 +63,14 @@ public class BaseEntity extends IdEntity {
         this.updater = updater;
     }
 
-    @Col(name = "check_status", nullable = false)
-    @Title(title = "审核状态", description = "用于如数据审核状态，-1：未审核，0：无需审核，1：已审核，默认为0，为无需工作流审核的数据。")
-    public int getCheckStatus() {
-        return checkStatus;
+    @Col(name = "check_state", nullable = false, dataType = "tinyint", numericPrecision = 2)
+    @Title(title = "审核状态", description = "用于如数据审核状态，99：未审核，0：无需审核，2：已审核，默认为0，为无需工作流审核的数据。")
+    public int getCheckState() {
+        return checkState;
     }
 
-    public void setCheckStatus(int checkStatus) {
-        this.checkStatus = checkStatus;
+    public void setCheckState(int checkState) {
+        this.checkState = checkState;
     }
 
     /***

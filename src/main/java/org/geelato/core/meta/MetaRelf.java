@@ -21,8 +21,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-//import javax.persistence.*;
-
 /**
  * Created by hongxueqian on 14-3-23.
  */
@@ -183,7 +181,7 @@ public class MetaRelf {
     }
 
     /**
-     * 解析get**方法或is**方法的映射，其它的不解析
+     * 解析get**方法或is**方法的映射，其它的，如set**方法不解析
      *
      * @param clazz
      * @return *

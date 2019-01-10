@@ -2,17 +2,19 @@ package org.geelato.core.meta.model.field;
 
 import org.geelato.core.meta.annotation.*;
 import org.geelato.core.meta.model.entity.BaseEntity;
+import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 
 /**
  * @author geemeta
- *
+ * <p>
  * 抽象数库中的元数据字段属性
  */
-@Entity(name = "dev_column_config")
-public class ColumnMeta extends BaseEntity implements Serializable{
+@Title(title = "字段信息")
+@Entity(name = "platform_dev_column")
+public class ColumnMeta extends BaseEntity implements EntityEnableAble, Serializable {
 
     //******--以下为元数据管理专用辅助字段
 //    private boolean isAbstractColumn = false;
@@ -65,8 +67,8 @@ public class ColumnMeta extends BaseEntity implements Serializable{
     //private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
-    private boolean activity;
-    private boolean linked;
+    private int enabled;
+    private int linked;
     private String description;
 
 
@@ -81,7 +83,7 @@ public class ColumnMeta extends BaseEntity implements Serializable{
         this.abstractColumnExpressions = abstractColumnExpressions;
     }
 
-    //    @SqlJoinEntity(model = TableConfig.class, refColumnName = "id", columnName = "dev_table_config_id")
+    //    @SqlJoinEntity(model = TableConfig.class, refColumnName = "id", columnName = "check_state_id")
     @Title(title = "表ID")
     public String getTableId() {
         return tableId;
@@ -121,6 +123,7 @@ public class ColumnMeta extends BaseEntity implements Serializable{
         this.tableCatalog = tableCatalog;
     }
 
+    @Col(name = "title")
     @Title(title = "中文名")
     public String getTitle() {
         return title;
@@ -279,6 +282,7 @@ public class ColumnMeta extends BaseEntity implements Serializable{
 
     /**
      * 注：数据库中没有该字段
+     *
      * @return 是否小数位
      */
     @Transient
@@ -301,24 +305,29 @@ public class ColumnMeta extends BaseEntity implements Serializable{
         this.datetimePrecision = datetimePrecision;
     }
 
-    @Title(title = "启用")
-    public boolean isActivity() {
-        return activity;
+    @Title(title = "启用状态", description = "1表示启用、0表示未启用")
+    @Col(name = "enabled", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Override
+    public int getEnabled() {
+        return this.enabled;
     }
 
-    public void setActivity(boolean activity) {
-        this.activity = activity;
+    @Override
+    public void setEnabled(int enabled) {
+        this.enabled = enabled;
     }
 
+    @Col(name = "linked")
     @Title(title = "链接")
-    public boolean isLinked() {
+    public int isLinked() {
         return linked;
     }
 
-    public void setLinked(boolean linked) {
+    public void setLinked(int linked) {
         this.linked = linked;
     }
 
+    @Col(name = "description")
     @Title(title = "描述")
     public String getDescription() {
         return description;
@@ -330,9 +339,9 @@ public class ColumnMeta extends BaseEntity implements Serializable{
 
 
     /**
-     *
      * (select columnName from t2) as abstractColumn
      * sum(columnName) as abstractColumn
+     *
      * @return 是否为计算出来的列，即非物理列
      */
     public boolean isAbstractColumn() {
