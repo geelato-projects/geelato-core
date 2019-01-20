@@ -1,7 +1,7 @@
 package org.geelato.core.service;
 
-import org.geelato.core.api.ApiMultiPagedResult;
-import org.geelato.core.api.ApiPagedResult;
+import org.apache.commons.collections.map.HashedMap;
+import org.geelato.core.api.*;
 import org.geelato.core.biz.rules.BizManagerFactory;
 import org.geelato.core.biz.rules.common.EntityValidateRule;
 import org.geelato.core.gql.GqlManager;
@@ -10,6 +10,8 @@ import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.DeleteCommand;
 import org.geelato.core.gql.parser.QueryCommand;
 import org.geelato.core.gql.parser.SaveCommand;
+import org.geelato.core.meta.MetaManager;
+import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.mvc.Ctx;
 import org.geelato.core.orm.Dao;
 import org.geelato.core.script.rule.BizMvelRuleManager;
@@ -21,9 +23,7 @@ import org.jeasy.rules.core.DefaultRulesEngine;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author geemeta
@@ -34,6 +34,7 @@ public class RuleService {
     private Dao dao;
     private GqlManager gqlManager = GqlManager.singleInstance();
     private SqlManager sqlManager = SqlManager.singleInstance();
+    private MetaManager metaManager = MetaManager.singleInstance();
     private BizMvelRuleManager bizMvelRuleManager = BizManagerFactory.getBizMvelRuleManager("mvelRule");
     private RulesEngine rulesEngine = new DefaultRulesEngine();
     private final static String VARS_PARENT = "$parent";
@@ -67,6 +68,78 @@ public class RuleService {
 
     public ApiPagedResult queryForMapList(String gql, boolean withMeta) {
         QueryCommand command = gqlManager.generateQuerySql(gql, getSessionCtx());
+        BoundPageSql boundPageSql = sqlManager.generatePageQuerySql(command);
+        return dao.queryForMapList(boundPageSql, withMeta);
+    }
+
+    /**
+     * @param entity 与platform_tree_node 关联的业务实体带有tree_node_id字段
+     * @param treeId
+     * @return
+     */
+    public ApiResult<List<Map>> queryForTreeNodeList(String entity, Long treeId) {
+        ApiResult<List<Map>> result = new ApiResult<List<Map>>();
+        if (!metaManager.containsEntity(entity)) {
+            result.setCode(ApiResultCode.FAIL);
+            result.setMsg("不存在该实体");
+            return result;
+        }
+        Map params = new HashedMap(2);
+        EntityMeta entityMeta = metaManager.getByEntityName(entity);
+        params.put("tableName", entityMeta.getTableName());
+        params.put("treeId", treeId);
+        result.setData(dao.queryForMapList("select_tree_node_left_join", params));
+        return result;
+    }
+
+    /**
+     * @param entity 与platform_tree_node 关联的业务实体带有tree_node_id字段
+     * @param treeId
+     * @return
+     */
+    public ApiResult queryForTree(String entity, long treeId, String childrenKey) {
+        ApiResult<List<Map>> result = queryForTreeNodeList(entity, treeId);
+        if (!result.isSuccess()) {
+            return result;
+        }
+        return new ApiResult().setData(toTree(result.getData(), treeId, childrenKey));
+    }
+
+    /**
+     * @param itemList
+     * @param parentId
+     * @param childrenKey e.g. "items"、"children"
+     * @return
+     */
+    private List<Map> toTree(List<Map> itemList, long parentId, String childrenKey) {
+        List<Map> resultList = new ArrayList();
+        List<Map> toParseList = new ArrayList();
+        Iterator<Map> iterator = itemList.iterator();
+        while (iterator.hasNext()) {
+            Map item = iterator.next();
+            long parent = Long.parseLong(item.get("tn_parent").toString());
+            if (parentId == parent) {
+                resultList.add(item);
+            } else {
+                toParseList.add(item);
+            }
+        }
+
+        if (resultList.size() > 0) {
+            for (Map item : resultList) {
+                List<Map> items = toTree(toParseList, Long.parseLong(item.get("tn_id").toString()), childrenKey);
+                if (items.size() > 0) {
+                    item.put(childrenKey, items);
+                }
+            }
+        }
+
+        return resultList;
+    }
+
+    public ApiPagedResult queryTreeForMapList(String gql, boolean withMeta, String treeId) {
+        QueryCommand command = gqlManager.generateQuerySql(gql, getSessionCtx());
+        command.getWhere().addFilter("tn.tree_id", treeId);
         BoundPageSql boundPageSql = sqlManager.generatePageQuerySql(command);
         return dao.queryForMapList(boundPageSql, withMeta);
     }
@@ -178,6 +251,7 @@ public class RuleService {
         BoundSql boundSql = sqlManager.generateDeleteSql(command);
         return dao.delete(boundSql);
     }
+
 
     /**
      * @return 当前会话信息

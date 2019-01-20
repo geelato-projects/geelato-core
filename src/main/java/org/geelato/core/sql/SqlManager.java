@@ -2,13 +2,10 @@ package org.geelato.core.sql;
 
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
-import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.gql.parser.*;
-import org.geelato.core.sql.provider.MetaDeleteSqlProvider;
-import org.geelato.core.sql.provider.MetaInsertSqlProvider;
-import org.geelato.core.sql.provider.MetaQuerySqlProvider;
-import org.geelato.core.sql.provider.MetaUpdateSqlProvider;
 import org.geelato.core.meta.MetaManager;
+import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.sql.provider.*;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -24,6 +21,7 @@ public class SqlManager {
     private static SqlManager instance;
     private MetaManager metaManager = MetaManager.singleInstance();
     private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
+    private MetaQueryTreeSqlProvider metaQueryTreeSqlProvider = new MetaQueryTreeSqlProvider();
     private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
     private MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
     private MetaDeleteSqlProvider metaDeleteSqlProvider = new MetaDeleteSqlProvider();
@@ -46,6 +44,13 @@ public class SqlManager {
         BoundPageSql boundPageSql = new BoundPageSql();
         boundPageSql.setBoundSql(metaQuerySqlProvider.generate(command));
         boundPageSql.setCountSql(metaQuerySqlProvider.buildCountSql(command));
+        return boundPageSql;
+    }
+
+    public BoundPageSql generatePageQuerySql(QueryTreeCommand command) {
+        BoundPageSql boundPageSql = new BoundPageSql();
+        boundPageSql.setBoundSql(metaQueryTreeSqlProvider.generate(command));
+        boundPageSql.setCountSql(metaQueryTreeSqlProvider.buildCountSql(command));
         return boundPageSql;
     }
 

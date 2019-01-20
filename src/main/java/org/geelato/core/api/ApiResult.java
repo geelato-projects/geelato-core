@@ -2,7 +2,6 @@ package org.geelato.core.api;
 
 /**
  * @author geemeta
- *
  */
 public class ApiResult<E> {
     private String msg = "";
@@ -10,6 +9,10 @@ public class ApiResult<E> {
     private E data;
 
     public ApiResult() {
+    }
+
+    public ApiResult(E data) {
+        setData(data);
     }
 
     public ApiResult(E data, String msg, String code) {
@@ -43,6 +46,10 @@ public class ApiResult<E> {
     public ApiResult<E> setData(E data) {
         this.data = data;
         return this;
+    }
+
+    public boolean isSuccess() {
+        return this.code == ApiResultCode.SUCCESS;
     }
 
 }
