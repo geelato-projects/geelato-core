@@ -10,7 +10,7 @@ public interface EntitySortable {
     // 实现类中设置的注解模板
     // @Title(title = "次序")
     // @Col(name = "seq")
-    Long getSeq();
+    long getSeq();
 
-    void setSeq(Long seq);
+    void setSeq(long seq);
 }

@@ -1,7 +1,7 @@
 package org.geelato.core.meta.model.field;
 
 import org.geelato.core.meta.annotation.*;
-import org.geelato.core.meta.model.entity.BaseEntity;
+import org.geelato.core.meta.model.entity.BaseSortableEntity;
 import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Title(title = "字段信息")
 @Entity(name = "platform_dev_column")
-public class ColumnMeta extends BaseEntity implements EntityEnableAble, Serializable {
+public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, Serializable {
 
     //******--以下为元数据管理专用辅助字段
 //    private boolean isAbstractColumn = false;
@@ -41,7 +41,7 @@ public class ColumnMeta extends BaseEntity implements EntityEnableAble, Serializ
     private String key;
 
     //isNullable
-    private boolean nullable = true;
+    private int nullable = 1;
 
     private String dataType = "";
 
@@ -198,14 +198,19 @@ public class ColumnMeta extends BaseEntity implements EntityEnableAble, Serializ
         this.key = key;
     }
 
-    @DictDataSrc(group = "YES_OR_NO")
-    @Col(name = "is_nullable")
-    @Title(title = "可空")
     public boolean isNullable() {
+        return nullable == 1;
+    }
+
+    @DictDataSrc(group = "YES_OR_NO")
+    @Col(name = "is_nullable", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Title(title = "可空")
+    public int getNullable() {
         return nullable;
     }
 
-    public void setNullable(boolean nullable) {
+
+    public void setNullable(int nullable) {
         this.nullable = nullable;
     }
 
