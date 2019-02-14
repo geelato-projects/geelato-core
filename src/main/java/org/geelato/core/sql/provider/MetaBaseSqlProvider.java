@@ -28,6 +28,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         keywordsMap.put("indexs", true);
         keywordsMap.put("inner", true);
         keywordsMap.put("enable", true);
+        keywordsMap.put("key", true);
     }
 
     protected static String convertToSignString(FilterGroup.Operator operator) {

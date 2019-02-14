@@ -222,7 +222,7 @@ public class MetaRelf {
                             }
                             //cfm.setCol(column);
                             if (column != null) {
-                                cfm.getColumn().setNullable(column.nullable() ? 1 : 0);
+                                cfm.getColumn().setNullable(column.nullable() ? true : false);
                                 cfm.getColumn().setUnique(column.unique());
                                 cfm.getColumn().setName(column.name());
                                 cfm.getColumn().setNumericPrecision(column.numericPrecision());

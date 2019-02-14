@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.geelato.core.meta.MetaManager;
+import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.mvc.Ctx;
 import org.geelato.utils.UIDGenerator;
 import org.slf4j.Logger;
@@ -64,7 +66,7 @@ public class JsonTextSaveParser {
         Assert.isTrue(validator.validateEntity(commandName), validator.getMessage());
         SaveCommand command = new SaveCommand();
         command.setEntityName(commandName);
-
+        EntityMeta entityMeta = metaManager.getByEntityName(commandName);
         Map<String, Object> params = new HashMap();
 
         jo.keySet().forEach(key -> {
@@ -88,7 +90,14 @@ public class JsonTextSaveParser {
             } else {
                 // 字段
                 validator.validateField(key, "字段");
-                params.put(key, jo.getString(key));
+                // 对于boolean类型的值，转为数值，以值存到数据库
+                FieldMeta fieldMeta = entityMeta.getFieldMeta(key);
+                if (fieldMeta != null && (boolean.class.equals(fieldMeta.getFieldType()) || Boolean.class.equals(fieldMeta.getFieldType()))) {
+                    String v = jo.getString(key).toLowerCase();
+                    params.put(key, v.equals("true") ? 1 : (v.equals("false") ? 0 : v));
+                } else {
+                    params.put(key, jo.getString(key));
+                }
             }
         });
         Assert.isTrue(validator.isSuccess(), validator.getMessage());

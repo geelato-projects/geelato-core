@@ -41,7 +41,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String key;
 
     //isNullable
-    private int nullable = 1;
+    private boolean nullable = true;
 
     private String dataType = "";
 
@@ -198,25 +198,21 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.key = key;
     }
 
-    public boolean isNullable() {
-        return nullable == 1;
-    }
 
     @DictDataSrc(group = "YES_OR_NO")
-    @Col(name = "is_nullable", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Col(name = "is_nullable", nullable = false)
     @Title(title = "可空")
-    public int getNullable() {
+    public boolean isNullable() {
         return nullable;
     }
 
-
-    public void setNullable(int nullable) {
+    public void setNullable(boolean nullable) {
         this.nullable = nullable;
     }
 
     @DictDataSrc(group = "DATA_TYPE")
     @Col(name = "data_type")
-    @Title(title = "数据类型", description = "int|bigint|varchar|datetime|date|time|timestamp|text|longText")
+    @Title(title = "数据类型", description = "tinyint|int|bigint|varchar|datetime|date|time|timestamp|text|longText")
     public String getDataType() {
         return dataType;
     }

@@ -1,8 +1,8 @@
 package org.geelato.core.sql.provider;
 
 import org.geelato.core.gql.TypeConverter;
-import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.gql.parser.SaveCommand;
+import org.geelato.core.meta.model.entity.EntityMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
