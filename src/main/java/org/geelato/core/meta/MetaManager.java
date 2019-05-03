@@ -23,6 +23,8 @@ public class MetaManager {
     private static MetaManager instance;
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
     private HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
+    // key：entityName,value：boolean
+//    private HashMap<String, Boolean> entityCacheAble = new HashMap<String, Boolean>();
     // TODO 多库同表名的场景暂未支持
     private HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<String, EntityMeta>();
     private static HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
