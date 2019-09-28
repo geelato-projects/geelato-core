@@ -3,7 +3,7 @@ package org.geelato.core.mvc;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * @author geemeta
+ * @author geemeta(已弃用)
  * @deprecated
  */
 public class SaveResult {

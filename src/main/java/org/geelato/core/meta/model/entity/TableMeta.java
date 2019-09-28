@@ -9,9 +9,9 @@ import org.geelato.core.meta.annotation.Title;
  */
 @Title(title = "实体信息")
 @Entity(name = "platform_dev_table")
-public class TableMeta extends BaseEntity implements EntityEnableAble, EntityTreeAble {
+public class TableMeta extends BaseEntity implements EntityEnableAble {
     private String title;
-    private String tableSchema;
+    private String connectId;
     private String tableName;
     private String tableType;
     private String tableComment;
@@ -40,12 +40,12 @@ public class TableMeta extends BaseEntity implements EntityEnableAble, EntityTre
 
     @Col(name = "table_schema")
     @Title(title = "数据库名")
-    public String getTableSchema() {
-        return tableSchema;
+    public String getConnectId() {
+        return connectId;
     }
 
-    public void setTableSchema(String tableSchema) {
-        this.tableSchema = tableSchema;
+    public void setConnectId(String ConnectId) {
+        this.connectId = ConnectId;
     }
 
     @Col(name = "table_type")
@@ -109,17 +109,5 @@ public class TableMeta extends BaseEntity implements EntityEnableAble, EntityTre
     @Override
     public void setEnabled(int enabled) {
         this.enabled = enabled;
-    }
-
-    @Title(title = "树节点")
-    @Col(name = "tree_node_id")
-    @Override
-    public Long getTreeNodeId() {
-        return null;
-    }
-
-    @Override
-    public Long setTreeNodeId(Long treeNodeId) {
-        return null;
     }
 }

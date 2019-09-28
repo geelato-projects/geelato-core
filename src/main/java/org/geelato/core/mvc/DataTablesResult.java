@@ -3,7 +3,7 @@ package org.geelato.core.mvc;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * datatable.js专用
+ * datatable.js专用(已弃用)
  * @author geemeta
  * @deprecated
  */
