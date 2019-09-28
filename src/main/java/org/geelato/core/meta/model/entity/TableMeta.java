@@ -11,7 +11,7 @@ import org.geelato.core.meta.annotation.Title;
 @Entity(name = "platform_dev_table")
 public class TableMeta extends BaseEntity implements EntityEnableAble {
     private String title;
-    private String connectId;
+    private Long connectId;
     private String tableName;
     private String tableType;
     private String tableComment;
@@ -40,12 +40,12 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
 
     @Col(name = "connect_id")
     @Title(title = "数据库连接id")
-    public String getConnectId() {
+    public Long getConnectId() {
         return connectId;
     }
 
-    public void setConnectId(String ConnectId) {
-        this.connectId = ConnectId;
+    public void setConnectId(Long connectId) {
+        this.connectId = connectId;
     }
 
     @Col(name = "table_type")
