@@ -38,8 +38,8 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
         this.tableName = tableName;
     }
 
-    @Col(name = "table_schema")
-    @Title(title = "数据库名")
+    @Col(name = "connect_id")
+    @Title(title = "数据库连接id")
     public String getConnectId() {
         return connectId;
     }
