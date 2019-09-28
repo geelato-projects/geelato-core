@@ -106,7 +106,6 @@ public class MetaRelf {
         em.setFieldMetas(map.values());
         if (em.getFieldMetas() != null)
             for (FieldMeta fm : em.getFieldMetas()) {
-                fm.getColumn().setTableSchema(em.getTableMeta().getTableSchema());
                 fm.getColumn().setTableName(em.getTableMeta().getTableName());
             }
         em.setDictDataSourceMap(getDictDataSourceMap(clazz));
