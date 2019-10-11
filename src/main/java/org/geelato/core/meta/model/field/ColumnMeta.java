@@ -320,7 +320,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     @Col(name = "linked")
     @Title(title = "链接")
-    public int isLinked() {
+    public int getLinked() {
         return linked;
     }
 

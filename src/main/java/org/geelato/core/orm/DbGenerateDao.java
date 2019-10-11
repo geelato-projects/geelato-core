@@ -1,7 +1,9 @@
 package org.geelato.core.orm;
 
 import org.geelato.core.meta.MetaManager;
+import org.geelato.core.meta.model.connect.ConnectMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.utils.SqlParams;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 /**
  * 注意：使用前需先注入dao，见{@link #setDao(Dao)}。
+ *
  * @author geemeta
  */
 @Component
@@ -47,6 +50,7 @@ public class DbGenerateDao {
      * 基于元数据管理，需元数据据管理器已加载、扫描元数据
      * <p>内部调用了sqlId:dropOneTable来删除表，
      * 内部调用了sqlId:createOneTable来创建表</p>
+     * 创建完表之后，将元数据信息保存到数据库中
      *
      * @param dropBeforeCreate 存在表时，是否删除
      */
@@ -59,12 +63,50 @@ public class DbGenerateDao {
         for (EntityMeta em : entityMetas) {
             createOneTable(em, dropBeforeCreate);
         }
+        // 创建数据库连接
+        // TODO 改成数据文件中获取
+        ConnectMeta connectMeta = new ConnectMeta();
+        connectMeta.setDbName("geelato");
+        connectMeta.setDbConnectName("geelato-local");
+        connectMeta.setDbHostnameIp("127.0.0.1");
+        connectMeta.setDbUserName("sa");
+        connectMeta.setDbPort(3306);
+        connectMeta.setDbSchema("geelato");
+        connectMeta.setDbType("Mysql");
+        connectMeta.setEnabled(1);
+        connectMeta.setDbPassword("123456");
+        Map connectMetaMap = this.dao.save(connectMeta);
+        // 保存数据表元数据
+        this.saveJavaMetaToDb(Long.parseLong(connectMetaMap.get("id").toString()), entityMetas);
+    }
+
+    /**
+     * 将元数据信息保存到服务端，一般用于开发环境初始化，创建完表之后执行
+     *
+     * @param entityMetas
+     */
+    private void saveJavaMetaToDb(Long id, Collection<EntityMeta> entityMetas) {
+        for (EntityMeta em : entityMetas) {
+            TableMeta tm = em.getTableMeta();
+            tm.setConnectId(id);
+            tm.setLinked(1);
+            Map table = dao.save(tm);
+            for (FieldMeta fm : em.getFieldMetas()) {
+                ColumnMeta cm = fm.getColumn();
+                cm.setTableId(table.get("id").toString());
+                cm.setLinked(1);
+                // 已有name不需再设置
+                // cm.setTableId(em.getTableMeta().getTableName());
+                dao.save(cm);
+            }
+        }
     }
 
 
     /**
      * 从数据库中删除实体对应的表
-     * @param entityName 实体名称
+     *
+     * @param entityName       实体名称
      * @param dropBeforeCreate 存在表时，是否删除
      */
     public void createOneTable(String entityName, boolean dropBeforeCreate) {

@@ -25,6 +25,7 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
     public TableMeta(String tableName, String title, String description) {
         this.tableName = tableName;
         this.title = title;
+        this.tableComment = description;
         this.description = description;
     }
 

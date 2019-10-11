@@ -92,7 +92,7 @@ public class MetaRelf {
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
         if (title != null)
-            new TableMeta(getTableName(clazz), title.title(), title.description());
+            return  new TableMeta(getTableName(clazz), title.title(), title.description());
         return new TableMeta(getTableName(clazz), clazz.getSimpleName(), "");
     }
 
