@@ -90,6 +90,7 @@ public class DbGenerateDao {
             TableMeta tm = em.getTableMeta();
             tm.setConnectId(id);
             tm.setLinked(1);
+            tm.setEnabled(1);
             Map table = dao.save(tm);
             for (FieldMeta fm : em.getFieldMetas()) {
                 ColumnMeta cm = fm.getColumn();
