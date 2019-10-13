@@ -10,17 +10,18 @@ import java.io.Serializable;
 /**
  * @author geemeta
  * <p>
- * 抽象数库中的元数据字段属性
+ * 抽象数库中的元数据字段属性、并加入实体属性建立联系
  */
 @Title(title = "字段信息")
 @Entity(name = "platform_dev_column")
 public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, Serializable {
 
     //******--以下为元数据管理专用辅助字段
-//    private boolean isAbstractColumn = false;
-    //中文
+    // 实体属性中文
     private String title = "";
     private String abstractColumnExpressions;
+    // 实体属性名称
+    private String fieldName = "";
     //******--以上为元数据管理专用辅助字段
 
     private String tableId;
@@ -64,7 +65,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
 
     //`DATETIME_PRECISION` bigint(21) unsigned DEFAULT NULL,
-    //private int datetime_precision;,
+    // private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
     private int enabled;
@@ -83,7 +84,6 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.abstractColumnExpressions = abstractColumnExpressions;
     }
 
-    //    @SqlJoinEntity(model = TableConfig.class, refColumnName = "id", columnName = "check_state_id")
     @Title(title = "表ID")
     public String getTableId() {
         return tableId;
@@ -131,6 +131,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Col(name = "field_name")
+    @Title(title = "列名")
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     @Col(name = "column_name")

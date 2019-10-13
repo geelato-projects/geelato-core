@@ -3,10 +3,10 @@ package org.geelato.core.meta.model.field;
 import java.io.Serializable;
 
 /**
- * @author geemeta
  *
+ * @author geemeta
  */
-public class FieldMeta implements Serializable{
+public class FieldMeta implements Serializable {
     private ColumnMeta columnMeta;
     private String fieldName;
     //@TODO java类中的类型？
@@ -16,6 +16,7 @@ public class FieldMeta implements Serializable{
         columnMeta = new ColumnMeta();
         columnMeta.setName(columnName);
         columnMeta.setTitle(title);
+        columnMeta.setFieldName(fieldName);
         this.fieldName = fieldName;
     }
 
@@ -34,6 +35,7 @@ public class FieldMeta implements Serializable{
     /**
      * 驼峰式
      * columnMeta.getName()是数据库中的字段格式
+     *
      * @return
      */
     public String getFieldName() {
@@ -59,7 +61,6 @@ public class FieldMeta implements Serializable{
     public void setTitle(String title) {
         this.getColumn().setTitle(title);
     }
-
 
 
     /**

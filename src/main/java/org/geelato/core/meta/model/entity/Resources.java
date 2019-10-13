@@ -5,7 +5,7 @@ import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
 
 /**
- * @author itechgee
+ * @author geelato
  * @date 2018/12/19
  */
 @Entity(name = "platform_resources", table = "platform_resources")

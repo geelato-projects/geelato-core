@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author itechgee
+ * @author geelato
  * 解析json字符串，并返回参数map
  */
 public class JsonTextSaveParser {
