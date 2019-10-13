@@ -91,16 +91,18 @@ public class MetaRelf {
 
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
-        if (title != null)
-            return  new TableMeta(getTableName(clazz), title.title(), title.description());
-        return new TableMeta(getTableName(clazz), clazz.getSimpleName(), "");
+//        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        TableMeta tableMeta = new TableMeta(getTableName(clazz), title.title(), getEntityName(clazz), title!=null?title.description():"");
+//        if(entity!=null){
+//        }
+        return tableMeta;
     }
 
     public static EntityMeta getEntityMeta(Class clazz) {
         EntityMeta em = new EntityMeta();
         em.setId(getId(clazz));
         em.setTableMeta(getTableMeta(clazz));
-        em.setEntityName(getEntityName(clazz));
+        em.setEntityName(em.getTableMeta().getEntityName());
         em.setEntityType(clazz);
         HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz);
         em.setFieldMetas(map.values());
@@ -114,7 +116,7 @@ public class MetaRelf {
 
     /**
      * 基于注解@Entity,按以下顺序获取，有值则返回：
-     * entity name 到 model name 到 simple name of class
+     * table name 到 entity name 到 simple name of class
      *
      * @param clazz
      * @return 表名

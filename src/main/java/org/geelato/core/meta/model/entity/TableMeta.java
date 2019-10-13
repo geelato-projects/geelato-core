@@ -13,6 +13,7 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
     private String title;
     private Long connectId;
     private String tableName;
+    private String entityName;
     private String tableType;
     private String tableComment;
     private int enabled;
@@ -22,9 +23,10 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
     public TableMeta() {
     }
 
-    public TableMeta(String tableName, String title, String description) {
+    public TableMeta(String tableName, String title,String entityName, String description) {
         this.tableName = tableName;
         this.title = title;
+        this.entityName = entityName;
         this.tableComment = description;
         this.description = description;
     }
@@ -37,6 +39,17 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+
+    @Col(name = "entity_name")
+    @Title(title = "实体名称", description = "实体名称")
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
     @Col(name = "connect_id")
