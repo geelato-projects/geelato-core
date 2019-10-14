@@ -14,7 +14,13 @@ public class BaseEntity extends IdEntity {
     private Date updateAt;
     private Long creator;
     private Long updater;
-    private int checkState;
+
+    // 逻辑删除的标识
+    private int delStatus = 0;
+    // 单位Id
+    private Long buId;
+    // 部门Id
+    private Long deptId;
 
     public BaseEntity() {
     }
@@ -63,14 +69,35 @@ public class BaseEntity extends IdEntity {
         this.updater = updater;
     }
 
-    @Col(name = "check_state", nullable = false, dataType = "tinyint", numericPrecision = 2)
-    @Title(title = "审核状态", description = "用于如数据审核状态，99：未审核，0：无需审核，2：已审核，默认为0，为无需工作流审核的数据。")
-    public int getCheckState() {
-        return checkState;
+    @Col(name = "del_status")
+    @Title(title = "删除状态",description = "逻辑删除的状态，1：已删除、0：未删除")
+    public int getDelStatus() {
+        return delStatus;
     }
 
-    public void setCheckState(int checkState) {
-        this.checkState = checkState;
+    public void setDelStatus(int delStatus) {
+        this.delStatus = delStatus;
+    }
+
+
+    @Col(name = "bu", nullable = true, charMaxlength = 8)
+    @Title(title = "单位", description = "bu即business unit，记录（分）公司的编码信息，可用于分公司、或事业部，主要用于数据权限的区分，如分公司可看自己分公司的数据。")
+    public Long getBuId() {
+        return buId;
+    }
+
+    public void setBuId(Long buId) {
+        this.buId = buId;
+    }
+
+    @Col(name = "dept", nullable = true, charMaxlength = 8)
+    @Title(title = "部门")
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     /***

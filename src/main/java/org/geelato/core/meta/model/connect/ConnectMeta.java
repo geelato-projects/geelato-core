@@ -21,7 +21,7 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble{
     private String dbPassword;
     private int dbPort;
     private String dbHostnameIp;
-    private int enabled;
+    private int enableStatus;
 
     @Col(name = "db_connect_name", nullable = false, charMaxlength = 255)
     @Title(title = "连接名称", description = "连接名称")
@@ -104,14 +104,14 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble{
     }
 
     @Title(title = "启用状态", description = "1表示启用、0表示未启用")
-    @Col(name = "enabled", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Col(name = "enable_status", nullable = false, dataType = "tinyint", numericPrecision = 1)
     @Override
-    public int getEnabled() {
-        return this.enabled;
+    public int getEnableStatus() {
+        return this.enableStatus;
     }
 
     @Override
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
+    public void setEnableStatus(int enableStatus) {
+        this.enableStatus = enableStatus;
     }
 }

@@ -89,13 +89,17 @@ public class MetaRelf {
         return getTableMeta(obj.getClass());
     }
 
+    /**
+     * 基于类的title注解，解析出表元数据
+     * @param clazz
+     * @return
+     */
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
-//        Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        TableMeta tableMeta = new TableMeta(getTableName(clazz), title.title(), getEntityName(clazz), title!=null?title.description():"");
-//        if(entity!=null){
-//        }
-        return tableMeta;
+        // Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+        // if(entity!=null){
+        // }
+        return new TableMeta(getTableName(clazz), title != null ? title.title():"", getEntityName(clazz), title != null ? title.description() : "");
     }
 
     public static EntityMeta getEntityMeta(Class clazz) {

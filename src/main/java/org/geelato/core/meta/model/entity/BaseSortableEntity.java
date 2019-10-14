@@ -9,19 +9,18 @@ import org.geelato.core.meta.annotation.Title;
  */
 public class BaseSortableEntity extends BaseEntity implements EntitySortable {
 
-    protected long seq;
-
+    protected long seqNo;
 
     @Title(title = "次序")
-    @Col(name = "seq")
+    @Col(name = "seq_no")
     @Override
-    public long getSeq() {
-        return seq;
+    public long getSeqNo() {
+        return seqNo;
     }
 
     @Override
-    public void setSeq(long seq) {
-        this.seq = seq;
+    public void setSeqNo(long seqNo) {
+        this.seqNo = seqNo;
     }
 
 }

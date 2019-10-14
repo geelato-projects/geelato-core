@@ -73,7 +73,7 @@ public class DbGenerateDao {
         connectMeta.setDbPort(3306);
         connectMeta.setDbSchema("geelato");
         connectMeta.setDbType("Mysql");
-        connectMeta.setEnabled(1);
+        connectMeta.setEnableStatus(1);
         connectMeta.setDbPassword("123456");
         Map connectMetaMap = this.dao.save(connectMeta);
         // 保存数据表元数据
@@ -90,7 +90,7 @@ public class DbGenerateDao {
             TableMeta tm = em.getTableMeta();
             tm.setConnectId(id);
             tm.setLinked(1);
-            tm.setEnabled(1);
+            tm.setEnableStatus(1);
             Map table = dao.save(tm);
             for (FieldMeta fm : em.getFieldMetas()) {
                 ColumnMeta cm = fm.getColumn();

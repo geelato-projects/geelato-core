@@ -10,10 +10,10 @@ public interface EntityEnableAble {
     // 实现类中设置的注解模板
     // @Title(title = "启用状态",description = "1表示启用、0表示未启用")
     // @Col(name = "enabled", nullable = false, dataType = "tinyint", numericPrecision = 1)
-    int getEnabled();
+    int getEnableStatus();
 
     /**
-     * @param enabled
+     * @param enableStatus
      */
-    void setEnabled(int enabled);
+    void setEnableStatus(int enableStatus);
 }

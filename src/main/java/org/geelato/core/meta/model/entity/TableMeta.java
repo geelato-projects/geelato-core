@@ -3,29 +3,30 @@ package org.geelato.core.meta.model.entity;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
+import org.geelato.core.util.StringUtils;
 
 /**
  * @author geemeta
  */
 @Title(title = "实体信息")
 @Entity(name = "platform_dev_table")
-public class TableMeta extends BaseEntity implements EntityEnableAble {
+public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private String title;
     private Long connectId;
     private String tableName;
     private String entityName;
     private String tableType;
     private String tableComment;
-    private int enabled;
+    private int enableStatus;
     private int linked;
     private String description;
 
     public TableMeta() {
     }
 
-    public TableMeta(String tableName, String title,String entityName, String description) {
+    public TableMeta(String tableName, String title, String entityName, String description) {
         this.tableName = tableName;
-        this.title = title;
+        this.title = StringUtils.hasText(title) ? title : tableName;
         this.entityName = entityName;
         this.tableComment = description;
         this.description = description;
@@ -114,14 +115,14 @@ public class TableMeta extends BaseEntity implements EntityEnableAble {
     }
 
     @Title(title = "启用状态", description = "1表示启用、0表示未启用")
-    @Col(name = "enabled", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Col(name = "enable_status", nullable = false, dataType = "tinyint", numericPrecision = 1)
     @Override
-    public int getEnabled() {
-        return this.enabled;
+    public int getEnableStatus() {
+        return this.enableStatus;
     }
 
     @Override
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
+    public void setEnableStatus(int enableStatus) {
+        this.enableStatus = enableStatus;
     }
 }

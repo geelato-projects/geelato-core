@@ -4,33 +4,34 @@ import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Title;
 
 /**
- * 基础业务实体，增加了组织信息、工作流信息
+ * 基础业务实体，增加了工作流信息
  */
 public class BizEntity extends BaseEntity {
 
-    private String bu;
-    private String dept;
     // 工作流实例id
-    private String bid;
+    private String procId;
+    // 工作流状态编码
+    private String procStatus;
 
-    @Col(name = "bu", nullable = true, charMaxlength = 8)
-    @Title(title = "单位", description = "bu即business unit，记录（分）公司的编码信息，可用于分公司、或事业部，主要用于数据权限的区分，如分公司可看自己分公司的数据。")
-    public String getBu() {
-        return bu;
+
+    @Col(name = "proc_id", nullable = true)
+    @Title(title = "流程实例ID")
+    public String getProcId() {
+        return procId;
     }
 
-    public void setBu(String bu) {
-        this.bu = bu;
+    public void setProcId(String procId) {
+        this.procId = procId;
     }
 
-    @Col(name = "dept", nullable = true, charMaxlength = 8)
-    @Title(title = "部门")
-    public String getDept() {
-        return dept;
+    @Col(name = "proc_status", nullable = true)
+    @Title(title = "流程状态")
+    public String getProcStatus() {
+        return procStatus;
     }
 
-    public void setDept(String dept) {
-        this.dept = dept;
+    public void setProcStatus(String procStatus) {
+        this.procStatus = procStatus;
     }
 
 

@@ -68,7 +68,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     // private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
-    private int enabled;
+    private int enableStatus;
     private int linked;
     private String description;
 
@@ -317,15 +317,15 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     }
 
     @Title(title = "启用状态", description = "1表示启用、0表示未启用")
-    @Col(name = "enabled", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Col(name = "enable_status", nullable = false, dataType = "tinyint", numericPrecision = 1)
     @Override
-    public int getEnabled() {
-        return this.enabled;
+    public int getEnableStatus() {
+        return this.enableStatus;
     }
 
     @Override
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
+    public void setEnableStatus(int enableStatus) {
+        this.enableStatus = enableStatus;
     }
 
     @Col(name = "linked")
