@@ -107,7 +107,7 @@
                 <version>3.0.2</version>
                 <configuration>
                     <archive>
-                        <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>-->
+                        <!--<manifestFile>${quickstart.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>-->
                         <manifest>
                             <!--<addClasspath>true</addClasspath>-->
                             <!--<classpathPrefix>lib/</classpathPrefix>-->
