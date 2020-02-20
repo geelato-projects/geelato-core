@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 /**
  * @author geemeta
- *
  */
 public class CommandValidator {
     private MetaManager metaManager = MetaManager.singleInstance();
@@ -74,27 +73,37 @@ public class CommandValidator {
         this.message.append(message);
     }
 
-    public String getPK(){
-        return  entityMeta.getId().getFieldName();
+    public String getPK() {
+        return entityMeta.getId().getFieldName();
+    }
+
+    public String getColumnName(String fieldName) {
+        if (entityMeta.containsField(fieldName)) {
+            return entityMeta.getFieldMeta(fieldName).getColumnName();
+        } else {
+            return fieldName;
+        }
     }
 
     /**
      * 从fields中查询主健
+     *
      * @param fields
      * @return
      */
-    public boolean hasPK(String[] fields){
+    public boolean hasPK(String[] fields) {
         String name = entityMeta.getId().getFieldName();
-        if(Arrays.asList(fields).contains(name))return true;
+        if (Arrays.asList(fields).contains(name)) return true;
         return false;
     }
 
     /**
      * 实体是否有公共字段，如update_at
+     *
      * @param field
      * @return
      */
-    public boolean hasKeyField(String field){
+    public boolean hasKeyField(String field) {
 
         return true;
     }

@@ -96,6 +96,7 @@ public class JsonTextQueryParser {
 
         jo.keySet().forEach(key -> {
             if (key.startsWith(KEYWORD_FLAG) && StringUtils.hasText(jo.getString(key))) {
+                // segments e.g. {"name|+","code|-"}
                 String[] segments = jo.getString(key).split(",");
                 //关键字
                 switch (key) {
@@ -124,7 +125,7 @@ public class JsonTextQueryParser {
                             if (strs.length == 2 && orderMap.containsKey(strs[1])) {
                                 validator.validateField(strs[0], KW_ORDER_BY);
                                 sb.append(sb.length() == 0 ? " " : ",");
-                                sb.append(strs[0]);
+                                sb.append(validator.getColumnName(strs[0]));
                                 sb.append(" ");
                                 sb.append(orderMap.get(strs[1]));
                             } else {
