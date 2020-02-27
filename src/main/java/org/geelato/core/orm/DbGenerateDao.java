@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 注意：使用前需先注入dao，见{@link #setDao(Dao)}。
@@ -46,23 +43,46 @@ public class DbGenerateDao {
         return dao;
     }
 
+    public void createAllTables(boolean dropBeforeCreate) {
+        this.createAllTables(dropBeforeCreate, null);
+    }
+
     /**
      * 基于元数据管理，需元数据据管理器已加载、扫描元数据
      * <p>内部调用了sqlId:dropOneTable来删除表，
      * 内部调用了sqlId:createOneTable来创建表</p>
      * 创建完表之后，将元数据信息保存到数据库中
      *
-     * @param dropBeforeCreate 存在表时，是否删除
+     * @param dropBeforeCreate     存在表时，是否删除
+     * @param ignoreEntityNameList
      */
-    public void createAllTables(boolean dropBeforeCreate) {
+    public void createAllTables(boolean dropBeforeCreate, List<String> ignoreEntityNameList) {
         Collection<EntityMeta> entityMetas = metaManager.getAll();
         if (entityMetas == null) {
             logger.warn("实体元数据为空，可能还未解析元数据，请解析之后，再执行该方法(createAllTables)");
             return;
         }
         for (EntityMeta em : entityMetas) {
-            createOneTable(em, dropBeforeCreate);
+            boolean isIgnore = false;
+            if (ignoreEntityNameList != null) {
+                for (String ignoreEntityName : ignoreEntityNameList) {
+                    if (em.getEntityName().indexOf(ignoreEntityName) != -1) {
+                        isIgnore = true;
+                        break;
+                    }
+                }
+            }
+            if (!isIgnore) {
+                createOneTable(em, dropBeforeCreate);
+            } else {
+                logger.info("ignore createTable for entity: {}.", em.getEntityName());
+            }
         }
+        // 先清空元数据
+//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_column");
+//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_table");
+//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_db_connect");
+
         // 创建数据库连接
         // TODO 改成数据文件中获取
         ConnectMeta connectMeta = new ConnectMeta();
