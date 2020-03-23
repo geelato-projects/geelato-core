@@ -92,6 +92,8 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         int seq = selectSql.indexOf("limit");
         if (seq != -1) {
             sb.append(selectSql.substring(0, seq));
+        } else {
+            sb.append(selectSql);
         }
         sb.append(") t");
         return sb.toString();
