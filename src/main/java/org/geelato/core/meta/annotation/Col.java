@@ -86,4 +86,20 @@ public @interface Col {
      */
     int datetimePrecision() default 0;
 
+    /**
+     * 外表字段，默认否
+     * @return isForeignColumn
+     */
+    boolean isForeignColumn() default false;
+
+    /**
+     * @return isForeignColumn
+     */
+    String foreignColName() default "";
+
+    /**
+     * 多张表名逗号隔开
+     * @return foreignTableId
+     */
+    String foreignTables() default "";
 }

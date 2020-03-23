@@ -42,4 +42,13 @@ public class StringUtils extends org.springframework.util.StringUtils {
         }
         return sb.toString();
     }
+
+    /**
+     * 校验空字符串和null，若为空字符串或null则返回true
+     * @param text
+     * @return
+     */
+    public static boolean isEmty(String text) {
+        return text == null || text.length() == 0;
+    }
 }

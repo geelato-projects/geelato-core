@@ -72,6 +72,12 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private int linked;
     private String description;
 
+    //1-外表字段，默认0
+    private boolean isForeignColumn;
+    //外表字段名称
+    private String foreignColName;
+    //外表表名
+    private String foreignTables;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -348,6 +354,35 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.description = description;
     }
 
+    @Col(name = "is_foreign_column")
+    @Title(title = "外表字段")
+    public boolean getIsForeignColumn() {
+        return isForeignColumn;
+    }
+
+    public void setIsForeignColumn(boolean isForeignColumn) {
+        this.isForeignColumn = isForeignColumn;
+    }
+
+    @Col(name = "foreign_table")
+    @Title(title = "外表表名", description = "多层关联外表用逗号隔开")
+    public String getForeignTables() {
+        return foreignTables;
+    }
+
+    public void setForeignTables(String foreignTables) {
+        this.foreignTables = foreignTables;
+    }
+
+    @Col(name = "foreign_col_name")
+    @Title(title = "外表字段名称", description = "命名规则：[表名]+[.]+[表字段]")
+    public String getForeignColName() {
+        return foreignColName;
+    }
+
+    public void setForeignColName(String foreignColName) {
+        this.foreignColName = foreignColName;
+    }
 
     /**
      * (select columnName from t2) as abstractColumn

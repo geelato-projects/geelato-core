@@ -17,6 +17,8 @@ public class BaseCommand<E extends BaseCommand> {
     protected String[] fields;
     // 指定条件
     protected FilterGroup where;
+    // 指定条件
+    protected StringBuilder from = new StringBuilder();
     // 子命令
     protected List<E> commands;
 
@@ -77,5 +79,19 @@ public class BaseCommand<E extends BaseCommand> {
 
     public void setCommandType(CommandType commandType) {
         this.commandType = commandType;
+    }
+
+    public StringBuilder getFrom() {
+        return from;
+    }
+
+    public BaseCommand appendFrom(String from) {
+        this.from.append(from);
+        return this;
+    }
+
+    public BaseCommand appendFrom(String tablaName, String alias) {
+        this.from.append(tablaName).append(" ").append(alias);
+        return this;
     }
 }

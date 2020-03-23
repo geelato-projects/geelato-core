@@ -27,6 +27,11 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
      */
     private Map alias = new HashedMap(10);
 
+    /**
+     * 查询语句
+     */
+    private String selectSql;
+
     private String groupBy;
     private String orderBy;
     private FilterGroup having;
@@ -106,5 +111,13 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
 
     public void setAlias(Map alias) {
         this.alias = alias;
+    }
+
+    public String getSelectSql() {
+        return selectSql;
+    }
+
+    public void setSelectSql(String selectSql) {
+        this.selectSql = selectSql;
     }
 }

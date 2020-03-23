@@ -21,6 +21,7 @@ public class SqlManager {
     private static SqlManager instance;
     private MetaManager metaManager = MetaManager.singleInstance();
     private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
+    private MetaQuerySqlMultiProvider metaQuerySqlMultiProvider = new MetaQuerySqlMultiProvider();
     private MetaQueryTreeSqlProvider metaQueryTreeSqlProvider = new MetaQueryTreeSqlProvider();
     private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
     private MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
@@ -118,5 +119,17 @@ public class SqlManager {
         return metaQuerySqlProvider.generate(queryCommand);
     }
 
+    /**
+     * 多表查询
+     *
+     * @param command
+     * @return
+     */
+    public BoundPageSql generatePageQuerySqlMulti(QueryCommand command) {
+        BoundPageSql boundPageSql = new BoundPageSql();
+        boundPageSql.setBoundSql(metaQuerySqlMultiProvider.generate(command));
+        boundPageSql.setCountSql(metaQuerySqlMultiProvider.buildCountSql(command));
+        return boundPageSql;
+    }
 
 }

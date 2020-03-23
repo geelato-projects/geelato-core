@@ -20,13 +20,17 @@ public class EntityMeta {
     private Class entityType;
     private FieldMeta id;
     private TableMeta tableMeta;
+    private String tableAlias;
     private Collection<FieldMeta> fieldMetas;
+    private Collection<TableForeign> tableForeigns;
     private String[] fieldNames;
     private Map<String, DictDataSource> dictDataSourceMap;
     //冗余，用于快速获取列信息
     private Map<String, FieldMeta> fieldMetaMap;
     //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
     private Map<String, SimpleFieldMeta> simpleFieldMetaMap;
+    //冗余，用于快速获取外键关系
+    private Map<String, TableForeign> tableForeignsMap = new HashMap<>();
     //不更新的字段
     private Map<String, Boolean> ignoreUpdateFieldMap;
 
@@ -187,5 +191,28 @@ public class EntityMeta {
 
     public boolean isIgnoreUpdateField(String field) {
         return ignoreUpdateFieldMap.containsKey(field);
+    }
+
+    public void setTableAlias(String tableAlias) {
+        this.tableAlias = tableAlias;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
+    }
+
+    public Collection<TableForeign> getTableForeigns() {
+        return tableForeigns;
+    }
+
+    public void setTableForeigns(Collection<TableForeign> tableForeigns) {
+        this.tableForeigns = tableForeigns;
+        for (TableForeign t : tableForeigns) {
+            tableForeignsMap.put(t.getForeigenTable(), t);
+        }
+    }
+
+    public Map<String, TableForeign> getTableForeignsMap() {
+        return tableForeignsMap;
     }
 }

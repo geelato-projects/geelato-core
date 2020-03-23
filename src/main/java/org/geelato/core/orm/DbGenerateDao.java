@@ -3,6 +3,7 @@ package org.geelato.core.orm;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.connect.ConnectMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
@@ -120,6 +121,11 @@ public class DbGenerateDao {
                 // cm.setTableId(em.getTableMeta().getTableName());
                 dao.save(cm);
             }
+            //保存外键关系
+            for (TableForeign ft : em.getTableForeigns()) {
+                ft.setEnableStatus(1);
+                dao.save(ft);
+            }
         }
     }
 
@@ -147,6 +153,7 @@ public class DbGenerateDao {
         map.put("tableName", em.getTableName());
         map.put("addList", addList);
         map.put("uniqueList", uniqueList);
+        map.put("foreignList", em.getTableForeigns());
 
         for (FieldMeta fm : em.getFieldMetas()) {
             try {

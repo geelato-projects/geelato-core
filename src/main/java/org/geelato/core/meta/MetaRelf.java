@@ -5,6 +5,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.meta.annotation.*;
+import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.TableMeta;
@@ -108,8 +109,10 @@ public class MetaRelf {
         em.setTableMeta(getTableMeta(clazz));
         em.setEntityName(em.getTableMeta().getEntityName());
         em.setEntityType(clazz);
-        HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz);
+        Collection<TableForeign> tableForeigns = new ArrayList<>();
+        HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz, tableForeigns);
         em.setFieldMetas(map.values());
+        em.setTableForeigns(tableForeigns);
         if (em.getFieldMetas() != null)
             for (FieldMeta fm : em.getFieldMetas()) {
                 fm.getColumn().setTableName(em.getTableMeta().getTableName());
@@ -173,7 +176,12 @@ public class MetaRelf {
                     fieldName = fieldName.replaceFirst(firstChar, firstChar.toLowerCase());
                     Title cn = method.getAnnotation(Title.class);
                     String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
-                    return new FieldMeta(fieldName, fieldName, title);
+                    String columnName = fieldName;
+                    Col col = method.getAnnotation(Col.class);
+                    if (col != null) {
+                        columnName = col.name();
+                    }
+                    return new FieldMeta(columnName, fieldName, title);
                 }
             }
         }
@@ -192,6 +200,16 @@ public class MetaRelf {
      * @return *
      */
     public static HashMap<String, FieldMeta> getColumnFieldMetas(Class clazz) {
+        return getColumnFieldMetas(clazz, null);
+    }
+
+    /**
+     * 解析get**方法或is**方法的映射，其它的，如set**方法不解析
+     * @param clazz
+     * @param tableForeigns 不为null时，解析表外键
+     * @return
+     */
+    public static HashMap<String, FieldMeta> getColumnFieldMetas(Class clazz, Collection<TableForeign> tableForeigns) {
         Object bean = getBean(clazz);
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
         for (Class<?> searchType = clazz; searchType != Object.class; searchType = searchType.getSuperclass()) {
@@ -227,11 +245,14 @@ public class MetaRelf {
                             }
                             //cfm.setCol(column);
                             if (column != null) {
-                                cfm.getColumn().setNullable(column.nullable() ? true : false);
+                                cfm.getColumn().setNullable(column.nullable());
                                 cfm.getColumn().setUnique(column.unique());
                                 cfm.getColumn().setName(column.name());
                                 cfm.getColumn().setNumericPrecision(column.numericPrecision());
                                 cfm.getColumn().setNumericScale(column.numericScale());
+                                cfm.getColumn().setIsForeignColumn(column.isForeignColumn());
+                                cfm.getColumn().setForeignColName(column.foreignColName());
+                                cfm.getColumn().setForeignTables(column.foreignTables());
                                 // charMaxlength 未设置值时，则依据dataType的获取length默认值
                                 cfm.getColumn().setCharMaxLength(column.charMaxlength() > 0 ? column.charMaxlength() : MapUtils.getLong(dataTypeDefaultMaxLengthMap, column.dataType(), 64L));
                                 cfm.getColumn().setDataType(column.dataType());
@@ -245,6 +266,23 @@ public class MetaRelf {
                                     logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
                                 }
 //                                logger.debug("column.dataType() >>"+column.name()+">>{}",column.dataType());
+
+                                //解析外键
+                                if (tableForeigns != null) {
+                                    ForeignKey foreignKey = method.getAnnotation(ForeignKey.class);
+                                    if(foreignKey != null){
+                                        TableForeign tableForeign = new TableForeign();
+                                        tableForeign.setMainTable(getEntityName(clazz));
+                                        tableForeign.setMainTableCol(column.name());
+                                        tableForeign.setForeigenTable(getEntityName(foreignKey.fTable()));
+                                        if (foreignKey.fCol().length() == 0) {
+                                            tableForeign.setForeigenTableCol(getId(clazz).getColumnName());
+                                        } else {
+                                            tableForeign.setForeigenTableCol(foreignKey.fCol());
+                                        }
+                                        tableForeigns.add(tableForeign);
+                                    }
+                                }
                             }
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());

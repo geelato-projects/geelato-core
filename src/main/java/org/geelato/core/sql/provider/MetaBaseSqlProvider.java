@@ -7,6 +7,7 @@ import org.geelato.core.gql.parser.BaseCommand;
 import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.field.FieldMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -21,6 +22,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     protected static final Map<String, Boolean> keywordsMap = new HashedMap();
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
     protected MetaManager metaManager = MetaManager.singleInstance();
+
+    //表别名MAP
+    private Map<String, String> tableAlias = new HashMap<>(8);
 
     static {
         // TODO 待添加所有的关键字、保留字
@@ -175,24 +179,23 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * @param filter
      */
     protected void buildConditionSegment(StringBuilder sb, EntityMeta md, FilterGroup.Filter filter) {
-
-        String columnName = md.getColumnName(filter.getField());
+        FieldMeta fm = md.getFieldMeta(filter.getField());
         FilterGroup.Operator operator = filter.getOperator();
         if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
-            tryAppendKeywords(sb, columnName);
+            tryAppendKeywords(md, sb, fm);
             sb.append(enumToSignString.get(operator));
             sb.append("?");
         } else if (operator == FilterGroup.Operator.startWith) {
-            tryAppendKeywords(sb, columnName);
+            tryAppendKeywords(md, sb, fm);
             sb.append(" like CONCAT('',?,'%')");
         } else if (operator == FilterGroup.Operator.endWith) {
-            tryAppendKeywords(sb, columnName);
+            tryAppendKeywords(md, sb, fm);
             sb.append(" like CONCAT('%',?,'')");
         } else if (operator == FilterGroup.Operator.contains) {
-            tryAppendKeywords(sb, columnName);
+            tryAppendKeywords(md, sb, fm);
             sb.append(" like CONCAT('%',?,'%')");
         } else if (operator == FilterGroup.Operator.in) {
-            tryAppendKeywords(sb, columnName);
+            tryAppendKeywords(md, sb, fm);
             String[] ary = filter.getValue().split(",");
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
@@ -206,6 +209,11 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         if (field == null)
             return false;
         return keywordsMap.containsKey(field);
+    }
+
+    protected StringBuilder tryAppendKeywords(EntityMeta md, StringBuilder sb, FieldMeta fm) {
+        Assert.notNull(fm, "获取不到元数据，fieldName：" + fm.getFieldName());
+        return this.tryAppendKeywords(sb, fm.getColumnName());
     }
 
     protected StringBuilder tryAppendKeywords(StringBuilder sb, String field) {
@@ -223,5 +231,17 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         EntityMeta md = metaManager.getByEntityName(command.getEntityName());
         Assert.notNull(md, "未能通过entityName：" + command.getEntityName() + ",获取元数据信息EntityMeta。");
         return md;
+    }
+
+    //表别名
+    public String buildTableAlias(String tableName) {
+        if (tableName != null && !this.tableAlias.containsKey(tableName)) {
+            this.tableAlias.put(tableName, "t" + this.tableAlias.size());
+        }
+        return this.tableAlias.get(tableName);
+    }
+
+    public String getTableAlias(String tableName){
+        return this.tableAlias.get(tableName);
     }
 }
