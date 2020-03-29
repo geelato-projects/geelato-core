@@ -250,9 +250,10 @@ public class MetaRelf {
                                 cfm.getColumn().setName(column.name());
                                 cfm.getColumn().setNumericPrecision(column.numericPrecision());
                                 cfm.getColumn().setNumericScale(column.numericScale());
-                                cfm.getColumn().setIsForeignColumn(column.isForeignColumn());
-                                cfm.getColumn().setForeignColName(column.foreignColName());
-                                cfm.getColumn().setForeignTables(column.foreignTables());
+                                cfm.getColumn().setIsRefColumn(column.isRefColumn());
+                                cfm.getColumn().setRefLocalCol(column.refLocalCol());
+                                cfm.getColumn().setRefColName(column.refColName());
+                                cfm.getColumn().setRefTables(column.refTables());
                                 // charMaxlength 未设置值时，则依据dataType的获取length默认值
                                 cfm.getColumn().setCharMaxLength(column.charMaxlength() > 0 ? column.charMaxlength() : MapUtils.getLong(dataTypeDefaultMaxLengthMap, column.dataType(), 64L));
                                 cfm.getColumn().setDataType(column.dataType());

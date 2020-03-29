@@ -94,4 +94,14 @@ public class BaseCommand<E extends BaseCommand> {
         this.from.append(tablaName).append(" ").append(alias);
         return this;
     }
+
+    /**
+     * from中是否已join该表
+     *
+     * @param alias
+     * @return
+     */
+    public boolean hasNotJoin(String alias) {
+        return this.from.indexOf(alias) == -1;
+    }
 }

@@ -90,16 +90,21 @@ public @interface Col {
      * 外表字段，默认否
      * @return isForeignColumn
      */
-    boolean isForeignColumn() default false;
+    boolean isRefColumn() default false;
+
+    /**
+     * isRefColumn为true时，需要通过本表引用字段
+     */
+    String refLocalCol() default  "";
 
     /**
      * @return isForeignColumn
      */
-    String foreignColName() default "";
+    String refColName() default "";
 
     /**
      * 多张表名逗号隔开
      * @return foreignTableId
      */
-    String foreignTables() default "";
+    String refTables() default "";
 }

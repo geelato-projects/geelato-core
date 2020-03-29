@@ -1,5 +1,6 @@
 package org.geelato.core.sql.provider;
 
+import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.gql.parser.QueryCommand;
 import org.geelato.core.meta.model.entity.EntityMeta;
@@ -136,39 +137,45 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
             FieldMeta fm = md.getFieldMeta(fieldName);
             ColumnMeta cm = fm.getColumn();
             //外表字段
-            if (!StringUtils.isEmpty(cm.getForeignTables())) {
-                if (cm.getIsForeignColumn()) {
-                    //外表字段
-                    String[] colArr = cm.getForeignColName().split(".", 2);
-                    if (colArr.length == 2) {
-                        sb.append(super.buildTableAlias(colArr[0])).append(".").append(colArr[1])
-                                .append(" AS ").append(fieldName);
-                    }
-                } else {
+            if (!StringUtils.isEmpty(cm.getRefColName())) {
+                if (!cm.getIsRefColumn()) {
                     //外键
                     this.buildForeignJoinSql(command, md, fm);
+                } else if (Strings.isNotEmpty(cm.getRefLocalCol())) {
+                    //非外键时，需要找到本表外键
+                    FieldMeta localFm = md.getFieldMeta(cm.getRefLocalCol());
+                    if (localFm != null) {
+                        this.buildForeignJoinSql(command, md, localFm);
+                    }
                 }
-            }
 
-            if (alias.containsKey(fieldName)) {
-                // 有指定的重命名要求时
-                tryAppendKeywords(md, sb, fm);
-//                sb.append(fm.getColumnName());
-                sb.append(" ");
-                tryAppendKeywords(sb, alias.get(fieldName).toString());
-//                sb.append(alias.get(fieldName));
+                //外表字段
+                String[] colArr = cm.getRefColName().split("\\.", 2);
+                if (colArr.length == 2) {
+                    sb.append(super.buildTableAlias(colArr[0])).append(".").append(colArr[1])
+                            .append(" AS ").append(fieldName);
+                }
             } else {
-                // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
-                //isEquals做什么用？
-                if (!fm.getColumn().getIsForeignColumn() && fm.isEquals()) {
+                if (alias.containsKey(fieldName)) {
+                    // 有指定的重命名要求时
                     tryAppendKeywords(md, sb, fm);
-//                    sb.append(fm.getColumnName());
-                } else {
-                    tryAppendKeywords(md, sb, fm);
-//                    sb.append(fm.getColumnName());
+//                sb.append(fm.getColumnName());
                     sb.append(" ");
-                    tryAppendKeywords(sb, fm.getFieldName());
+                    tryAppendKeywords(sb, alias.get(fieldName).toString());
+//                sb.append(alias.get(fieldName));
+                } else {
+                    // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
+                    //isEquals做什么用？
+                    if (!fm.getColumn().getIsRefColumn() && fm.isEquals()) {
+                        tryAppendKeywords(md, sb, fm);
+//                    sb.append(fm.getColumnName());
+                    } else {
+                        tryAppendKeywords(md, sb, fm);
+//                    sb.append(fm.getColumnName());
+                        sb.append(" ");
+                        tryAppendKeywords(sb, fm.getFieldName());
 //                    sb.append(fm.getFieldName());
+                    }
                 }
             }
             sb.append(",");
@@ -183,26 +190,32 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
      * @param fm
      */
     private void buildForeignJoinSql(QueryCommand command, EntityMeta md, FieldMeta fm) {
-        String[] fTables = fm.getColumn().getForeignTables().split(",");
+        String[] fTables = fm.getColumn().getRefTables().split(",");
         for (int i = 0, len = fTables.length; i < len; i++) {
             String lastTable = i > 0 ? fTables[i-1] : md.getTableName();
             EntityMeta fEm = super.metaManager.get(fTables[i]);
             TableForeign tf = fEm.getTableForeignsMap().get(lastTable);
-            if (tf != null) {
-                //外键在fTables[i]表
-                command.appendFrom(" left join ").appendFrom(fTables[i], super.buildTableAlias(fTables[i]))
-                        .appendFrom(" on ").appendFrom(super.getTableAlias(fTables[i])).appendFrom(".").appendFrom(tf.getMainTableCol())
-                        .appendFrom("=").appendFrom(super.getTableAlias(lastTable)).appendFrom(".").appendFrom(tf.getForeigenTableCol());
-            } else {
-                //外键在前一张表
-                fEm = super.metaManager.get(lastTable);
-                tf = fEm.getTableForeignsMap().get(fTables[i]);
+            //外键
+            String tableAlias = super.buildTableAlias(fTables[i]);
+            if (command.hasNotJoin(tableAlias)) {
                 if (tf != null) {
-                    command.appendFrom(" left join ").appendFrom(fTables[i], super.buildTableAlias(fTables[i]))
-                            .appendFrom(" on ").appendFrom(super.getTableAlias(fTables[i])).appendFrom(".").appendFrom(tf.getForeigenTableCol())
-                            .appendFrom("=").appendFrom(super.getTableAlias(lastTable))
-                            .appendFrom(".").appendFrom(tf.getMainTableCol());
+                    //外键在fTables[i]表
+                    command.appendFrom(" left join ").appendFrom(fTables[i], tableAlias)
+                            .appendFrom(" on ").appendFrom(tableAlias).appendFrom(".").appendFrom(tf.getMainTableCol())
+                            .appendFrom("=").appendFrom(super.getTableAlias(lastTable)).appendFrom(".").appendFrom(tf.getForeigenTableCol());
+                } else {
+                    //外键在前一张表
+                    fEm = super.metaManager.get(lastTable);
+                    tf = fEm.getTableForeignsMap().get(fTables[i]);
+                    if (tf != null) {
+                        command.appendFrom(" left join ").appendFrom(fTables[i], tableAlias)
+                                .appendFrom(" on ").appendFrom(tableAlias).appendFrom(".").appendFrom(tf.getForeigenTableCol())
+                                .appendFrom("=").appendFrom(super.getTableAlias(lastTable))
+                                .appendFrom(".").appendFrom(tf.getMainTableCol());
+                    }
                 }
+
+                //todo join中存多次引用同一张表场景待实现
             }
         }
     }
@@ -260,8 +273,8 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
     @Override
     protected StringBuilder tryAppendKeywords(EntityMeta md, StringBuilder sb, FieldMeta fm) {
         String field = fm.getColumnName();
-        if (fm.getColumn().getIsForeignColumn()) {
-            String fCol = fm.getColumn().getForeignColName();
+        if (fm.getColumn().getIsRefColumn()) {
+            String fCol = fm.getColumn().getRefColName();
             String[] items = fCol.split("\\.");
             if (items.length == 2) {
                 sb.append(super.buildTableAlias(items[0])).append(".");

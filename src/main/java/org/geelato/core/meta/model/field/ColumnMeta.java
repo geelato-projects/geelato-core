@@ -73,11 +73,13 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String description;
 
     //1-外表字段，默认0
-    private boolean isForeignColumn;
+    private boolean isRefColumn;
+    //isRefColumn为true时，需要通过本表引用字段
+    private String refLocalCol;
     //外表字段名称
-    private String foreignColName;
+    private String refColName;
     //外表表名
-    private String foreignTables;
+    private String refTables;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -356,32 +358,42 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     @Col(name = "is_foreign_column")
     @Title(title = "外表字段")
-    public boolean getIsForeignColumn() {
-        return isForeignColumn;
+    public boolean getIsRefColumn() {
+        return isRefColumn;
     }
 
-    public void setIsForeignColumn(boolean isForeignColumn) {
-        this.isForeignColumn = isForeignColumn;
+    public void setIsRefColumn(boolean isRefColumn) {
+        this.isRefColumn = isRefColumn;
+    }
+
+    @Col(name = "ref_local_col")
+    @Title(title = "本表引用字段", description = "isRefColumn为true时有效")
+    public String getRefLocalCol() {
+        return refLocalCol;
+    }
+
+    public void setRefLocalCol(String refLocalCol) {
+        this.refLocalCol = refLocalCol;
     }
 
     @Col(name = "foreign_table")
     @Title(title = "外表表名", description = "多层关联外表用逗号隔开")
-    public String getForeignTables() {
-        return foreignTables;
+    public String getRefTables() {
+        return refTables;
     }
 
-    public void setForeignTables(String foreignTables) {
-        this.foreignTables = foreignTables;
+    public void setRefTables(String refTables) {
+        this.refTables = refTables;
     }
 
     @Col(name = "foreign_col_name")
     @Title(title = "外表字段名称", description = "命名规则：[表名]+[.]+[表字段]")
-    public String getForeignColName() {
-        return foreignColName;
+    public String getRefColName() {
+        return refColName;
     }
 
-    public void setForeignColName(String foreignColName) {
-        this.foreignColName = foreignColName;
+    public void setRefColName(String refColName) {
+        this.refColName = refColName;
     }
 
     /**
