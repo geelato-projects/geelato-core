@@ -97,7 +97,8 @@ public class DbGenerateDao {
         connectMeta.setEnableStatus(1);
         connectMeta.setDbPassword("123456");
         Map connectMetaMap = this.dao.save(connectMeta);
-        // 保存数据表元数据
+
+        // 保存所有的数据表元数据
         this.saveJavaMetaToDb(Long.parseLong(connectMetaMap.get("id").toString()), entityMetas);
     }
 
@@ -121,7 +122,7 @@ public class DbGenerateDao {
                 // cm.setTableId(em.getTableMeta().getTableName());
                 dao.save(cm);
             }
-            //保存外键关系
+            // 保存外键关系
             for (TableForeign ft : em.getTableForeigns()) {
                 ft.setEnableStatus(1);
                 dao.save(ft);

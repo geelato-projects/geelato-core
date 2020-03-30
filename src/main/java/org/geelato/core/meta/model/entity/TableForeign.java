@@ -16,9 +16,9 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     private String mainTableCol;
 
-    private String foreigenTable;
+    private String foreignTable;
 
-    private String foreigenTableCol;
+    private String foreignTableCol;
 
     private int enableStatus;
 
@@ -47,22 +47,22 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     @Col(name = "foreign_table")
     @Title(title = "外键关联表表名")
-    public String getForeigenTable() {
-        return foreigenTable;
+    public String getForeignTable() {
+        return foreignTable;
     }
 
-    public void setForeigenTable(String foreigenTable) {
-        this.foreigenTable = foreigenTable;
+    public void setForeignTable(String foreignTable) {
+        this.foreignTable = foreignTable;
     }
 
     @Col(name = "foreign_table_col")
     @Title(title = "外键关联表字段")
-    public String getForeigenTableCol() {
-        return foreigenTableCol;
+    public String getForeignTableCol() {
+        return foreignTableCol;
     }
 
-    public void setForeigenTableCol(String foreigenTableCol) {
-        this.foreigenTableCol = foreigenTableCol;
+    public void setForeignTableCol(String foreignTableCol) {
+        this.foreignTableCol = foreignTableCol;
     }
 
     @Override

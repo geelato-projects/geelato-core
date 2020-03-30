@@ -208,7 +208,7 @@ public class EntityMeta {
     public void setTableForeigns(Collection<TableForeign> tableForeigns) {
         this.tableForeigns = tableForeigns;
         for (TableForeign t : tableForeigns) {
-            tableForeignsMap.put(t.getForeigenTable(), t);
+            tableForeignsMap.put(t.getForeignTable(), t);
         }
     }
 

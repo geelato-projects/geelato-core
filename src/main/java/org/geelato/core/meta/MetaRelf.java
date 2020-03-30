@@ -275,11 +275,11 @@ public class MetaRelf {
                                         TableForeign tableForeign = new TableForeign();
                                         tableForeign.setMainTable(getEntityName(clazz));
                                         tableForeign.setMainTableCol(column.name());
-                                        tableForeign.setForeigenTable(getEntityName(foreignKey.fTable()));
+                                        tableForeign.setForeignTable(getEntityName(foreignKey.fTable()));
                                         if (foreignKey.fCol().length() == 0) {
-                                            tableForeign.setForeigenTableCol(getId(clazz).getColumnName());
+                                            tableForeign.setForeignTableCol(getId(clazz).getColumnName());
                                         } else {
-                                            tableForeign.setForeigenTableCol(foreignKey.fCol());
+                                            tableForeign.setForeignTableCol(foreignKey.fCol());
                                         }
                                         tableForeigns.add(tableForeign);
                                     }
@@ -301,12 +301,9 @@ public class MetaRelf {
                     throw e;
                 }
             }
-
         }
         return map;
-
     }
-
 
     /**
      * 解析get**方法或is**方法的映射，其它的不解析

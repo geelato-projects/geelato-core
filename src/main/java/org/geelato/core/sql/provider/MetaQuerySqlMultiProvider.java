@@ -202,14 +202,14 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
                     //外键在fTables[i]表
                     command.appendFrom(" left join ").appendFrom(fTables[i], tableAlias)
                             .appendFrom(" on ").appendFrom(tableAlias).appendFrom(".").appendFrom(tf.getMainTableCol())
-                            .appendFrom("=").appendFrom(super.getTableAlias(lastTable)).appendFrom(".").appendFrom(tf.getForeigenTableCol());
+                            .appendFrom("=").appendFrom(super.getTableAlias(lastTable)).appendFrom(".").appendFrom(tf.getForeignTableCol());
                 } else {
                     //外键在前一张表
                     fEm = super.metaManager.get(lastTable);
                     tf = fEm.getTableForeignsMap().get(fTables[i]);
                     if (tf != null) {
                         command.appendFrom(" left join ").appendFrom(fTables[i], tableAlias)
-                                .appendFrom(" on ").appendFrom(tableAlias).appendFrom(".").appendFrom(tf.getForeigenTableCol())
+                                .appendFrom(" on ").appendFrom(tableAlias).appendFrom(".").appendFrom(tf.getForeignTableCol())
                                 .appendFrom("=").appendFrom(super.getTableAlias(lastTable))
                                 .appendFrom(".").appendFrom(tf.getMainTableCol());
                     }
