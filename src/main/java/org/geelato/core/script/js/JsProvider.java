@@ -36,7 +36,7 @@ public class JsProvider {
         if (jsFuncMap == null) return;
         for (Map.Entry<String, String> entry : jsFuncMap.entrySet()) {
             if (compiledScriptMap.containsKey(entry.getKey())) {
-                logger.error("存在同名称key：{},不进行解析！待解析内容：{}", entry.getKey(), entry.getValue());
+                logger.warn("存在同名称key：{},不进行解析！", entry.getKey());
             } else {
                 compiledScriptMap.put(entry.getKey(), compile(entry.getKey(), entry.getValue()));
             }
