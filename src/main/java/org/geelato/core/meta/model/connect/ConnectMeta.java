@@ -11,7 +11,7 @@ import org.geelato.core.meta.model.entity.EntityEnableAble;
  */
 @Title(title = "数据库连接信息")
 @Entity(name = "platform_dev_db_connect")
-public class ConnectMeta extends BaseEntity implements EntityEnableAble{
+public class ConnectMeta extends BaseEntity implements EntityEnableAble {
 
     private String dbConnectName;
     private String dbName;
@@ -104,7 +104,7 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble{
     }
 
     @Title(title = "启用状态", description = "1表示启用、0表示未启用")
-    @Col(name = "enable_status", nullable = false, dataType = "tinyint", numericPrecision = 1)
+    @Col(name = "enable_status", nullable = false, numericPrecision = 1)
     @Override
     public int getEnableStatus() {
         return this.enableStatus;
