@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author geemeta
+ * @author geelato
  *
  */
 public class EntityMeta {
@@ -37,6 +37,7 @@ public class EntityMeta {
     public EntityMeta() {
         ignoreUpdateFieldMap = new HashMap<>();
         ignoreUpdateFieldMap.put("create_at", true);
+        ignoreUpdateFieldMap.put("createAt", true);
         ignoreUpdateFieldMap.put("creator", true);
     }
 

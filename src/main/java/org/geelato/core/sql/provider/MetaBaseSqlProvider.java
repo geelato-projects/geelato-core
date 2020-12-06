@@ -147,11 +147,11 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * 只构建当前实体的查询条件!isRefField
      *
      * @param sb
-     * @param md
+     * @param em
      * @param list
      * @param logic
      */
-    protected void buildConditions(StringBuilder sb, EntityMeta md, List<FilterGroup.Filter> list, FilterGroup.Logic logic) {
+    protected void buildConditions(StringBuilder sb, EntityMeta em, List<FilterGroup.Filter> list, FilterGroup.Logic logic) {
         if (list != null && list.size() > 0) {
             Iterator<FilterGroup.Filter> iterator = list.iterator();
             int index = 0;
@@ -164,7 +164,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                     sb.append(logic.getText());
                     sb.append(" ");
                 }
-                buildConditionSegment(sb, md, filter);
+                buildConditionSegment(sb, em, filter);
                 index += 1;
             }
         }
@@ -175,27 +175,27 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * 构建单个过滤条件
      *
      * @param sb
-     * @param md
+     * @param em
      * @param filter
      */
-    protected void buildConditionSegment(StringBuilder sb, EntityMeta md, FilterGroup.Filter filter) {
-        FieldMeta fm = md.getFieldMeta(filter.getField());
+    protected void buildConditionSegment(StringBuilder sb, EntityMeta em, FilterGroup.Filter filter) {
+        FieldMeta fm = em.getFieldMeta(filter.getField());
         FilterGroup.Operator operator = filter.getOperator();
         if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
-            tryAppendKeywords(md, sb, fm);
+            tryAppendKeywords(em, sb, fm);
             sb.append(enumToSignString.get(operator));
             sb.append("?");
         } else if (operator == FilterGroup.Operator.startWith) {
-            tryAppendKeywords(md, sb, fm);
+            tryAppendKeywords(em, sb, fm);
             sb.append(" like CONCAT('',?,'%')");
         } else if (operator == FilterGroup.Operator.endWith) {
-            tryAppendKeywords(md, sb, fm);
+            tryAppendKeywords(em, sb, fm);
             sb.append(" like CONCAT('%',?,'')");
         } else if (operator == FilterGroup.Operator.contains) {
-            tryAppendKeywords(md, sb, fm);
+            tryAppendKeywords(em, sb, fm);
             sb.append(" like CONCAT('%',?,'%')");
         } else if (operator == FilterGroup.Operator.in) {
-            tryAppendKeywords(md, sb, fm);
+            tryAppendKeywords(em, sb, fm);
             String[] ary = filter.getValue().split(",");
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
@@ -211,7 +211,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         return keywordsMap.containsKey(field);
     }
 
-    protected StringBuilder tryAppendKeywords(EntityMeta md, StringBuilder sb, FieldMeta fm) {
+    protected StringBuilder tryAppendKeywords(EntityMeta em, StringBuilder sb, FieldMeta fm) {
         Assert.notNull(fm, "获取不到元数据，fieldName：" + fm.getFieldName());
         return this.tryAppendKeywords(sb, fm.getColumnName());
     }
@@ -228,9 +228,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     }
 
     public EntityMeta getEntityMeta(E command) {
-        EntityMeta md = metaManager.getByEntityName(command.getEntityName());
-        Assert.notNull(md, "未能通过entityName：" + command.getEntityName() + ",获取元数据信息EntityMeta。");
-        return md;
+        EntityMeta em = metaManager.getByEntityName(command.getEntityName());
+        Assert.notNull(em, "未能通过entityName：" + command.getEntityName() + ",获取元数据信息EntityMeta。");
+        return em;
     }
 
     //表别名
