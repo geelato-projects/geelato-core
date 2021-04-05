@@ -74,7 +74,7 @@ public class DbGenerateDao {
                 }
             }
             if (!isIgnore) {
-                createOneTable(em, dropBeforeCreate);
+                createOrUpdateOneTable(em, dropBeforeCreate);
             } else {
                 logger.info("ignore createTable for entity: {}.", em.getEntityName());
             }
@@ -137,24 +137,47 @@ public class DbGenerateDao {
      * @param entityName       实体名称
      * @param dropBeforeCreate 存在表时，是否删除
      */
-    public void createOneTable(String entityName, boolean dropBeforeCreate) {
-        createOneTable(metaManager.getByEntityName(entityName), dropBeforeCreate);
+    public void createOrUpdateOneTable(String entityName, boolean dropBeforeCreate) {
+        createOrUpdateOneTable(metaManager.getByEntityName(entityName), dropBeforeCreate);
     }
 
-    private void createOneTable(EntityMeta em, boolean dropBeforeCreate) {
+    private void createOrUpdateOneTable(EntityMeta em, boolean dropBeforeCreate) {
+
         if (dropBeforeCreate) {
             logger.info("  drop entity " + em.getTableName());
             dao.execute("dropOneTable", SqlParams.map("tableName", em.getTableName()));
         }
-        logger.info("  create entity " + em.getTableName());
+        logger.info("  create or update an entity " + em.getTableName());
 
+        // 检查表是否存在，或取已存在的列元数据
+        boolean isExistsTable = true;
+        Map existscolumnMap = new HashMap();
+        List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", em.getTableName()));
+        if (columns == null || columns.size() == 0) {
+            isExistsTable = false;
+        } else {
+            for (Map<String, Object> columnMap : columns) {
+                existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
+            }
+        }
+        // 通过create table创建的字段
+        ArrayList<ColumnMeta> createList = new ArrayList<>();
+        // 通过alert table创建的字段
         ArrayList<ColumnMeta> addList = new ArrayList<>();
+        // 通过alert table修改的字段
+        ArrayList<ColumnMeta> modifyList = new ArrayList<>();
+        // 通过alert table删除的字段
+        ArrayList<ColumnMeta> deleteList = new ArrayList<>();
         ArrayList<ColumnMeta> uniqueList = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("tableName", em.getTableName());
+        map.put("createList", createList);
         map.put("addList", addList);
+        map.put("modifyList", modifyList);
+        map.put("deleteList", deleteList);
         map.put("uniqueList", uniqueList);
         map.put("foreignList", em.getTableForeigns());
+        map.put("existsTable", isExistsTable);
 
         for (FieldMeta fm : em.getFieldMetas()) {
             try {
@@ -165,9 +188,15 @@ public class DbGenerateDao {
                     fm.getColumn().setNumericPrecision(len);
                     fm.getColumn().afterSet();
                 }
-                //创建表的语句中已有id，这里不再重复创建。改用应用程序的guid，这里还是加上id
+                // 创建表的语句中已有id，这里不再重复创建。改用应用程序的guid，这里还是加上id
 //                    if (!fm.getColumn().getName().toLowerCase().equals("id"))
-                addList.add(fm.getColumn());
+
+                if (existscolumnMap.containsKey(fm.getColumnName())) {
+                    modifyList.add(fm.getColumn());
+                } else {
+                    addList.add(fm.getColumn());
+                }
+                createList.add(fm.getColumn());
                 if (fm.getColumn().isUnique())
                     uniqueList.add(fm.getColumn());
             } catch (Exception e) {
@@ -176,6 +205,6 @@ public class DbGenerateDao {
                 else throw e;
             }
         }
-        dao.execute("createOneTable", map);
+        dao.execute("createOrUpdateOneTable", map);
     }
 }
