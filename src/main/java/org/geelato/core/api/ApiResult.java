@@ -1,55 +1,108 @@
 package org.geelato.core.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author geemeta
  */
 public class ApiResult<E> {
-    private String msg = "";
-    private String code = ApiResultCode.SUCCESS;
-    private E data;
+    private String message = "";
+    private int code = ApiResultCode.SUCCESS;
+    private String type = ApiResultType.SUCCESS;
+    private E result;
 
     public ApiResult() {
     }
 
-    public ApiResult(E data) {
-        setData(data);
+    public ApiResult(E result) {
+        setResult(result);
     }
 
-    public ApiResult(E data, String msg, String code) {
+    public ApiResult(E result, String msg, int code) {
         setCode(code);
-        setMsg(msg);
-        setData(data);
+        setMessage(msg);
+        setResult(result);
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public ApiResult<E> setMsg(String msg) {
-        this.msg = msg;
+    public ApiResult<E> setMessage(String message) {
+        this.message = this.message;
         return this;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public ApiResult<E> setCode(String code) {
+    public ApiResult<E> setCode(int code) {
         this.code = code;
         return this;
     }
 
-    public E getData() {
-        return data;
+    public String getType() {
+        return type;
     }
 
-    public ApiResult<E> setData(E data) {
-        this.data = data;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public E getResult() {
+        return result;
+    }
+
+    public ApiResult<E> setResult(E result) {
+        this.result = result;
         return this;
     }
 
+    /**
+     * 设置编码为ApiResultCode.ERROR
+     *
+     * @return ApiResult
+     */
+    public ApiResult<E> error() {
+        this.code = ApiResultCode.ERROR;
+        this.type = ApiResultType.ERROR;
+        return this;
+    }
+
+    /**
+     * 设置编码为ApiResultCode.SUCCESS
+     *
+     * @return ApiResult
+     */
+    public ApiResult<E> success() {
+        this.code = ApiResultCode.SUCCESS;
+        this.type = ApiResultType.SUCCESS;
+        return this;
+    }
+
+    /**
+     * 设置编码为ApiResultCode.WARNING
+     *
+     * @return ApiResult
+     */
+    public ApiResult<E> warning() {
+        this.code = ApiResultCode.WARNING;
+        this.type = ApiResultType.WARNING;
+        return this;
+    }
+
+    @JsonIgnore
     public boolean isSuccess() {
         return this.code == ApiResultCode.SUCCESS;
+    }
+    @JsonIgnore
+    public boolean isError() {
+        return this.code == ApiResultCode.ERROR;
+    }
+    @JsonIgnore
+    public boolean isWarning() {
+        return this.code == ApiResultCode.WARNING;
     }
 
 }

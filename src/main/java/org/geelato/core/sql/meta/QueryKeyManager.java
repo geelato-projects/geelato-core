@@ -1,5 +1,6 @@
 package org.geelato.core.sql.meta;
 
+import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
@@ -15,7 +16,7 @@ import java.util.List;
 public class QueryKeyManager {
 
     public static void columnResolve() {
-        final String dbType = JdbcConstants.MYSQL;
+        final DbType dbType = JdbcConstants.MYSQL;
 
         SchemaRepository repository = new SchemaRepository(dbType);
 
@@ -66,18 +67,18 @@ public class QueryKeyManager {
 
         columnResolve();
         //
-        String dbType = JdbcConstants.MYSQL; // 可以是ORACLE、POSTGRESQL、SQLSERVER、ODPS等
+        DbType dbType = JdbcConstants.MYSQL; // 可以是ORACLE、POSTGRESQL、SQLSERVER、ODPS等
         String sql = "select * from t";
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType);
         SQLSelectItem selectItem = SQLUtils.toSelectItem(sql, dbType);
 
 
-        sql = "select t1.id,t1.name,t2.code from platform_page_config t1,User t2 where ti.userId=t2.id";
+        sql = "select t1.id,t1.name,t2.code from platform_app_page t1,User t2 where ti.userId=t2.id";
         stmtList = SQLUtils.parseStatements(sql, dbType);
         selectItem = SQLUtils.toSelectItem(sql, dbType);
 
 
-        sql = "select id,name from platform_page_config";
+        sql = "select id,name from platform_app_page";
         stmtList = SQLUtils.parseStatements(sql, dbType);
 
 

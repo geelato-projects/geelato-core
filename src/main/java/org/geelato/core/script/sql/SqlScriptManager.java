@@ -67,17 +67,17 @@ public class SqlScriptManager extends AbstractManager {
      * @return
      * @throws ScriptException
      */
-    public <T> T generate(String id, Map<String, Object> paramMap) {
+    public String generate(String id, Map<String, Object> paramMap) {
         if (jsProvider.contain(id))
             try {
-                SimpleBindings simpleBindings = new SimpleBindings();
-                simpleBindings.put(SqlScriptParser.VAL_NAME, paramMap);
-                T sql = jsProvider.execute(id, simpleBindings);
+//                SimpleBindings simpleBindings = new SimpleBindings();
+//                simpleBindings.put(SqlScriptParser.VAL_NAME, paramMap);
+                String sql = jsProvider.execute(id, paramMap).asString();
                 if (logger.isInfoEnabled()) {
                     logger.info("sql {} : {}", id, sql);
                 }
                 return sql;
-            } catch (ScriptException e) {
+            } catch (ScriptException | NoSuchMethodException e) {
                 logger.error("sql脚本构建失败。", e);
                 return null;
             }

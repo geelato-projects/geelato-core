@@ -3,6 +3,7 @@ package org.geelato.core.script.rule;
 import org.geelato.core.AbstractManager;
 import org.geelato.core.script.js.JsProvider;
 import org.geelato.core.script.js.JsTemplateParser;
+import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -59,19 +60,19 @@ public class BizRuleScriptManager extends AbstractManager {
 
     /**
      * @param functionName functionName
-     * @param bindings     bindings中put的key与函数的参数名称需一致，{@link Bindings}
+     * @param paramMap     paramMap中put的key与函数的参数名称需一致，{@link Bindings}
      * @return 执行结果
      * @throws ScriptException 脚本执行错误
      */
-    public <T> T execute(String functionName, Bindings bindings) {
+    public Object execute(String functionName,Map<String, Object> paramMap) {
         if (jsProvider.contain(functionName))
             try {
-                T result = jsProvider.execute(functionName, bindings);
+                Object result = jsProvider.execute(functionName, paramMap);
                 if (logger.isInfoEnabled()) {
                     logger.info("execute {} : {}", functionName, result);
                 }
                 return result;
-            } catch (ScriptException e) {
+            } catch (ScriptException | NoSuchMethodException e) {
                 logger.error("脚本执行失败。function:" + functionName + "。", e);
                 return null;
             }

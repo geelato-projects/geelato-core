@@ -1,5 +1,6 @@
 package org.geelato.core.orm;
 
+import com.alibaba.fastjson2.JSONObject;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.connect.ConnectMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
@@ -161,23 +162,14 @@ public class DbGenerateDao {
             }
         }
         // 通过create table创建的字段
-        ArrayList<ColumnMeta> createList = new ArrayList<>();
+        ArrayList<JSONObject> createList = new ArrayList<>();
         // 通过alert table创建的字段
-        ArrayList<ColumnMeta> addList = new ArrayList<>();
+        ArrayList<JSONObject> addList = new ArrayList<>();
         // 通过alert table修改的字段
-        ArrayList<ColumnMeta> modifyList = new ArrayList<>();
+        ArrayList<JSONObject> modifyList = new ArrayList<>();
         // 通过alert table删除的字段
-        ArrayList<ColumnMeta> deleteList = new ArrayList<>();
-        ArrayList<ColumnMeta> uniqueList = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
-        map.put("tableName", em.getTableName());
-        map.put("createList", createList);
-        map.put("addList", addList);
-        map.put("modifyList", modifyList);
-        map.put("deleteList", deleteList);
-        map.put("uniqueList", uniqueList);
-        map.put("foreignList", em.getTableForeigns());
-        map.put("existsTable", isExistsTable);
+        ArrayList<JSONObject> deleteList = new ArrayList<>();
+        ArrayList<JSONObject> uniqueList = new ArrayList<>();
 
         for (FieldMeta fm : em.getFieldMetas()) {
             try {
@@ -190,21 +182,32 @@ public class DbGenerateDao {
                 }
                 // 创建表的语句中已有id，这里不再重复创建。改用应用程序的guid，这里还是加上id
 //                    if (!fm.getColumn().getName().toLowerCase().equals("id"))
+                JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
 
                 if (existscolumnMap.containsKey(fm.getColumnName())) {
-                    modifyList.add(fm.getColumn());
+                    modifyList.add(jsonColumn);
                 } else {
-                    addList.add(fm.getColumn());
+                    addList.add(jsonColumn);
                 }
-                createList.add(fm.getColumn());
+                createList.add(jsonColumn);
                 if (fm.getColumn().isUnique())
-                    uniqueList.add(fm.getColumn());
+                    uniqueList.add(jsonColumn);
             } catch (Exception e) {
                 if (e.getMessage().indexOf("Duplicate column name") != -1)
                     logger.info("column " + fm.getColumnName() + " is exists，ignore.");
                 else throw e;
             }
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("tableName", em.getTableName());
+        map.put("createList", createList);
+        map.put("addList", addList);
+        map.put("modifyList", modifyList);
+        map.put("deleteList", deleteList);
+        map.put("uniqueList", uniqueList);
+        map.put("foreignList", em.getTableForeigns());
+        map.put("existsTable", isExistsTable);
+
         dao.execute("createOrUpdateOneTable", map);
     }
 }

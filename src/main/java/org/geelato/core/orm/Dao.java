@@ -147,8 +147,8 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-//        result.setData(convertLongToString(list));
-        result.setData(list);
+//        result.setResult(convertLongToString(list));
+        result.setResult(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
@@ -167,7 +167,7 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiMultiPagedResult.PageData result = new ApiMultiPagedResult.PageData();
-//        result.setData(convertLongToString(list));
+//        result.setResult(convertLongToString(list));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());

@@ -1,7 +1,7 @@
 package org.geelato.core.gql.parser;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import org.geelato.core.mvc.Ctx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

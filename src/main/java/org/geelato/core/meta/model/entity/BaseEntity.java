@@ -1,5 +1,9 @@
 package org.geelato.core.meta.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Title;
 
@@ -11,6 +15,7 @@ import java.util.Date;
 public class BaseEntity extends IdEntity {
 
     private Date createAt;
+
     private Date updateAt;
     private Long creator;
     private Long updater;
