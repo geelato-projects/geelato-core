@@ -48,7 +48,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @param text
      * @return
      */
-    public static boolean isEmty(String text) {
+    public static boolean isEmpty(String text) {
         return text == null || text.length() == 0;
     }
 }

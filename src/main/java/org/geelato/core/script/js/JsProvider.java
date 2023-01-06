@@ -117,6 +117,24 @@ public class JsProvider {
         return result;
     }
 
+    public static Object executeExpression(String expression, Map<String, Object> paramMap) {
+        Context context = Context.newBuilder("js").allowAllAccess(true).build();
+        Object result = null;
+        try {
+            Value value = context.eval("js", "(function($){return " + expression + "})");
+            if (value != null && value.canExecute()) {
+                result = value.execute(paramMap).as(Object.class);
+            }
+        } catch (Exception e) {
+            logger.error("执行表达式" + expression + "出错。", e);
+        } finally {
+            if (context != null) {
+                context.close();
+            }
+        }
+        return result;
+    }
+
     /**
      * 编译的脚本信息
      */
