@@ -1,6 +1,7 @@
 package org.geelato.core.meta;
 
 import org.geelato.core.meta.annotation.Entity;
+import org.geelato.core.meta.model.entity.EntityLiteMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
@@ -23,6 +24,7 @@ public class MetaManager {
     private static MetaManager instance;
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
     private HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
+    private List<EntityLiteMeta> entityLiteMetaList = new ArrayList<>();
     // key：entityName,value：boolean
 //    private HashMap<String, Boolean> entityCacheAble = new HashMap<String, Boolean>();
     // TODO 多库同表名的场景暂未支持
@@ -176,6 +178,10 @@ public class MetaManager {
         return entityMetadataMap.keySet();
     }
 
+    public List<EntityLiteMeta> getAllEntityLiteMetas() {
+        return entityLiteMetaList;
+    }
+
 //    public Class getMappedEntity(String tableName) {
 //        if (tableNameMetadataMap.containsKey(tableName)) {
 //            return tableNameMetadataMap.getBizRuleScriptManager(tableName).getEntityType();
@@ -281,6 +287,7 @@ public class MetaManager {
         if (!entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(),entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
             if (logger.isDebugEnabled()) {
                 logger.debug("success in parsing class:{}", clazz.getName());

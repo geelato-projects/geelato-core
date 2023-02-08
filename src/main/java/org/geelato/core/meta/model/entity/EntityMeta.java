@@ -16,7 +16,10 @@ import java.util.Map;
  */
 public class EntityMeta {
 
+    // 实体的编码，如：user_info
     private String entityName;
+    // 实体的中文名称，如：用户信息
+    private String entityTitle;
     private Class entityType;
     private FieldMeta id;
     private TableMeta tableMeta;
@@ -53,6 +56,14 @@ public class EntityMeta {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
+    }
+
+    public String getEntityTitle() {
+        return entityTitle;
+    }
+
+    public void setEntityTitle(String entityTitle) {
+        this.entityTitle = entityTitle;
     }
 
     /**

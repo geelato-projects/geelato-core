@@ -108,7 +108,9 @@ public class MetaRelf {
         em.setId(getId(clazz));
         em.setTableMeta(getTableMeta(clazz));
         em.setEntityName(em.getTableMeta().getEntityName());
+        em.setEntityTitle(em.getTableMeta().getTitle());
         em.setEntityType(clazz);
+
         Collection<TableForeign> tableForeigns = new ArrayList<>();
         HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz, tableForeigns);
         em.setFieldMetas(map.values());
