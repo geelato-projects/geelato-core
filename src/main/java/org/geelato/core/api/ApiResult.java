@@ -6,30 +6,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author geemeta
  */
 public class ApiResult<E> {
-    private String message = "";
+    private String msg = "";
     private int code = ApiResultCode.SUCCESS;
-    private String type = ApiResultType.SUCCESS;
-    private E result;
+    private String status = ApiResultStatus.SUCCESS;
+    private E data;
 
     public ApiResult() {
     }
 
     public ApiResult(E result) {
-        setResult(result);
+        setData(result);
     }
 
     public ApiResult(E result, String msg, int code) {
         setCode(code);
-        setMessage(msg);
-        setResult(result);
+        setMsg(msg);
+        setData(result);
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public ApiResult<E> setMessage(String message) {
-        this.message = this.message;
+    public ApiResult<E> setMsg(String msg) {
+        this.msg = this.msg;
         return this;
     }
 
@@ -42,20 +42,20 @@ public class ApiResult<E> {
         return this;
     }
 
-    public String getType() {
-        return type;
+    public String getStatus() {
+        return status;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public E getResult() {
-        return result;
+    public E getData() {
+        return data;
     }
 
-    public ApiResult<E> setResult(E result) {
-        this.result = result;
+    public ApiResult<E> setData(E data) {
+        this.data = data;
         return this;
     }
 
@@ -66,7 +66,7 @@ public class ApiResult<E> {
      */
     public ApiResult<E> error() {
         this.code = ApiResultCode.ERROR;
-        this.type = ApiResultType.ERROR;
+        this.status = ApiResultStatus.FAIL;
         return this;
     }
 
@@ -77,18 +77,7 @@ public class ApiResult<E> {
      */
     public ApiResult<E> success() {
         this.code = ApiResultCode.SUCCESS;
-        this.type = ApiResultType.SUCCESS;
-        return this;
-    }
-
-    /**
-     * 设置编码为ApiResultCode.WARNING
-     *
-     * @return ApiResult
-     */
-    public ApiResult<E> warning() {
-        this.code = ApiResultCode.WARNING;
-        this.type = ApiResultType.WARNING;
+        this.status = ApiResultStatus.SUCCESS;
         return this;
     }
 

@@ -148,7 +148,7 @@ public class Dao {
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
 //        result.setResult(convertLongToString(list));
-        result.setResult(list);
+        result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
