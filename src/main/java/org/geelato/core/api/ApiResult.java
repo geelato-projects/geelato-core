@@ -29,7 +29,7 @@ public class ApiResult<E> {
     }
 
     public ApiResult<E> setMsg(String msg) {
-        this.msg = this.msg;
+        this.msg = msg;
         return this;
     }
 
