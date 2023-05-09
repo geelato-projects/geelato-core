@@ -18,7 +18,7 @@ public class JsonTextSaveParserTest {
 
     @Test
     public void parse1() throws IOException, URISyntaxException {
-        MetaManager.singleInstance().parseOne(DemoEntity.class);
+        MetaManager.singleInstance().parseOne(DemoEntity.class);  //当前为解析java实体类，要改造为解析数据库中的模型数据
         String json = TestHelper.getText("./gql/parser/saveJsonText1.json");
         SaveCommand saveCommand = new JsonTextSaveParser().parse(json, new Ctx());
         Assert.assertEquals(1, saveCommand.getCommands().size());

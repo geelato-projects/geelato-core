@@ -97,10 +97,17 @@ public class MetaRelf {
      */
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
-        // Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        // if(entity!=null){
-        // }
-        return new TableMeta(getTableName(clazz), title != null ? title.title():"", getEntityName(clazz), title != null ? title.description() : "");
+        return new TableMeta(getTableName(clazz),
+                title != null ? title.title():"",
+                getEntityName(clazz),
+                title != null ? title.description() : "");
+    }
+
+    public static TableMeta getTableMeta(Map map){
+        String name=map.get("table_name").toString();
+        String title=map.get("title").toString();
+        String description=map.get("description").toString();
+        return new TableMeta(name,title,name,description);
     }
 
     public static EntityMeta getEntityMeta(Class clazz) {
@@ -120,6 +127,23 @@ public class MetaRelf {
                 fm.getColumn().setTableName(em.getTableMeta().getTableName());
             }
         em.setDictDataSourceMap(getDictDataSourceMap(clazz));
+        return em;
+    }
+
+    //方法重载，通过数据库读取的数据，构造EntityMeta
+    public  static  EntityMeta getEntityMeta(Map tmap,List columnList){
+        EntityMeta em = new EntityMeta();
+        em.setId(getId(tmap.get("id")));
+        em.setTableMeta(getTableMeta(tmap));
+        em.setEntityName(tmap.get("table_name").toString());
+        em.setEntityTitle(em.getTableMeta().getTitle());
+
+        HashMap<String, FieldMeta> map = getColumnFieldMetas(columnList);
+        em.setFieldMetas(map.values());
+        if (em.getFieldMetas() != null)
+            for (FieldMeta fm : em.getFieldMetas()) {
+                fm.getColumn().setTableName(em.getTableMeta().getTableName());
+            }
         return em;
     }
 
@@ -227,8 +251,6 @@ public class MetaRelf {
                         fieldName = method.getName().substring(2);
                     //首字符变小写
                     fieldName = firstCharToLow(fieldName);
-//                    String firstChar = "" + fieldName.charAt(0);
-//                    fieldName = fieldName.replaceFirst(firstChar, firstChar.toLowerCase());
                     if (!map.containsKey(fieldName)) {
                         //如果列中有@Transient，则跳过
                         if (method.getAnnotation(Transient.class) == null) {
@@ -307,6 +329,38 @@ public class MetaRelf {
         return map;
     }
 
+    public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
+        HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
+            for (Map c_map : columnList) {
+                try {
+                    String fieldName = c_map.get("field_name").toString();
+                    if (!map.containsKey(fieldName)) {
+                            String description = c_map.get("description").toString();
+                            FieldMeta cfm = new FieldMeta(fieldName, fieldName, fieldName);;
+
+                                cfm.getColumn().setNullable(Boolean.parseBoolean(c_map.get("is_nullable").toString()));
+                                cfm.getColumn().setUnique(Boolean.parseBoolean(c_map.get("").toString()));
+                                cfm.getColumn().setName(fieldName);
+//                                cfm.getColumn().setNumericPrecision(c_map.get("").toString());
+//                                cfm.getColumn().setNumericScale(c_map.get("").toString());
+//                                cfm.getColumn().setIsRefColumn(c_map.get("").toString());
+//                                cfm.getColumn().setRefLocalCol(c_map.get("").toString());
+//                                cfm.getColumn().setRefColName(c_map.get("").toString());
+//                                cfm.getColumn().setRefTables(c_map.get("").toString());
+//                                cfm.getColumn().setDataType(c_map.get("").toString());
+
+                            cfm.getColumn().setDescription(description);
+                            cfm.getColumn().afterSet();
+                            map.put(fieldName, cfm);
+                        }
+
+                } catch (RuntimeException e) {
+                    throw e;
+                }
+            }
+
+        return map;
+    }
     /**
      * 解析get**方法或is**方法的映射，其它的不解析
      *

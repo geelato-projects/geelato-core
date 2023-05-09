@@ -6,6 +6,7 @@ import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.TableMeta;
+import org.geelato.core.orm.Dao;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author geemeta
  */
 public class MetaManager {
+
+
 
     private static Lock lock = new ReentrantLock();
     private static MetaManager instance;
@@ -34,6 +37,7 @@ public class MetaManager {
 
 
     private MetaManager() {
+
         // 解析内置的类
         logger.info("解析内置的类包含注解{}的实体！！", Entity.class);
         parseOne(ColumnMeta.class);
@@ -52,6 +56,16 @@ public class MetaManager {
         addCommonFieldMeta("login_name", "loginName", "登录名");
     }
 
+    public void parseDBMeta(Dao dao) {
+        logger.info("解析数据库保存得实体元数据", Entity.class);
+        //select * from platform_dev_table
+        List<Map<String,Object>> tableList=dao.getJdbcTemplate().queryForList("select * from platform_dev_table");
+        //select * from platform_dev_column
+        for (Map map:tableList) {
+            List columnList= dao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
+            parseOne(map,columnList);
+        }
+    }
     /**
      * 添加公共字段
      *
@@ -93,10 +107,6 @@ public class MetaManager {
         return instance;
     }
 
-//    public void setApplicationContext(ApplicationContext applicationContext) {
-//        this.applicationContext = applicationContext;
-//        if (dao == null) dao = applicationContext.getBean(JdbcTemplate.class);
-//    }
 
     public EntityMeta get(Class clazz) {
         String entityName = MetaRelf.getEntityName(clazz);
@@ -296,11 +306,22 @@ public class MetaManager {
                         entityFieldNameTitleMap.put(fm.getFieldName(), fm.getTitle());
                     if (!entityFieldNameTitleMap.containsKey(fm.getColumnName()))
                         entityFieldNameTitleMap.put(fm.getColumnName(), fm.getTitle());
-//                    if (logger.isDebugEnabled())
-//                        logger.debug("field:column >>>" + fm.getFieldName() + ":" + fm.getColumnName());
                 }
             }
         }
     }
-
+    /**
+     * 解析数据库记录map，并将其加入到实体元数据缓存中
+     *
+     * @param map 待解析的数据
+     */
+    public void parseOne(Map map,List<HashMap> columnList) {
+        String entityName =map.get("entity_name").toString();
+        if (!entityMetadataMap.containsKey(entityName)) {
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map,columnList);
+            entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(),entityMeta.getEntityTitle()));
+            tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
+        }
+    }
 }
