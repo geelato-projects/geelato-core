@@ -192,18 +192,6 @@ public class MetaManager {
         return entityLiteMetaList;
     }
 
-//    public Class getMappedEntity(String tableName) {
-//        if (tableNameMetadataMap.containsKey(tableName)) {
-//            return tableNameMetadataMap.getBizRuleScriptManager(tableName).getEntityType();
-//        } else {
-//            Iterator<String> it = tableNameMetadataMap.keySet().iterator();
-//            logger.warn("Key({}) not found in tableNameMetadataMap.keySet:", tableName);
-//            while (it.hasNext()) {
-//                logger.warn(it.next());
-//            }
-//            return null;
-//        }
-//    }
 
     /**
      * 检索批定包名中包含所有的包javax.persistence.Entity的类，并进行解析
