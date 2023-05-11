@@ -357,7 +357,24 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
+        filterGroup.addFilter("delStatus", Long.toString(0));
         BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
+        logger.info(boundSql.toString());
+        return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
+    }
+
+    public <T> List<T> queryList(Class<T> entityType, int pageNum, int pageSize, Map<String, Object> params) {
+        FilterGroup filterGroup = new FilterGroup();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
+            }
+        }
+        filterGroup.addFilter("delStatus", Long.toString(0));
+        QueryCommand command = new QueryCommand();
+        command.setPageNum(pageNum);
+        command.setPageSize(pageSize);
+        BoundSql boundSql = sqlManager.generatePageQuerySql(command, entityType, true, filterGroup, null);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }

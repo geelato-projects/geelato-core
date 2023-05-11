@@ -151,4 +151,13 @@ public class SqlManager {
         deleteCommand.setWhere(filterGroup);
         return metaDeleteSqlProvider.generate(deleteCommand);
     }
+
+    public <T> BoundSql generatePageQuerySql(QueryCommand queryCommand, Class<T> clazz, boolean isArray, FilterGroup filterGroup, String[] fields) {
+        EntityMeta em = metaManager.get(clazz);
+        queryCommand.setEntityName(em.getEntityName());
+        queryCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        queryCommand.setQueryForList(isArray);
+        queryCommand.setWhere(filterGroup);
+        return metaQuerySqlProvider.generate(queryCommand);
+    }
 }
