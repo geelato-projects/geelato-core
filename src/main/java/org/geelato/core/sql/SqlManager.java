@@ -79,9 +79,9 @@ public class SqlManager {
     }
 
     /**
-     * @param clazz 查询的实体
+     * @param clazz       查询的实体
      * @param filterGroup 过滤条件
-     * @param field 指定实体中的查询列，单列
+     * @param field       指定实体中的查询列，单列
      * @param <T>
      * @return 单列列表查询语句
      */
@@ -90,9 +90,9 @@ public class SqlManager {
     }
 
     /**
-     * @param clazz 查询的实体
+     * @param clazz       查询的实体
      * @param filterGroup 过滤条件
-     * @param fields 指定实体中的查询列，多列
+     * @param fields      指定实体中的查询列，多列
      * @param <T>
      * @return 多列列表查询语句
      */
@@ -102,10 +102,10 @@ public class SqlManager {
 
 
     /**
-     * @param clazz 查询的实体
-     * @param isArray 是否查询多条记录，true：是，false：否
+     * @param clazz       查询的实体
+     * @param isArray     是否查询多条记录，true：是，false：否
      * @param filterGroup 过滤条件
-     * @param fields 指定实体中的查询列，多列
+     * @param fields      指定实体中的查询列，多列
      * @param <T>
      * @return 多列列表查询语句
      */
@@ -132,4 +132,32 @@ public class SqlManager {
         return boundPageSql;
     }
 
+    /**
+     * 删除服务
+     *
+     * @param clazz
+     * @param filterGroup
+     * @return
+     */
+    public BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup) {
+        return generateDeleteSql(clazz, filterGroup, null);
+    }
+
+    private BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup, String[] fields) {
+        DeleteCommand deleteCommand = new DeleteCommand();
+        EntityMeta em = metaManager.get(clazz);
+        deleteCommand.setEntityName(em.getEntityName());
+        deleteCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        deleteCommand.setWhere(filterGroup);
+        return metaDeleteSqlProvider.generate(deleteCommand);
+    }
+
+    public <T> BoundSql generatePageQuerySql(QueryCommand queryCommand, Class<T> clazz, boolean isArray, FilterGroup filterGroup, String[] fields) {
+        EntityMeta em = metaManager.get(clazz);
+        queryCommand.setEntityName(em.getEntityName());
+        queryCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        queryCommand.setQueryForList(isArray);
+        queryCommand.setWhere(filterGroup);
+        return metaQuerySqlProvider.generate(queryCommand);
+    }
 }
