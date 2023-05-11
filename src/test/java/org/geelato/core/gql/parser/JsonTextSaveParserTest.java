@@ -44,15 +44,6 @@ public class JsonTextSaveParserTest {
         Assert.assertEquals(1, saveCommand.getCommands().get(1).getCommands().size());
     }
 
-//    @Test
-//    public void toArray() {
-//        ArrayList list = new ArrayList(4);
-//        list.add(1);
-//        list.add(2);
-//        list.add(null);
-//        list.add(4);
-//        System.out.println(list);
-//    }
 
 
 }
