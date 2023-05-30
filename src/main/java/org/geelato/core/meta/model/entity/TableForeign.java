@@ -22,6 +22,8 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     private int enableStatus;
 
+    private String description;
+
     public TableForeign() {
     }
 
@@ -76,5 +78,15 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     @Override
     public void setEnableStatus(int enableStatus) {
         this.enableStatus = enableStatus;
+    }
+
+    @Col(name = "description")
+    @Title(title = "描述")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

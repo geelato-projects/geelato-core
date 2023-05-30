@@ -21,6 +21,8 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private int linked;
     private String description;
 
+    private String viewSql;
+
     public TableMeta() {
     }
 
@@ -124,5 +126,15 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     @Override
     public void setEnableStatus(int enableStatus) {
         this.enableStatus = enableStatus;
+    }
+
+    @Col(name = "view_sql")
+    @Title(title = "视图语句")
+    public String getViewSql() {
+        return viewSql;
+    }
+
+    public void setViewSql(String viewSql) {
+        this.viewSql = viewSql;
     }
 }
