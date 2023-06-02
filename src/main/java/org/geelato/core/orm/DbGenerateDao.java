@@ -25,13 +25,29 @@ public class DbGenerateDao {
 
     private static Logger logger = LoggerFactory.getLogger(DbGenerateDao.class);
     private static HashMap<String, Integer> defaultColumnLengthMap;
+    private static HashMap<String, Boolean> defaultColumnNullMap;
+    private static HashMap<String, String> defaultColumnDataTypeMap;
+    private static HashMap<String, String> defaultColumnTitleMap;
     private Dao dao;
 
     private MetaManager metaManager = MetaManager.singleInstance();
 
     public DbGenerateDao() {
+        InitDefaultColumn();
+    }
+
+    private void InitDefaultColumn(){
+        //todo chengx: init default column datatype,null,title
+
+        //init default column length
         defaultColumnLengthMap = new HashMap<>();
-        defaultColumnLengthMap.put("description", 1024);
+        defaultColumnLengthMap.put("id", 1024);
+        defaultColumnLengthMap.put("createAt", 1024);
+        defaultColumnLengthMap.put("updateAt", 1024);
+        defaultColumnLengthMap.put("creator", 1024);
+        defaultColumnLengthMap.put("updater", 1024);
+        defaultColumnLengthMap.put("bu", 1024);
+        defaultColumnLengthMap.put("del_status", 1024);
     }
 
     /**
@@ -139,7 +155,7 @@ public class DbGenerateDao {
      * @param dropBeforeCreate 存在表时，是否删除
      */
     public void createOrUpdateOneTable(String entityName, boolean dropBeforeCreate) {
-        createOrUpdateOneTable(metaManager.getByEntityName(entityName), dropBeforeCreate);
+        createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
     }
 
     private void createOrUpdateOneTable(EntityMeta em, boolean dropBeforeCreate) {
@@ -173,7 +189,6 @@ public class DbGenerateDao {
 
         for (FieldMeta fm : em.getFieldMetas()) {
             try {
-                // TODO 默认字段长的设置
                 if (defaultColumnLengthMap.containsKey(fm.getColumnName())) {
                     int len = defaultColumnLengthMap.get(fm.getColumnName()).intValue();
                     fm.getColumn().setCharMaxLength(len);
@@ -209,5 +224,12 @@ public class DbGenerateDao {
         map.put("existsTable", isExistsTable);
 
         dao.execute("createOrUpdateOneTable", map);
+    }
+
+    public void createOrUpdateView(String view, String sql) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("viewName",view);
+        map.put("viewSql",sql);
+        dao.execute("createOneView", map);
     }
 }

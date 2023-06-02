@@ -35,6 +35,8 @@ public class MetaManager {
     private static HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
     private Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
 
+    private Dao MetaDao;
+
 
     private MetaManager() {
 
@@ -57,12 +59,22 @@ public class MetaManager {
     }
 
     public void parseDBMeta(Dao dao) {
+        this.MetaDao=dao;
         logger.info("解析数据库保存得实体元数据", Entity.class);
         //select * from platform_dev_table
-        List<Map<String,Object>> tableList=dao.getJdbcTemplate().queryForList("select * from platform_dev_table");
+        List<Map<String,Object>> tableList=MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_table");
         //select * from platform_dev_column
         for (Map map:tableList) {
-            List columnList= dao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
+            List columnList= MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
+            parseOne(map,columnList);
+        }
+    }
+
+    private void refreshDBMeta(){
+        logger.info("刷新实体元数据", Entity.class);
+        List<Map<String,Object>> tableList=MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_table");
+        for (Map map:tableList) {
+            List columnList= MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
             parseOne(map,columnList);
         }
     }
@@ -163,6 +175,12 @@ public class MetaManager {
         }
     }
 
+    public EntityMeta getByEntityName(String entityName,boolean cache){
+        if(cache) return getByEntityName(entityName);
+        refreshDBMeta();
+       return getByEntityName(entityName);
+
+    }
     public boolean containsEntity(String entityName) {
         return entityMetadataMap.containsKey(entityName);
     }

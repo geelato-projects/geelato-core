@@ -70,8 +70,6 @@ public class SqlScriptManager extends AbstractManager {
     public String generate(String id, Map<String, Object> paramMap) {
         if (jsProvider.contain(id))
             try {
-//                SimpleBindings simpleBindings = new SimpleBindings();
-//                simpleBindings.put(SqlScriptParser.VAL_NAME, paramMap);
                 String sql = jsProvider.execute(id, paramMap).asString();
                 if (logger.isInfoEnabled()) {
                     logger.info("sql {} : {}", id, sql);
