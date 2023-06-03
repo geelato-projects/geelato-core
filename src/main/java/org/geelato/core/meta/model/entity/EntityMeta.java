@@ -171,11 +171,9 @@ public class EntityMeta {
         index = addToThisFieldMetasIfNotNull(titleMeta, index);
         index = addToThisFieldMetasIfNotNull(nameMeta, index);
         // 再排业务字段
-//        int i = this.fieldMetas.size() - (this.fieldMetas.size() > 0 ? 1 : 0);
         for (FieldMeta fm : nonSpecialFiledMetas) {
             this.fieldMetas.add(fm);
             fieldMetaMap.put(fm.getFieldName(), fm);
-            System.out.println("index:" + index + "_" + this.fieldMetas.size());
             this.fieldNames[index++] = fm.getFieldName();
             simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
         }
@@ -187,17 +185,6 @@ public class EntityMeta {
         index = addToThisFieldMetasIfNotNull(creatorMeta, index);
         index = addToThisFieldMetasIfNotNull(updateAtMeta, index);
         index = addToThisFieldMetasIfNotNull(updaterMeta, index);
-        System.out.println(this.fieldMetas);
-//        this.fieldNames = new String[fieldMetas.size()];
-//        int i = 0;
-//        for (FieldMeta fm : fieldMetas) {
-//            if (fieldMetaMap == null) fieldMetaMap = new HashMap<>(fieldMetas.size());
-//            fieldMetaMap.put(fm.getFieldName(), fm);
-//            this.fieldNames[i++] = fm.getFieldName();
-//
-//            if (simpleFieldMetaMap == null) simpleFieldMetaMap = new HashMap<>(fieldMetas.size());
-//            simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
-//        }
     }
 
     private int addToThisFieldMetasIfNotNull(FieldMeta fm, int index) {
@@ -205,7 +192,6 @@ public class EntityMeta {
             this.fieldMetas.add(fm);
             fieldMetaMap.put(fm.getFieldName(), fm);
             this.fieldNames[index] = fm.getFieldName();
-            System.out.println("index:" + index + "_" + this.fieldMetas.size());
             simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
             return index + 1;
         }
