@@ -6,13 +6,10 @@ import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.field.SimpleFieldMeta;
 import org.springframework.util.Assert;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author geelato
- *
  */
 public class EntityMeta {
 
@@ -29,9 +26,9 @@ public class EntityMeta {
     private String[] fieldNames;
     private Map<String, DictDataSource> dictDataSourceMap;
     //冗余，用于快速获取列信息
-    private Map<String, FieldMeta> fieldMetaMap;
+    private LinkedHashMap<String, FieldMeta> fieldMetaMap;
     //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
-    private Map<String, SimpleFieldMeta> simpleFieldMetaMap;
+    private LinkedHashMap<String, SimpleFieldMeta> simpleFieldMetaMap;
     //冗余，用于快速获取外键关系
     private Map<String, TableForeign> tableForeignsMap = new HashMap<>();
     //不更新的字段
@@ -112,17 +109,107 @@ public class EntityMeta {
 
     public void setFieldMetas(Collection<FieldMeta> fieldMetas) {
         if (fieldMetas == null) return;
-        this.fieldMetas = fieldMetas;
-        this.fieldNames = new String[fieldMetas.size()];
-        int i = 0;
-        for (FieldMeta fm : fieldMetas) {
-            if (fieldMetaMap == null) fieldMetaMap = new HashMap<>(fieldMetas.size());
-            fieldMetaMap.put(fm.getFieldName(), fm);
-            this.fieldNames[i++] = fm.getFieldName();
+        // 对字段做排序
+        // id、name、title、...、
+        FieldMeta idMeta = null;
+        FieldMeta titleMeta = null;
+        FieldMeta nameMeta = null;
+        FieldMeta createAtMeta = null;
+        FieldMeta creatorMeta = null;
+        FieldMeta updateAtMeta = null;
+        FieldMeta updaterMeta = null;
+        FieldMeta delStatusMeta = null;
+        FieldMeta seqNoMeta = null;
+        FieldMeta descriptionMeta = null;
+        Collection<FieldMeta> nonSpecialFiledMetas = new ArrayList<>();
 
-            if (simpleFieldMetaMap == null) simpleFieldMetaMap = new HashMap<>(fieldMetas.size());
+        for (FieldMeta fm : fieldMetas) {
+            switch (fm.getColumnName()) {
+                case "id":
+                    idMeta = fm;
+                    break;
+                case "title":
+                    titleMeta = fm;
+                    break;
+                case "name":
+                    nameMeta = fm;
+                    break;
+                case "seq_no":
+                    seqNoMeta = fm;
+                    break;
+                case "del_status":
+                    delStatusMeta = fm;
+                    break;
+                case "description":
+                    descriptionMeta = fm;
+                    break;
+                case "create_at":
+                    createAtMeta = fm;
+                    break;
+                case "creator":
+                    creatorMeta = fm;
+                    break;
+                case "update_at":
+                    updateAtMeta = fm;
+                    break;
+                case "updater":
+                    updaterMeta = fm;
+                    break;
+                default:
+                    nonSpecialFiledMetas.add(fm);
+            }
+        }
+
+        if (fieldMetaMap == null) fieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
+        if (simpleFieldMetaMap == null) simpleFieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
+        // 这里不初始具体的size，后续程序需依据动态增加的size进行设值
+        this.fieldMetas = new ArrayList<>();
+        this.fieldNames = new String[fieldMetas.size()];
+        int index = 0;
+        // 先排前面的几个常用字段
+        index = addToThisFieldMetasIfNotNull(idMeta, index);
+        index = addToThisFieldMetasIfNotNull(titleMeta, index);
+        index = addToThisFieldMetasIfNotNull(nameMeta, index);
+        // 再排业务字段
+//        int i = this.fieldMetas.size() - (this.fieldMetas.size() > 0 ? 1 : 0);
+        for (FieldMeta fm : nonSpecialFiledMetas) {
+            this.fieldMetas.add(fm);
+            fieldMetaMap.put(fm.getFieldName(), fm);
+            System.out.println("index:" + index + "_" + this.fieldMetas.size());
+            this.fieldNames[index++] = fm.getFieldName();
             simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
         }
+        // 最后排其它常用字段
+        index = addToThisFieldMetasIfNotNull(seqNoMeta, index);
+        index = addToThisFieldMetasIfNotNull(descriptionMeta, index);
+        index = addToThisFieldMetasIfNotNull(delStatusMeta, index);
+        index = addToThisFieldMetasIfNotNull(createAtMeta, index);
+        index = addToThisFieldMetasIfNotNull(creatorMeta, index);
+        index = addToThisFieldMetasIfNotNull(updateAtMeta, index);
+        index = addToThisFieldMetasIfNotNull(updaterMeta, index);
+        System.out.println(this.fieldMetas);
+//        this.fieldNames = new String[fieldMetas.size()];
+//        int i = 0;
+//        for (FieldMeta fm : fieldMetas) {
+//            if (fieldMetaMap == null) fieldMetaMap = new HashMap<>(fieldMetas.size());
+//            fieldMetaMap.put(fm.getFieldName(), fm);
+//            this.fieldNames[i++] = fm.getFieldName();
+//
+//            if (simpleFieldMetaMap == null) simpleFieldMetaMap = new HashMap<>(fieldMetas.size());
+//            simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
+//        }
+    }
+
+    private int addToThisFieldMetasIfNotNull(FieldMeta fm, int index) {
+        if (fm != null) {
+            this.fieldMetas.add(fm);
+            fieldMetaMap.put(fm.getFieldName(), fm);
+            this.fieldNames[index] = fm.getFieldName();
+            System.out.println("index:" + index + "_" + this.fieldMetas.size());
+            simpleFieldMetaMap.put(fm.getFieldName(), getSimpleFiledMeta(fm));
+            return index + 1;
+        }
+        return index;
     }
 
     private SimpleFieldMeta getSimpleFiledMeta(FieldMeta fm) {
@@ -170,6 +257,7 @@ public class EntityMeta {
 
     /**
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
+     *
      * @param fieldNames 指定需获取元数据的字段
      * @return
      */
@@ -183,6 +271,7 @@ public class EntityMeta {
 
     /**
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
+     *
      * @return
      */
     public Collection<SimpleFieldMeta> getAllSimpleFieldMetas() {
