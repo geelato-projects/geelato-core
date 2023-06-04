@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class JsonTextSaveParser {
 
     private final static String SUB_ENTITY_FLAG = "#";
     private final static String KW_BIZ = "@biz";
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     /**
      * @param jsonText
@@ -106,6 +110,7 @@ public class JsonTextSaveParser {
         params.keySet().toArray(fields);
         String PK = validator.getPK();
 
+        String newDataString = simpleDateFormat.format(new Date());
         if (validator.hasPK(fields) && StringUtils.hasText(jo.getString(PK))) {
             //update
             FilterGroup fg = new FilterGroup();
@@ -113,7 +118,7 @@ public class JsonTextSaveParser {
             command.setWhere(fg);
             command.setCommandType(CommandType.Update);
             Object pkValue = params.remove(PK);
-            if (validator.hasKeyField("updateAt")) params.put("updateAt", new Date());
+            if (validator.hasKeyField("updateAt")) params.put("updateAt", newDataString);
             if (validator.hasKeyField("updater")) params.put("updater", ctx.get("userId"));
             String[] updateFields = new String[params.keySet().size()];
             params.keySet().toArray(updateFields);
@@ -128,9 +133,9 @@ public class JsonTextSaveParser {
             Map<String, Object> entity = metaManager.newDefaultEntity(commandName);
             entity.putAll(params);
             entity.put(PK, UIDGenerator.generate(1));
-            if (entity.containsKey("createAt")) entity.put("createAt", new Date());
+            if (entity.containsKey("createAt")) entity.put("createAt", newDataString);
             if (entity.containsKey("creator")) entity.put("creator", ctx.get("userId"));
-            if (entity.containsKey("updateAt")) entity.put("updateAt", new Date());
+            if (entity.containsKey("updateAt")) entity.put("updateAt", newDataString);
             if (entity.containsKey("updater")) entity.put("updater", ctx.get("userId"));
 
             String[] insertFields = new String[entity.size()];
