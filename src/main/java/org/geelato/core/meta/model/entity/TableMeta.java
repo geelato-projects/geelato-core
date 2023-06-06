@@ -35,7 +35,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     }
 
     @Col(name = "table_name")
-    @Title(title = "表名", description = "与数据库中的表名一致")
+    @Title(title = "表名", description = "与数据库中的表名一致") 
     public String getTableName() {
         return tableName;
     }
