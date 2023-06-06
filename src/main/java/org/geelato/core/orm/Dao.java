@@ -308,37 +308,6 @@ public class Dao {
         return command.getValueMap();
     }
 
-//    protected Object getObject(Class clazz) {
-//        if (!beanCache.containsKey(clazz.toString()))
-//            try {
-//                beanCache.put(clazz.toString(), clazz.newInstance());
-//            } catch (InstantiationException e) {
-//                logger.error("创建实例失败。", e);
-//            } catch (IllegalAccessException e) {
-//                logger.error("创建实例失败。", e);
-//            }
-//        return beanCache.getBizRuleScriptManager(clazz.toString());
-//
-//    }
-
-
-//    private <E extends IdEntity> DataDynamic genDataDynamic(E model) {
-//        EntityMeta entityMeta = metaManager.getBizRuleScriptManager(model.getClass());
-//        DataDynamic dd = new DataDynamic();
-//        dd.setIdField("id");
-//        dd.setIdValue(model.getId());
-////        dd.setAction("");
-////        dd.setDescription("");
-//        dd.setEntity(model.getClass().getName());
-//        dd.setName(entityMeta.getTableMeta().getTitle());
-//        dd.setTableName(entityMeta.getTableName());
-//        dd.setCreateAt(new Date());
-//        dd.setCreateAt(dd.getUpdateAt());
-//        dd.setCreator(SecurityHelper.getCurrentUserId());
-//        dd.setUpdater(SecurityHelper.getCurrentUserId());
-//        dd.setSubjectName(SecurityHelper.getCurrentUserName());
-//        return dd;
-//    }
 
     /**
      * @return 当前会话信息
