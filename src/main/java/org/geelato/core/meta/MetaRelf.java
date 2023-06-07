@@ -133,7 +133,7 @@ public class MetaRelf {
     //方法重载，通过数据库读取的数据，构造EntityMeta
     public  static  EntityMeta getEntityMeta(Map tmap,List columnList){
         EntityMeta em = new EntityMeta();
-        em.setId(getId(tmap.get("id")));
+//        em.setId(tmap.get("id")));
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("table_name").toString());
         em.setEntityTitle(em.getTableMeta().getTitle());

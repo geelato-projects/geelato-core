@@ -155,9 +155,55 @@ public class DbGenerateDao {
      * @param dropBeforeCreate 存在表时，是否删除
      */
     public void createOrUpdateOneTable(String entityName, boolean dropBeforeCreate) {
-        createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
+        //createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
+
+        createOrUpdateOneTable(metaManager.getByEntityName(entityName,false));
     }
 
+    private void createOrUpdateOneTable(EntityMeta em) {
+        boolean isExistsTable = true;
+        Map existscolumnMap = new HashMap();
+        List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", em.getTableName()));
+        if (columns == null || columns.size() == 0) {
+            isExistsTable = false;
+        } else {
+            for (Map<String, Object> columnMap : columns) {
+                existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
+            }
+        }
+        // 通过create table创建的字段
+        ArrayList<JSONObject> createList = new ArrayList<>();
+        // 通过alert table创建的字段
+        ArrayList<JSONObject> addList = new ArrayList<>();
+        // 通过alert table修改的字段
+        ArrayList<JSONObject> modifyList = new ArrayList<>();
+        // 通过alert table删除的字段
+        ArrayList<JSONObject> deleteList = new ArrayList<>();
+        ArrayList<JSONObject> uniqueList = new ArrayList<>();
+
+        for (FieldMeta fm : em.getFieldMetas()) {
+            try {
+                JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
+                if (existscolumnMap.containsKey(fm.getColumnName())) {
+                    modifyList.add(jsonColumn);
+                } else {
+                    addList.add(jsonColumn);
+                }
+                createList.add(jsonColumn);
+                if (fm.getColumn().isUnique())
+                    uniqueList.add(jsonColumn);
+            } catch (Exception e) {
+                if (e.getMessage().indexOf("Duplicate column name") != -1)
+                    logger.info("column " + fm.getColumnName() + " is exists，ignore.");
+                else throw e;
+            }
+        }
+        if(isExistsTable){
+            createTable(em.getTableName(),createList);
+        }else{
+            upgradeTable(em.getTableName(),addList,modifyList,deleteList);
+        }
+    }
     private void createOrUpdateOneTable(EntityMeta em, boolean dropBeforeCreate) {
 
         if (dropBeforeCreate) {
@@ -195,8 +241,7 @@ public class DbGenerateDao {
                     fm.getColumn().setNumericPrecision(len);
                     fm.getColumn().afterSet();
                 }
-                // 创建表的语句中已有id，这里不再重复创建。改用应用程序的guid，这里还是加上id
-//                    if (!fm.getColumn().getName().toLowerCase().equals("id"))
+
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
 
                 if (existscolumnMap.containsKey(fm.getColumnName())) {
@@ -226,10 +271,56 @@ public class DbGenerateDao {
         dao.execute("createOrUpdateOneTable", map);
     }
 
+    //创建表
+    private void createTable(String tableName,List<JSONObject> createColumnList){
+        Map<String, Object> map = new HashMap<>();
+        ArrayList<JSONObject> defaultColumnList = getDefaultColumn();
+        createColumnList.addAll(defaultColumnList);  //add default column
+        ArrayList<JSONObject> uniqueColumnList = getDefaultUniqueColumn();
+        map.put("tableName",tableName);
+        map.put("createList",createColumnList);
+        map.put("uniqueList", uniqueColumnList);
+        dao.execute("createOneTable", map);
+    }
+
+    ///更新表
+    private void upgradeTable(String tableName,List<JSONObject> addList,List<JSONObject> modifyList,List<JSONObject> deleteList){
+        Map<String, Object> map = new HashMap<>();
+        map.put("tableName", tableName);
+        map.put("addList", addList);
+        map.put("modifyList", modifyList);
+        map.put("deleteList", deleteList);
+
+        dao.execute("upgradeOneTable", map);
+    }
+    private ArrayList<JSONObject> getDefaultColumn() {
+        ArrayList<JSONObject> defaultColumnList = new ArrayList<>();
+        List<ColumnMeta> defaultColumnMetaList= MetaManager.singleInstance().getDefualtColumnMeta();
+        for (ColumnMeta columnMeta:defaultColumnMetaList){
+            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(columnMeta));
+            defaultColumnList.add(jsonColumn);
+        }
+
+        return defaultColumnList;
+    }
+
+    private ArrayList<JSONObject> getDefaultUniqueColumn() {
+        ArrayList<JSONObject> defaultUniqueColumnLsit = new ArrayList<>();
+        List<ColumnMeta> defaultColumnMetaList= MetaManager.singleInstance().getDefualtColumnMeta();
+        for (ColumnMeta columnMeta:defaultColumnMetaList){
+            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(columnMeta));
+            defaultUniqueColumnLsit.add(jsonColumn);
+        }
+        return defaultUniqueColumnLsit;
+    }
+
+
+
+
     public void createOrUpdateView(String view, String sql) {
         Map<String, Object> map = new HashMap<>();
         map.put("viewName",view);
-        map.put("viewSql",sql);
+        map.put("viewSql",sql);   //TODO 对sql进行检查
         dao.execute("createOneView", map);
     }
 }

@@ -1,5 +1,6 @@
 package org.geelato.core.meta;
 
+import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.model.entity.EntityLiteMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
@@ -329,5 +330,75 @@ public class MetaManager {
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(),entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
         }
+    }
+
+
+    public List<ColumnMeta> getDefaultUniqueColumnMeta(){
+        List<ColumnMeta> defaultColumnMetaList=new ArrayList<ColumnMeta>();
+
+        ColumnMeta idColumnMeta=new ColumnMeta();
+        idColumnMeta.setName("id");
+        idColumnMeta.setNullable(false);
+        idColumnMeta.setType("varchar(50)");
+        idColumnMeta.setTitle("主键");
+        idColumnMeta.setUnique(true);
+        defaultColumnMetaList.add(idColumnMeta);
+
+        return defaultColumnMetaList;
+    }
+    public List<ColumnMeta> getDefualtColumnMeta(){
+
+        List<ColumnMeta> defaultColumnMetaList=new ArrayList<ColumnMeta>();
+
+        ColumnMeta creatorColumnMeta=new ColumnMeta();
+        creatorColumnMeta.setName("creator");
+        creatorColumnMeta.setNullable(false);
+        creatorColumnMeta.setType("varchar(50)");
+        creatorColumnMeta.setTitle("创建者");
+        defaultColumnMetaList.add(creatorColumnMeta);
+
+        ColumnMeta updaterColumnMeta=new ColumnMeta();
+        updaterColumnMeta.setName("updater");
+        updaterColumnMeta.setNullable(true);
+        updaterColumnMeta.setType("varchar(50)");
+        updaterColumnMeta.setTitle("修改者");
+        defaultColumnMetaList.add(updaterColumnMeta);
+
+        ColumnMeta creatrAtColumnMeta=new ColumnMeta();
+        creatrAtColumnMeta.setName("create_at");
+        creatrAtColumnMeta.setNullable(false);
+        creatrAtColumnMeta.setType("datetime)");
+        creatrAtColumnMeta.setTitle("创建时间");
+        defaultColumnMetaList.add(creatrAtColumnMeta);
+
+        ColumnMeta updateAtColumnMeta=new ColumnMeta();
+        updateAtColumnMeta.setName("update_at");
+        updateAtColumnMeta.setNullable(true);
+        updateAtColumnMeta.setType("datetime)");
+        updateAtColumnMeta.setTitle("修改时间");
+        defaultColumnMetaList.add(updateAtColumnMeta);
+
+        ColumnMeta tenantCodeColumnMeta=new ColumnMeta();
+        tenantCodeColumnMeta.setName("tenant_code");
+        tenantCodeColumnMeta.setNullable(false);
+        tenantCodeColumnMeta.setType("varchar(50)");
+        tenantCodeColumnMeta.setTitle("租户编码");
+        defaultColumnMetaList.add(tenantCodeColumnMeta);
+
+        ColumnMeta buColumnMeta=new ColumnMeta();
+        buColumnMeta.setName("bu");
+        buColumnMeta.setNullable(false);
+        buColumnMeta.setType("varchar(50)");
+        buColumnMeta.setTitle("企业信息");
+        defaultColumnMetaList.add(buColumnMeta);
+
+        ColumnMeta delStatusColumnMeta=new ColumnMeta();
+        buColumnMeta.setName("del_status");
+        buColumnMeta.setNullable(false);
+        buColumnMeta.setType("int");
+        buColumnMeta.setTitle("是否删除");
+        defaultColumnMetaList.add(delStatusColumnMeta);
+
+        return defaultColumnMetaList;
     }
 }
