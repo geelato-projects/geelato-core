@@ -1,5 +1,6 @@
 package org.geelato.core.meta.model.entity;
 
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
@@ -17,7 +18,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private String entityName;
     private String tableType;
     private String tableComment;
-    private int enableStatus;
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
     private int linked;
     private String description;
 

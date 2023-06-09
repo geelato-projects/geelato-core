@@ -1,5 +1,6 @@
 package org.geelato.core.meta.model.connect;
 
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
@@ -21,7 +22,7 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble {
     private String dbPassword;
     private int dbPort;
     private String dbHostnameIp;
-    private int enableStatus;
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
 
     @Col(name = "db_connect_name", nullable = false, charMaxlength = 255)
     @Title(title = "连接名称", description = "连接名称")

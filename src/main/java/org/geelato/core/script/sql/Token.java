@@ -1,5 +1,7 @@
 package org.geelato.core.script.sql;
 
+import org.geelato.core.enums.TokenType;
+
 import java.util.Map;
 
 /**

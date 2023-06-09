@@ -1,5 +1,6 @@
 package org.geelato.core.meta.model.entity;
 
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
@@ -20,7 +21,7 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     private String foreignTableCol;
 
-    private int enableStatus;
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
 
     private String description;
 

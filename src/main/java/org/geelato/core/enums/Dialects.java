@@ -1,4 +1,4 @@
-package org.geelato.core.orm;
+package org.geelato.core.enums;
 
 /**
  * @author geemeta

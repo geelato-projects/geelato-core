@@ -1,4 +1,4 @@
-package org.geelato.core.script.sql;
+package org.geelato.core.enums;
 
 /**
  * @author geemeta

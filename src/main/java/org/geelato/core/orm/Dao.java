@@ -3,6 +3,8 @@ package org.geelato.core.orm;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
+import org.geelato.core.constants.ColumnDefault;
+import org.geelato.core.enums.DeleteStatusEnum;
 import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
@@ -326,7 +328,7 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
-        filterGroup.addFilter("delStatus", Long.toString(0));
+        filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
         BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
@@ -339,7 +341,7 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
-        filterGroup.addFilter("delStatus", Long.toString(0));
+        filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
         QueryCommand command = new QueryCommand();
         command.setPageNum(pageNum);
         command.setPageSize(pageSize);
