@@ -2,6 +2,7 @@ package org.geelato.core.constants;
 
 import org.geelato.core.enums.DeleteStatusEnum;
 import org.geelato.core.enums.EnableStatusEnum;
+import org.geelato.core.enums.TableForeignAction;
 
 /**
  * @author diabl
@@ -27,4 +28,9 @@ public class ColumnDefault {
      * 启用状态 默认值 - 启用[1]
      */
     public static final int ENABLE_STATUS_VALUE = EnableStatusEnum.ENABLED.getCode();
+    /**
+     * 外键操作类型 默认值 - [NO ACTION]
+     */
+    public static final String FOREIGN_ACTION_VALUE = TableForeignAction.NO_ACTION.getCode();
+
 }

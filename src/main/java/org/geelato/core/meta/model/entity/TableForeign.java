@@ -5,6 +5,8 @@ import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
 
+import java.util.Map;
+
 /**
  * @Description 实体外键关系
  * @Date 2020/3/20 14:42 by liuwq
@@ -24,6 +26,9 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
 
     private String description;
+
+    private String deleteAction = ColumnDefault.FOREIGN_ACTION_VALUE;// 删除时
+    private String updateAction = ColumnDefault.FOREIGN_ACTION_VALUE;// 更新时
 
     public TableForeign() {
     }
@@ -68,6 +73,8 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
         this.foreignTableCol = foreignTableCol;
     }
 
+    @Title(title = "启用状态", description = "1表示启用、0表示未启用")
+    @Col(name = "enable_status")
     @Override
     public int getEnableStatus() {
         return this.enableStatus;
@@ -89,5 +96,36 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Col(name = "delete_action")
+    @Title(title = "描述")
+    public String getDeleteAction() {
+        return deleteAction;
+    }
+
+    public void setDeleteAction(String deleteAction) {
+        this.deleteAction = deleteAction;
+    }
+
+    @Col(name = "update_action")
+    @Title(title = "描述")
+    public String getUpdateAction() {
+        return updateAction;
+    }
+
+    public void setUpdateAction(String updateAction) {
+        this.updateAction = updateAction;
+    }
+
+    public TableForeign(Map map) {
+        this.mainTable = map.get("main_table") == null ? null : map.get("main_table").toString();
+        this.mainTableCol = map.get("main_table_col") == null ? null : map.get("main_table_col").toString();
+        this.foreignTable = map.get("foreign_table") == null ? null : map.get("foreign_table").toString();
+        this.foreignTableCol = map.get("foreign_table_col") == null ? null : map.get("foreign_table_col").toString();
+        this.enableStatus = map.get("enable_status") == null ? null : Integer.parseInt(map.get("enable_status").toString());
+        this.description = map.get("description") == null ? null : map.get("description").toString();
+        this.deleteAction = map.get("delete_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("delete_action").toString();
+        this.updateAction = map.get("update_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("update_action").toString();
     }
 }

@@ -1,6 +1,7 @@
 package org.geelato.core.meta.model.field;
 
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.DictDataSrc;
 import org.geelato.core.meta.annotation.Entity;
@@ -47,7 +48,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     //COLUMN_TYPE  --varchar(100)
     private String type;
     //COLUMN_KEY,-- PRI
-    private boolean key;
+    private boolean key = false;
 
     //isNullable
     private boolean nullable = true;
@@ -56,7 +57,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     private String extra;
 
-    private boolean autoIncrement;
+    private boolean autoIncrement = false;
     private boolean uniqued = false;
 
     //CHARACTER_MAXIMUM_LENGTH
@@ -76,8 +77,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     // private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
-    private int enableStatus;
-    private int linked;
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+    private int linked = 1;
     private String description;
 
     //1-外表字段，默认0
@@ -425,24 +426,25 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             dataType = dataType.toUpperCase(Locale.ENGLISH);
             String columnType = null;
             if (Arrays.asList(new String[]{"BIT"}).contains(dataType)) {
-                setCharMaxLength(Long.parseLong("1"));
+                setCharMaxLength(1L);
                 columnType = dataType + "(" + charMaxLength + ")";
             } else if (Arrays.asList(new String[]{"VARCHAR"}).contains(dataType)) {
                 columnType = dataType + "(" + charMaxLength + ")";
             } else if (Arrays.asList(new String[]{"TEXT"}).contains(dataType)) {
-                setCharMaxLength(Long.parseLong("65535"));
+                setCharMaxLength(65535L);
                 setDefaultValue(null);
-                columnType = dataType + "(" + charMaxLength + ")";
+                columnType = dataType;
             } else if (Arrays.asList(new String[]{"LONGTEXT"}).contains(dataType)) {
-                setCharMaxLength(Long.parseLong("4294967295"));
+                setCharMaxLength(4294967295L);
                 setDefaultValue(null);
                 columnType = dataType;
             } else if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT"}).contains(dataType)) {
                 setCharMaxLength(isNumericSigned() ? numericPrecision : (numericPrecision + 1));
                 columnType = dataType + (isNumericSigned() ? ("(" + numericPrecision + ")") : ("(" + (numericPrecision + 1) + ") unsigned"));
             } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
+                setAutoIncrement(false);
                 setCharMaxLength(numericPrecision + numericScale);
-                columnType = dataType + "(" + numericPrecision + "," + numericScale + ")";
+                columnType = dataType + "(" + charMaxLength + "," + numericScale + ")";
             } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
                 columnType = dataType;
             } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
@@ -457,13 +459,17 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             if (isUniqued()) {
                 extras.add("unique");
             }
-            if (isAutoIncrement()) {
-                extras.add("auto_increment");
-            }
-            if (isNumericSigned()) {
-                extras.add("unsigned");
+            if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT", "DECIMAL"}).contains(dataType)) {
+                if (isAutoIncrement()) {
+                    extras.add("auto_increment");
+                }
+                if (!isNumericSigned()) {
+                    extras.add("unsigned");
+                }
             }
             setExtra(String.join(",", extras));
+            // 设置默认值
+            setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
         }
     }
 }
