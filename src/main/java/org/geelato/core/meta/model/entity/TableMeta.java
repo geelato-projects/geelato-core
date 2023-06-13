@@ -15,7 +15,7 @@ import java.util.Map;
 @Entity(name = "platform_dev_table")
 public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private String title;
-    private Long connectId;
+    private String connectId;
     private String tableName;
     private String entityName;
     private String tableType;
@@ -60,11 +60,11 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     @Col(name = "connect_id")
     @Title(title = "数据库连接id")
-    public Long getConnectId() {
+    public String getConnectId() {
         return connectId;
     }
 
-    public void setConnectId(Long connectId) {
+    public void setConnectId(String connectId) {
         this.connectId = connectId;
     }
 
@@ -144,7 +144,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     public TableMeta(Map map) {
         this.title = map.get("title") == null ? null : map.get("title").toString();
-        this.connectId = map.get("connect_id") == null ? null : Long.parseLong(map.get("connect_id").toString());
+        this.connectId = map.get("connect_id") == null ? null : map.get("connect_id").toString();
         this.tableName = map.get("table_name") == null ? null : map.get("table_name").toString();
         this.entityName = map.get("entity_name") == null ? null : map.get("entity_name").toString();
         this.tableType = map.get("table_type") == null ? null : map.get("table_type").toString();

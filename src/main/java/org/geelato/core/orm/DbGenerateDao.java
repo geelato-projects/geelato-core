@@ -121,7 +121,7 @@ public class DbGenerateDao {
         Map connectMetaMap = this.dao.save(connectMeta);
 
         // 保存所有的数据表元数据
-        this.saveJavaMetaToDb(Long.parseLong(connectMetaMap.get("id").toString()), entityMetas);
+        this.saveJavaMetaToDb(connectMetaMap.get("id").toString(), entityMetas);
     }
 
     /**
@@ -129,7 +129,7 @@ public class DbGenerateDao {
      *
      * @param entityMetas
      */
-    private void saveJavaMetaToDb(Long id, Collection<EntityMeta> entityMetas) {
+    private void saveJavaMetaToDb(String id, Collection<EntityMeta> entityMetas) {
         for (EntityMeta em : entityMetas) {
             TableMeta tm = em.getTableMeta();
             tm.setConnectId(id);

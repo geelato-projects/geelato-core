@@ -13,16 +13,16 @@ public abstract class IdEntity implements Serializable {
 
 //    private static final long serialVersionUID = 1L;
 
-    protected Long id;
+    protected String id;
 
     @Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Title(title = "序号")
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

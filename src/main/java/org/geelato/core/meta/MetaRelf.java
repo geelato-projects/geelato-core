@@ -57,10 +57,9 @@ public class MetaRelf {
     private static Object getBean(Class clazz) {
         if (applicationContext == null) {
             try {
-                return clazz.newInstance();
-            } catch (InstantiationException e) {
-                logger.error("创建对象失败！", e);
-            } catch (IllegalAccessException e) {
+                // return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
                 logger.error("创建对象失败！", e);
             }
             return null;
@@ -104,7 +103,7 @@ public class MetaRelf {
     public static TableMeta getTableMeta(Map map) {
         TableMeta tableMeta = new TableMeta(map);
         Integer delStatus = map.get("del_status") == null ? null : Integer.parseInt(map.get("del_status").toString());
-        Long id = map.get("id") == null ? null : Long.parseLong(map.get("id").toString());
+        String id = map.get("id") == null ? null : map.get("id").toString();
         String title = StringUtils.hasText(tableMeta.getTitle()) ? tableMeta.getTitle() : (org.geelato.core.util.StringUtils.isEmpty(tableMeta.getTableName()) ? tableMeta.getEntityName() : tableMeta.getTableName());
         tableMeta.setId(id);
         tableMeta.setDelStatus(delStatus);
@@ -215,7 +214,7 @@ public class MetaRelf {
                     String firstChar = "" + fieldName.charAt(0);
                     fieldName = fieldName.replaceFirst(firstChar, firstChar.toLowerCase());
                     Title cn = method.getAnnotation(Title.class);
-                    String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                    String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                     String columnName = fieldName;
                     Col col = method.getAnnotation(Col.class);
                     if (col != null) {
@@ -272,7 +271,7 @@ public class MetaRelf {
 
                             //列的中文信息
                             Title cn = method.getAnnotation(Title.class);
-                            String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                            String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                             String description = cn != null ? cn.description() : "";
                             FieldMeta cfm = null;
                             if (column != null && column.name() != null) {
@@ -326,7 +325,7 @@ public class MetaRelf {
 //                            logger.debug("cfm.getColumn().getDataType())>>{}",cfm.getColumn().getDataType());
                             //如果未指定类型（如特殊的json），则采用方法的返回类型
                             //TODO 会导致 cfm.setFieldType与cfm.getColumn().getDataType())不一致,需为mybatis自定义一个JSON类型
-                            if (StringUtils.isEmpty(cfm.getColumn().getDataType()))
+                            if (Strings.isEmpty(cfm.getColumn().getDataType()))
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             cfm.getColumn().afterSet();
                             map.put(fieldName, cfm);
@@ -364,7 +363,7 @@ public class MetaRelf {
                     cfm.getColumn().setTitle(title);
                     cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
                     cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
-                    cfm.getColumn().setId(c_map.get("id") == null ? null : Long.parseLong(c_map.get("id").toString()));
+                    cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
                     cfm.getColumn().setKey(c_map.get("column_key") == null ? null : Boolean.parseBoolean(c_map.get("column_key").toString()));
                     cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
                     cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
@@ -415,7 +414,7 @@ public class MetaRelf {
         for (Map f_map : foreignList) {
             try {
                 Integer delStatus = f_map.get("del_status") == null ? null : Integer.parseInt(f_map.get("del_status").toString());
-                Long id = f_map.get("id") == null ? null : Long.parseLong(f_map.get("id").toString());
+                String id = f_map.get("id") == null ? null : f_map.get("id").toString();
                 TableForeign foreign = new TableForeign(f_map);
                 foreign.setId(id);
                 foreign.setDelStatus(delStatus);

@@ -17,20 +17,20 @@ public class BaseEntity extends IdEntity {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateAt;
-    private Long creator;
-    private Long updater;
+    private String creator;
+    private String updater;
 
     // 逻辑删除的标识
     private int delStatus = ColumnDefault.DEL_STATUS_VALUE;
     // 单位Id
-    private Long buId;
+    private String buId;
     // 部门Id
-    private Long deptId;
+    private String deptId;
 
     public BaseEntity() {
     }
 
-    public BaseEntity(Long Id) {
+    public BaseEntity(String Id) {
         setId(id);
     }
 
@@ -56,21 +56,21 @@ public class BaseEntity extends IdEntity {
 
     @Col(name = "creator", nullable = false)
     @Title(title = "创建者")
-    public Long getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(Long creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
     @Col(name = "updater", nullable = false)
     @Title(title = "更新者")
-    public Long getUpdater() {
+    public String getUpdater() {
         return updater;
     }
 
-    public void setUpdater(Long updater) {
+    public void setUpdater(String updater) {
         this.updater = updater;
     }
 
@@ -85,23 +85,23 @@ public class BaseEntity extends IdEntity {
     }
 
 
-    @Col(name = "bu", nullable = true, charMaxlength = 8)
+    @Col(name = "bu", nullable = true, charMaxlength = 32)
     @Title(title = "单位", description = "bu即business unit，记录（分）公司的编码信息，可用于分公司、或事业部，主要用于数据权限的区分，如分公司可看自己分公司的数据。")
-    public Long getBuId() {
+    public String getBuId() {
         return buId;
     }
 
-    public void setBuId(Long buId) {
+    public void setBuId(String buId) {
         this.buId = buId;
     }
 
-    @Col(name = "dept", nullable = true, charMaxlength = 8)
+    @Col(name = "dept", nullable = true, charMaxlength = 32)
     @Title(title = "部门")
-    public Long getDeptId() {
+    public String getDeptId() {
         return deptId;
     }
 
-    public void setDeptId(Long deptId) {
+    public void setDeptId(String deptId) {
         this.deptId = deptId;
     }
 

@@ -11,18 +11,18 @@ import org.geelato.core.meta.annotation.Title;
 @Title(title = "示例子实体")
 public class DemoSubEntity extends BaseSortableEntity {
 
-    private Long demoEntityId;
+    private String demoEntityId;
     private String name;
     private String description;
 
 
     @Col(name = "demoEntityId", nullable = true)
     @Title(title = "示例实体Id")
-    public Long getDemoEntityId() {
+    public String getDemoEntityId() {
         return demoEntityId;
     }
 
-    public void setDemoEntityId(Long demoEntityId) {
+    public void setDemoEntityId(String demoEntityId) {
         this.demoEntityId = demoEntityId;
     }
 
