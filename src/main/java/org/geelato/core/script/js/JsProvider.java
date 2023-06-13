@@ -38,7 +38,7 @@ public class JsProvider {
      * @throws ScriptException
      */
     public void compile(Map<String, String> jsFuncMap) throws ScriptException {
-        if (jsFuncMap == null) return;
+        if (jsFuncMap == null){ return;}
         for (Map.Entry<String, String> entry : jsFuncMap.entrySet()) {
             if (jsFunctionInfoMap.containsKey(entry.getKey())) {
                 logger.warn("存在同名称key：{},不进行解析！", entry.getKey());

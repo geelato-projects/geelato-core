@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author geemeta
- *
  */
 public abstract class AbstractScriptLexer {
     private Logger logger = LoggerFactory.getLogger(AbstractScriptLexer.class);
@@ -27,21 +26,24 @@ public abstract class AbstractScriptLexer {
         ScriptStatement scriptStatement = null;
         for (String l : lines) {
             String line = l.trim();
-            if (line.length() == 0)
+            if (line.length() == 0) {
                 continue;
+            }
             Matcher matcher = getSplitPattern().matcher(line);
             if (matcher.find()) {
-                if (logger.isDebugEnabled())
+                if (logger.isDebugEnabled()) {
                     logger.debug("matcher:{}", matcher.group());
+                }
                 //当前分行
                 if (statementId != null) {
                     //新的语句行，先保存已有的TemplateStatement
-                    if (scriptStatement != null && scriptStatement.getContent() != null && scriptStatement.getContent().size() > 0)
+                    if (scriptStatement != null && scriptStatement.getContent() != null && scriptStatement.getContent().size() > 0) {
                         scriptStatements.add(scriptStatement);
+                    }
                 }
                 scriptStatement = new ScriptStatement();
-                scriptStatement.setContent(new ArrayList());
-                statementId=parseStatementId(line);
+                scriptStatement.setContent(new ArrayList<String>());
+                statementId = parseStatementId(line);
                 scriptStatement.setId(statementId);
                 //如果匹配的statementId行同时是内容行时
                 if (statementIdLineIsContent()) {
@@ -55,17 +57,20 @@ public abstract class AbstractScriptLexer {
                     case '/':
                         continue;
                     case '-':
-                        if (line.charAt(1) == '-')
+                        if (line.charAt(1) == '-') {
                             continue;
+                        }
                 }
 
-                if (scriptStatement != null)
+                if (scriptStatement != null) {
                     scriptStatement.getContent().add(line);
+                }
             }
         }
         //添加最后一个
-        if (scriptStatement != null && scriptStatement.getContent() != null && scriptStatement.getContent().size() > 0)
+        if (scriptStatement != null && scriptStatement.getContent() != null && scriptStatement.getContent().size() > 0) {
             scriptStatements.add(scriptStatement);
+        }
         return scriptStatements;
     }
 

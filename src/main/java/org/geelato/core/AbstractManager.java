@@ -20,8 +20,8 @@ public abstract class AbstractManager {
 
     protected Dao dao;
     private static Logger logger = LoggerFactory.getLogger(AbstractManager.class);
-    protected final static String RN_WIN = "\r\n";   // in WinOS
-    protected final static String RN_LINUX = "\n";    // in Linux
+    protected static final String RN_WIN = "\r\n";   // in WinOS
+    protected static final String RN_LINUX = "\n";    // in Linux
     protected ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
     /**
@@ -90,7 +90,7 @@ public abstract class AbstractManager {
 
     public List<String> readLines(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        List<String> lineList = new ArrayList<String>();
+        List<String> lineList = new ArrayList<>();
         String line = null;
         while ((line = reader.readLine()) != null) {
             lineList.add(line);

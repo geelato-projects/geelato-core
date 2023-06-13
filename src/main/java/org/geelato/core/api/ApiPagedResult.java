@@ -16,6 +16,7 @@ public class ApiPagedResult<E> extends ApiResult<E> implements ApiMeta {
      */
     private Object meta;
 
+    @Override
     public Object getMeta() {
         return meta;
     }

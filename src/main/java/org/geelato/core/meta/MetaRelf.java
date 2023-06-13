@@ -79,7 +79,9 @@ public class MetaRelf {
         for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
             Field[] fields = superClass.getDeclaredFields();
             for (Field field : fields) {
-                if (!fieldMap.containsKey(field.getName())) fieldMap.put(field.getName(), field);
+                if (!fieldMap.containsKey(field.getName())) {
+                    fieldMap.put(field.getName(), field);
+                }
             }
         }
         return fieldMap;
@@ -124,8 +126,10 @@ public class MetaRelf {
         HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz, tableForeigns);
         em.setFieldMetas(map.values());
         em.setTableForeigns(tableForeigns);
-        if (em.getFieldMetas() != null) for (FieldMeta fm : em.getFieldMetas()) {
-            fm.getColumn().setTableName(em.getTableMeta().getTableName());
+        if (em.getFieldMetas() != null) {
+            for (FieldMeta fm : em.getFieldMetas()) {
+                fm.getColumn().setTableName(em.getTableMeta().getTableName());
+            }
         }
         em.setDictDataSourceMap(getDictDataSourceMap(clazz));
         return em;
@@ -141,8 +145,10 @@ public class MetaRelf {
 
         HashMap<String, FieldMeta> map = getColumnFieldMetas(columnList);
         em.setFieldMetas(map.values());
-        if (em.getFieldMetas() != null) for (FieldMeta fm : em.getFieldMetas()) {
-            fm.getColumn().setTableName(em.getTableMeta().getTableName());
+        if (em.getFieldMetas() != null) {
+            for (FieldMeta fm : em.getFieldMetas()) {
+                fm.getColumn().setTableName(em.getTableMeta().getTableName());
+            }
         }
         return em;
     }
@@ -171,7 +177,9 @@ public class MetaRelf {
      */
     public static String getTableName(Class clazz) {
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null) return clazz.getSimpleName();
+        if (entity == null) {
+            return clazz.getSimpleName();
+        }
         if (StringUtils.hasText(entity.table())) {
             return entity.table();
         } else if (StringUtils.hasText(entity.name())) {
@@ -190,7 +198,9 @@ public class MetaRelf {
      */
     public static String getEntityName(Class clazz) {
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null) return clazz.getSimpleName();
+        if (entity == null) {
+            return clazz.getSimpleName();
+        }
         if (StringUtils.hasText(entity.name())) {
             return entity.name();
         } else {
@@ -256,11 +266,16 @@ public class MetaRelf {
             Method[] methods = searchType.getDeclaredMethods();
             for (Method method : methods) {
                 try {
-                    if (!method.getName().startsWith("get") && !method.getName().startsWith("is")) continue;
+                    if (!method.getName().startsWith("get") && !method.getName().startsWith("is")) {
+                        continue;
+                    }
                     String fieldName = "";
                     //去掉get三个字符
-                    if (method.getName().startsWith("get")) fieldName = method.getName().substring(3);
-                    else if (method.getName().startsWith("is")) fieldName = method.getName().substring(2);
+                    if (method.getName().startsWith("get")) {
+                        fieldName = method.getName().substring(3);
+                    } else if (method.getName().startsWith("is")) {
+                        fieldName = method.getName().substring(2);
+                    }
                     //首字符变小写
                     fieldName = firstCharToLow(fieldName);
                     if (!map.containsKey(fieldName)) {
@@ -295,7 +310,9 @@ public class MetaRelf {
                                 cfm.getColumn().setDataType(column.dataType());
                                 try {
                                     Object defaultValue = method.invoke(bean);
-                                    if (defaultValue != null) cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
+                                    if (defaultValue != null) {
+                                        cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
+                                    }
                                 } catch (IllegalAccessException e) {
                                     logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
                                 } catch (InvocationTargetException e) {
@@ -325,8 +342,9 @@ public class MetaRelf {
 //                            logger.debug("cfm.getColumn().getDataType())>>{}",cfm.getColumn().getDataType());
                             //如果未指定类型（如特殊的json），则采用方法的返回类型
                             //TODO 会导致 cfm.setFieldType与cfm.getColumn().getDataType())不一致,需为mybatis自定义一个JSON类型
-                            if (Strings.isEmpty(cfm.getColumn().getDataType()))
+                            if (Strings.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
+                            }
                             cfm.getColumn().afterSet();
                             map.put(fieldName, cfm);
                         }
@@ -440,7 +458,9 @@ public class MetaRelf {
             for (Method method : methods) {
                 try {
                     String fieldName = getFieldNameByGetMethod(method.getName());
-                    if (fieldName == null) continue;
+                    if (fieldName == null) {
+                        continue;
+                    }
                     if (!map.containsKey(fieldName)) {
                         DictDataSrc ds = method.getAnnotation(DictDataSrc.class);
                         if (ds != null) {
@@ -471,12 +491,16 @@ public class MetaRelf {
         Assert.notNull(after, "不能为空");
         Assert.isTrue(before.getClass().equals(after.getClass()), "before与after为相同类型");
         HashMap<String, Field> beforeFieldHashMap = getAccessibleFields(before);
-        if (beforeFieldHashMap.values().size() == 0) return "";
+        if (beforeFieldHashMap.values().size() == 0) {
+            return "";
+        }
         HashMap<String, Field> afterFieldHashMap = getAccessibleFields(after);
         StringBuilder jsonResult = new StringBuilder();
         jsonResult.append("[");
         for (Field field : beforeFieldHashMap.values()) {
-            if (ignoreFieldMap != null && ignoreFieldMap.containsKey(field.getName())) continue;
+            if (ignoreFieldMap != null && ignoreFieldMap.containsKey(field.getName())) {
+                continue;
+            }
             Field afterField = null;
             try {
                 field.setAccessible(true);
@@ -496,7 +520,9 @@ public class MetaRelf {
                 logger.error("", e);
             } finally {
                 field.setAccessible(false);
-                if (afterField != null) afterField.setAccessible(true);
+                if (afterField != null) {
+                    afterField.setAccessible(true);
+                }
             }
         }
         jsonResult.deleteCharAt(jsonResult.length() - 1);
@@ -511,11 +537,17 @@ public class MetaRelf {
     }
 
     private static String getFieldNameByGetMethod(String methodName) {
-        if (!methodName.startsWith("get") && !methodName.startsWith("is")) return null;
+        if (!methodName.startsWith("get") && !methodName.startsWith("is")) {
+            return null;
+        }
         String fieldName = "";
         //去掉get三个字符
-        if (methodName.startsWith("get")) fieldName = methodName.substring(3);
-        if (methodName.startsWith("is")) fieldName = methodName.substring(2);
+        if (methodName.startsWith("get")) {
+            fieldName = methodName.substring(3);
+        }
+        if (methodName.startsWith("is")) {
+            fieldName = methodName.substring(2);
+        }
         //首字符变小写
         return firstCharToLow(fieldName);
     }

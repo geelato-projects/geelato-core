@@ -1,24 +1,24 @@
 package org.geelato.core.script.js;
 
-import org.geelato.core.script.js.JsScriptManager;
-
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author geemeta
- *
  */
 public class JsScriptManagerFactory {
     private static Lock lock = new ReentrantLock();
     private static HashMap<String, JsScriptManager> map = new HashMap<>();
 
-    private JsScriptManagerFactory(){}
+    private JsScriptManagerFactory() {
+    }
+
     public static JsScriptManager get(String name) {
         lock.lock();
-        if (!map.containsKey(name))
+        if (!map.containsKey(name)) {
             map.put(name, new JsScriptManager());
+        }
         lock.unlock();
         return map.get(name);
     }

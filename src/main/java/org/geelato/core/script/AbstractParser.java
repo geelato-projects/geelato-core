@@ -5,7 +5,6 @@ import java.util.Map;
 
 /**
  * @author geemeta
- *
  */
 public abstract class AbstractParser<E extends AbstractScriptLexer> {
 
@@ -20,14 +19,13 @@ public abstract class AbstractParser<E extends AbstractScriptLexer> {
     public abstract Class<E> getLexerType();
 
     protected <T extends E> T getLexer() {
-        if (lexer == null)
+        if (lexer == null) {
             try {
                 lexer = getLexerType().newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
 
         return (T) lexer;
     }

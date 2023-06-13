@@ -28,7 +28,9 @@ public class SqlFiles {
         if (lines != null) {
             StringBuffer sb = new StringBuffer();
             for (String line : lines) {
-                if (StringUtils.isBlank(line)) continue;
+                if (StringUtils.isBlank(line)) {
+                    continue;
+                }
                 line = line.trim();
                 int index = line.trim().indexOf("--");
                 if (index >= 0) {
@@ -40,10 +42,11 @@ public class SqlFiles {
                     sb = new StringBuffer();
                 } else {
                     sb.append(line);
-                    if (isWinOS)
+                    if (isWinOS) {
                         sb.append("\r\n");
-                    else
+                    } else {
                         sb.append("\n");
+                    }
                 }
             }
             if (sb.length() > 1) {
@@ -79,6 +82,7 @@ public class SqlFiles {
     /**
      * 解析sql，并执行本框架定义的方法，目前方案有：
      * </br>$newId()：生成long型UID，并替换sql语句相应的位置
+     *
      * @param line 解析后的语句
      * @return
      */

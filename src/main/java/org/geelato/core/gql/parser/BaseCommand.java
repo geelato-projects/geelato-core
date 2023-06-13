@@ -61,7 +61,7 @@ public class BaseCommand<E extends BaseCommand> {
      * @return 获取子命令，若不存在，则创建一个空的命令列表
      */
     public List<E> getCommands() {
-        if (commands == null) commands = new ArrayList<>();
+        if (commands == null){ commands = new ArrayList<>();}
         return commands;
     }
 

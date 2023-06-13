@@ -71,6 +71,7 @@ public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
      * @param command
      * @return
      */
+    @Override
     protected String buildOneSql(SaveCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);

@@ -137,7 +137,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
             FieldMeta fm = md.getFieldMeta(fieldName);
             ColumnMeta cm = fm.getColumn();
             //外表字段
-            if (!StringUtils.isEmpty(cm.getRefColName())) {
+            if (Strings.isNotEmpty(cm.getRefColName())) {
                 if (!cm.getIsRefColumn()) {
                     //外键
                     this.buildForeignJoinSql(command, md, fm);

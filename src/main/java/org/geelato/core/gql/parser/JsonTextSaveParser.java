@@ -98,7 +98,7 @@ public class JsonTextSaveParser {
                 FieldMeta fieldMeta = entityMeta.getFieldMeta(key);
                 if (fieldMeta != null && (boolean.class.equals(fieldMeta.getFieldType()) || Boolean.class.equals(fieldMeta.getFieldType()))) {
                     String v = jo.getString(key).toLowerCase();
-                    params.put(key, v.equals("true") ? 1 : (v.equals("false") ? 0 : v));
+                    params.put(key, "true".equals(v) ? 1 : ("false".equals(v) ? 0 : v));
                 } else {
                     params.put(key, jo.getString(key));
                 }
@@ -118,8 +118,12 @@ public class JsonTextSaveParser {
             command.setWhere(fg);
             command.setCommandType(CommandType.Update);
             Object pkValue = params.remove(PK);
-            if (validator.hasKeyField("updateAt")) params.put("updateAt", newDataString);
-            if (validator.hasKeyField("updater")) params.put("updater", ctx.get("userId"));
+            if (validator.hasKeyField("updateAt")) {
+                params.put("updateAt", newDataString);
+            }
+            if (validator.hasKeyField("updater")) {
+                params.put("updater", ctx.get("userId"));
+            }
             String[] updateFields = new String[params.keySet().size()];
             params.keySet().toArray(updateFields);
             command.setFields(updateFields);
@@ -133,10 +137,18 @@ public class JsonTextSaveParser {
             Map<String, Object> entity = metaManager.newDefaultEntity(commandName);
             entity.putAll(params);
             entity.put(PK, UIDGenerator.generate(1));
-            if (entity.containsKey("createAt")) entity.put("createAt", newDataString);
-            if (entity.containsKey("creator")) entity.put("creator", ctx.get("userId"));
-            if (entity.containsKey("updateAt")) entity.put("updateAt", newDataString);
-            if (entity.containsKey("updater")) entity.put("updater", ctx.get("userId"));
+            if (entity.containsKey("createAt")) {
+                entity.put("createAt", newDataString);
+            }
+            if (entity.containsKey("creator")) {
+                entity.put("creator", ctx.get("userId"));
+            }
+            if (entity.containsKey("updateAt")) {
+                entity.put("updateAt", newDataString);
+            }
+            if (entity.containsKey("updater")) {
+                entity.put("updater", ctx.get("userId"));
+            }
 
             String[] insertFields = new String[entity.size()];
             entity.keySet().toArray(insertFields);

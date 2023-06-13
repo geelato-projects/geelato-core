@@ -108,7 +108,9 @@ public class EntityMeta {
     }
 
     public void setFieldMetas(Collection<FieldMeta> fieldMetas) {
-        if (fieldMetas == null) return;
+        if (fieldMetas == null) {
+            return;
+        }
         // 对字段做排序
         // id、name、title、...、
         FieldMeta idMeta = null;
@@ -160,8 +162,12 @@ public class EntityMeta {
             }
         }
 
-        if (fieldMetaMap == null) fieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
-        if (simpleFieldMetaMap == null) simpleFieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
+        if (fieldMetaMap == null) {
+            fieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
+        }
+        if (simpleFieldMetaMap == null) {
+            simpleFieldMetaMap = new LinkedHashMap<>(fieldMetas.size());
+        }
         // 这里不初始具体的size，后续程序需依据动态增加的size进行设值
         this.fieldMetas = new ArrayList<>();
         this.fieldNames = new String[fieldMetas.size()];
@@ -269,9 +275,13 @@ public class EntityMeta {
     }
 
     public FieldMeta getFieldMetaByColumn(String columnName) {
-        if (this.fieldMetas == null || this.fieldMetas.size() == 0) return null;
+        if (this.fieldMetas == null || this.fieldMetas.size() == 0) {
+            return null;
+        }
         for (FieldMeta fm : fieldMetas) {
-            if (fm.getColumnName().equals(columnName)) return fm;
+            if (fm.getColumnName().equals(columnName)) {
+                return fm;
+            }
         }
         return null;
     }

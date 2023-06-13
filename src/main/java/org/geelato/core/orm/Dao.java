@@ -156,8 +156,9 @@ public class Dao {
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
         result.setDataSize(list != null ? list.size() : 0);
-        if (withMeta)
+        if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
+        }
         return result;
     }
 
@@ -176,8 +177,9 @@ public class Dao {
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
         result.setDataSize(list != null ? list.size() : 0);
-        if (withMeta)
+        if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
+        }
         return result;
     }
 

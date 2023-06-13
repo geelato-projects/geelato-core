@@ -77,8 +77,9 @@ public class TypeConverter {
      * @return mysql information_schema库中，columns表记录的dataType
      */
     public static String toSqlTypeString(Class<?> javaType) {
-        if (!javaTypeToSqlTypeMap.containsKey(javaType))
+        if (!javaTypeToSqlTypeMap.containsKey(javaType)) {
             throw new RuntimeException("未配置转换类型javaType：" + javaType.getName());
+        }
         return javaTypeToSqlTypeMap.get(javaType);
     }
 
@@ -100,8 +101,9 @@ public class TypeConverter {
      * @return 用于前端UI展示的字段类型
      */
     public static String toUIType(String sqlType) {
-        if (!sqlTypeToUITypeMap.containsKey(sqlType))
+        if (!sqlTypeToUITypeMap.containsKey(sqlType)) {
             throw new RuntimeException("未配置转换类型sqlType：" + sqlType);
+        }
         return sqlTypeToUITypeMap.get(sqlType);
     }
 }

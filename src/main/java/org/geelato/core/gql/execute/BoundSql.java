@@ -6,7 +6,6 @@ import java.util.Map;
 
 /**
  * @author geemeta
- *
  */
 public class BoundSql {
     private String name;
@@ -80,8 +79,9 @@ public class BoundSql {
                 sb.append(o);
                 sb.append(",");
             }
-            if (params.length > 0)
+            if (params.length > 0) {
                 sb.deleteCharAt(sb.length() - 1);
+            }
             sb.append("]");
         }
         return sb.toString();

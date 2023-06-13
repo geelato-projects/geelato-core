@@ -107,10 +107,10 @@ public class JsonTextQueryParser {
                             if (ary.length == 1) {
                                 validator.validateField(ary[0], KW_FIELDS);
                                 fieldNames[i] = ary[0];
-                            }else if (ary.length == 2) {
+                            } else if (ary.length == 2) {
                                 validator.validateField(ary[0], KW_FIELDS);
                                 fieldNames[i] = ary[0];
-                                command.getAlias().put(ary[0],ary[1]);
+                                command.getAlias().put(ary[0], ary[1]);
                             } else {
                                 validator.appendMessage(KW_FIELDS);
                                 validator.appendMessage("的值格式有误，正确如：name userName,age,sex，其中userName为重命名。");
@@ -133,8 +133,9 @@ public class JsonTextQueryParser {
                                 validator.appendMessage("的值格式有误，正确如：age|+,name|-。");
                             }
                         }
-                        if (sb.length() > 0)
+                        if (sb.length() > 0) {
                             command.setOrderBy(sb.toString());
+                        }
                         break;
                     case KW_GROUP_BY:
                         validator.validateField(segments, KW_GROUP_BY);

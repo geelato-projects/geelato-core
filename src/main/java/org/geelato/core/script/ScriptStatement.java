@@ -6,7 +6,6 @@ import java.util.List;
  * 模板中的一段语句，如：一个javascript function、或一段sql
  *
  * @author geemeta
- *
  */
 public class ScriptStatement {
     private String id;
@@ -25,8 +24,9 @@ public class ScriptStatement {
     }
 
     public String getContentString() {
-        if (content == null || content.size() == 0)
+        if (content == null || content.size() == 0) {
             return "";
+        }
         StringBuilder sb = new StringBuilder(content.size());
         for (String str : content) {
             sb.append(str);

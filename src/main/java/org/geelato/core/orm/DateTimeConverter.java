@@ -15,7 +15,6 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -31,8 +30,9 @@ public class DateTimeConverter implements Converter {
     }
 
     public static Object toDate(Class type, Object value) {
-        if (value == null || "".equals(value))
+        if (value == null || "".equals(value)) {
             return null;
+        }
         if (value instanceof LocalDateTime) {
             return DateUtils.asDate((LocalDateTime) value);
         } else if (value instanceof LocalDate) {

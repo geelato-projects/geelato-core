@@ -1,14 +1,11 @@
 package org.geelato.core.script.js;
 
 import org.geelato.core.AbstractManager;
-import org.geelato.core.script.sql.SqlScriptParser;
-import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +36,7 @@ public class JsScriptManager extends AbstractManager {
         compileJs(jsTemplateParser.parse(Files.readAllLines(Paths.get(file.getPath()))));
     }
 
+    @Override
     public void parseStream(InputStream inputStream) throws IOException {
         compileJs(jsTemplateParser.parse(readLines(inputStream)));
     }
@@ -60,7 +58,7 @@ public class JsScriptManager extends AbstractManager {
      * @throws ScriptException
      */
     public String generate(String id, Map<String, Object> paramMap) {
-        if (jsProvider.contain(id))
+        if (jsProvider.contain(id)) {
             try {
 //                SimpleBindings simpleBindings = new SimpleBindings();
 //                simpleBindings.put(SqlScriptParser.VAL_NAME, paramMap);
@@ -73,7 +71,7 @@ public class JsScriptManager extends AbstractManager {
                 logger.error("sql脚本构建失败。", e);
                 return null;
             }
-        else {
+        } else {
             Assert.isTrue(false, "未找到sqlId：" + id + "，对应的语句。");
             return null;
         }

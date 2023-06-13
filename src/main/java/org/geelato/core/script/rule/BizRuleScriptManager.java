@@ -3,7 +3,6 @@ package org.geelato.core.script.rule;
 import org.geelato.core.AbstractManager;
 import org.geelato.core.script.js.JsProvider;
 import org.geelato.core.script.js.JsTemplateParser;
-import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -38,8 +37,10 @@ public class BizRuleScriptManager extends AbstractManager {
 
     /**
      * 解析*.js的文件流
+     *
      * @param inputStream
      */
+    @Override
     public void parseStream(InputStream inputStream) throws IOException {
         compileJs(jsTemplateParser.parse(readLines(inputStream)));
     }
@@ -64,8 +65,8 @@ public class BizRuleScriptManager extends AbstractManager {
      * @return 执行结果
      * @throws ScriptException 脚本执行错误
      */
-    public Object execute(String functionName,Map<String, Object> paramMap) {
-        if (jsProvider.contain(functionName))
+    public Object execute(String functionName, Map<String, Object> paramMap) {
+        if (jsProvider.contain(functionName)) {
             try {
                 Object result = jsProvider.execute(functionName, paramMap);
                 if (logger.isInfoEnabled()) {
@@ -76,7 +77,7 @@ public class BizRuleScriptManager extends AbstractManager {
                 logger.error("脚本执行失败。function:" + functionName + "。", e);
                 return null;
             }
-        else {
+        } else {
             Assert.isTrue(false, "未找到function：" + functionName + "，对应的函数。");
             return null;
         }

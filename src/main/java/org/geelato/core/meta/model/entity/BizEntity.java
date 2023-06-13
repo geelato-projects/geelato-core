@@ -38,6 +38,7 @@ public class BizEntity extends BaseEntity {
     /***
      * 其它属性设置之后，调用。可用于通用的增删改查功能中，特别字段的生成
      */
+    @Override
     public void afterSet() {
 
     }

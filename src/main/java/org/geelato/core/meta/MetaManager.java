@@ -17,7 +17,6 @@ import org.geelato.core.util.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -173,7 +172,9 @@ public class MetaManager {
 
     public static MetaManager singleInstance() {
         lock.lock();
-        if (instance == null) instance = new MetaManager();
+        if (instance == null) {
+            instance = new MetaManager();
+        }
         lock.unlock();
         return instance;
     }
@@ -235,7 +236,9 @@ public class MetaManager {
     }
 
     public EntityMeta getByEntityName(String entityName, boolean cache) {
-        if (cache) return getByEntityName(entityName);
+        if (cache) {
+            return getByEntityName(entityName);
+        }
         refreshDBMeta(entityName);
         return getByEntityName(entityName);
     }
@@ -294,7 +297,9 @@ public class MetaManager {
     public void scanAndParse(String packageName, boolean isUpdateMetadataFormDb) {
         scanAndParse(packageName);
         //@TODO updateMetadataFromDbAfterParse的取值
-        if (isUpdateMetadataFormDb) updateMetadataFromDbAfterParse(null);
+        if (isUpdateMetadataFormDb) {
+            updateMetadataFromDbAfterParse(null);
+        }
     }
 
     /**
@@ -343,7 +348,9 @@ public class MetaManager {
                 fm.getColumn().setNumericPrecision(Integer.parseInt(NUMERIC_PRECISION));
                 fm.getColumn().setNumericScale(Integer.parseInt(NUMERIC_SCALE));
                 fm.getColumn().setComment(COLUMN_COMMENT);
-                if (StringUtils.isEmpty(fm.getColumn().getTitle())) fm.getColumn().setTitle(COLUMN_COMMENT);
+                if (Strings.isEmpty(fm.getColumn().getTitle())) {
+                    fm.getColumn().setTitle(COLUMN_COMMENT);
+                }
                 fm.getColumn().setOrdinalPosition(Integer.parseInt(ORDINAL_POSITION));
 
             }
@@ -367,8 +374,12 @@ public class MetaManager {
             if (logger.isDebugEnabled()) {
                 logger.debug("success in parsing class:{}", clazz.getName());
                 for (FieldMeta fm : entityMeta.getFieldMetas()) {
-                    if (!entityFieldNameTitleMap.containsKey(fm.getFieldName())) entityFieldNameTitleMap.put(fm.getFieldName(), fm.getTitle());
-                    if (!entityFieldNameTitleMap.containsKey(fm.getColumnName())) entityFieldNameTitleMap.put(fm.getColumnName(), fm.getTitle());
+                    if (!entityFieldNameTitleMap.containsKey(fm.getFieldName())) {
+                        entityFieldNameTitleMap.put(fm.getFieldName(), fm.getTitle());
+                    }
+                    if (!entityFieldNameTitleMap.containsKey(fm.getColumnName())) {
+                        entityFieldNameTitleMap.put(fm.getColumnName(), fm.getTitle());
+                    }
                 }
             }
         }

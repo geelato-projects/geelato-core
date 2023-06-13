@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
  * 将*.sql文件中的内容解析成javascript function，便于基于javascript的engine来创建语句
  *
  * @author geemeta
- *
  */
 public class SqlScriptParser extends AbstractParser<SqlScriptLexer> {
     private static Logger logger = LoggerFactory.getLogger(SqlScriptParser.class);
@@ -138,7 +137,9 @@ public class SqlScriptParser extends AbstractParser<SqlScriptLexer> {
             int startIndex = template.indexOf(VAL_FLAG, matcher.start());
 
             if (isJsCode) {
-                if (VAL_NAME.equals(VAL_FLAG)) return template;
+                if (VAL_NAME.equals(VAL_FLAG)) {
+                    return template;
+                }
                 StringBuilder sb = new StringBuilder(template);
                 sb.replace(startIndex, startIndex + 1, VAL_NAME);
                 return replace(sb.toString(), isJsCode);
@@ -159,7 +160,9 @@ public class SqlScriptParser extends AbstractParser<SqlScriptLexer> {
                 return sb.toString().replaceAll("\"\"", "\"");
             }
         }
-        if (isJsCode) return template;
+        if (isJsCode) {
+            return template;
+        }
         return "\"" + template + "\"";
     }
 

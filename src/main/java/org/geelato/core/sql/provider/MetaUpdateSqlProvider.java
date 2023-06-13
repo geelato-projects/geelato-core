@@ -78,6 +78,7 @@ public class MetaUpdateSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
      * @param command 保存命令
      * @return 构建的保存语句
      */
+    @Override
     protected String buildOneSql(SaveCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta em = getEntityMeta(command);
@@ -99,7 +100,9 @@ public class MetaUpdateSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
         //重命名查询的结果列表为实体字段名
         for (String fieldName : fields) {
             // 如忽略掉creator create_at createAt
-            if (em.isIgnoreUpdateField(fieldName)) continue;
+            if (em.isIgnoreUpdateField(fieldName)) {
+                continue;
+            }
             tryAppendKeywords(sb, em.getColumnName(fieldName));
 //            sb.append(em.getColumnName(fieldName));
             sb.append("=?,");

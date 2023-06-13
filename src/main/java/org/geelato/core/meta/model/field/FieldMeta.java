@@ -3,7 +3,6 @@ package org.geelato.core.meta.model.field;
 import java.io.Serializable;
 
 /**
- *
  * @author geemeta
  */
 public class FieldMeta implements Serializable {
@@ -70,8 +69,9 @@ public class FieldMeta implements Serializable {
      * @return
      */
     public boolean isEquals() {
-        if (this.getColumn().getName() == null || fieldName == null)
+        if (this.getColumn().getName() == null || fieldName == null) {
             return false;
+        }
         return this.getColumn().getName().equals(fieldName);
     }
 }

@@ -35,7 +35,9 @@ public class FilterGroup {
     }
 
     public List<Filter> getFilters() {
-        if (filters == null) filters = new ArrayList<Filter>();
+        if (filters == null) {
+            filters = new ArrayList<Filter>();
+        }
         return filters;
     }
 

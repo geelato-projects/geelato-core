@@ -32,6 +32,7 @@ public class MetaDeleteSqlProvider extends MetaBaseSqlProvider<DeleteCommand> {
      * @param command
      * @return
      */
+    @Override
     protected String buildOneSql(DeleteCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);

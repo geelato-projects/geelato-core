@@ -218,8 +218,11 @@ public class DbGenerateDao {
                     uniqueList.add(jsonColumn);
                 }
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1) logger.info("column " + fm.getColumnName() + " is exists，ignore.");
-                else throw e;
+                if (e.getMessage().indexOf("Duplicate column name") != -1) {
+                    logger.info("column " + fm.getColumnName() + " is exists，ignore.");
+                } else {
+                    throw e;
+                }
             }
         }
         /*for (TableForeign tf : em.getTableForeigns()) {
@@ -296,10 +299,15 @@ public class DbGenerateDao {
                     addList.add(jsonColumn);
                 }
                 createList.add(jsonColumn);
-                if (fm.getColumn().isUniqued()) uniqueList.add(jsonColumn);
+                if (fm.getColumn().isUniqued()) {
+                    uniqueList.add(jsonColumn);
+                }
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1) logger.info("column " + fm.getColumnName() + " is exists，ignore.");
-                else throw e;
+                if (e.getMessage().indexOf("Duplicate column name") != -1) {
+                    logger.info("column " + fm.getColumnName() + " is exists，ignore.");
+                } else {
+                    throw e;
+                }
             }
         }
         Map<String, Object> map = new HashMap<>();

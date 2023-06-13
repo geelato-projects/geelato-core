@@ -43,8 +43,12 @@ public class EntitySaveParser {
                 command.setWhere(fg);
                 command.setCommandType(CommandType.Update);
 
-                if (entity.containsKey("updateAt")) entity.put("updateAt", new Date());
-                if (entity.containsKey("updater")) entity.put("updater", ctx.get("userId"));
+                if (entity.containsKey("updateAt")) {
+                    entity.put("updateAt", new Date());
+                }
+                if (entity.containsKey("updater")) {
+                    entity.put("updater", ctx.get("userId"));
+                }
 
                 String[] updateFields = new String[entity.size()];
                 entity.keySet().toArray(updateFields);
@@ -53,10 +57,18 @@ public class EntitySaveParser {
             } else {
                 command.setCommandType(CommandType.Insert);
                 entity.put(PK, UIDGenerator.generate(1));
-                if (entity.containsKey("createAt")) entity.put("createAt", new Date());
-                if (entity.containsKey("creator")) entity.put("creator", ctx.get("userId"));
-                if (entity.containsKey("updateAt")) entity.put("updateAt", new Date());
-                if (entity.containsKey("updater")) entity.put("updater", ctx.get("userId"));
+                if (entity.containsKey("createAt")) {
+                    entity.put("createAt", new Date());
+                }
+                if (entity.containsKey("creator")) {
+                    entity.put("creator", ctx.get("userId"));
+                }
+                if (entity.containsKey("updateAt")) {
+                    entity.put("updateAt", new Date());
+                }
+                if (entity.containsKey("updater")) {
+                    entity.put("updater", ctx.get("userId"));
+                }
 
                 String[] insertFields = new String[entity.size()];
                 entity.keySet().toArray(insertFields);

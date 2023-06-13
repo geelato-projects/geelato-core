@@ -29,7 +29,9 @@ public class SqlManager {
 
     public static SqlManager singleInstance() {
         lock.lock();
-        if (instance == null) instance = new SqlManager();
+        if (instance == null) {
+            instance = new SqlManager();
+        }
         lock.unlock();
         return instance;
     }

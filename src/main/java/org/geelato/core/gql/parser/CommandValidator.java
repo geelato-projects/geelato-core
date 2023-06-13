@@ -93,7 +93,9 @@ public class CommandValidator {
      */
     public boolean hasPK(String[] fields) {
         String name = entityMeta.getId().getFieldName();
-        if (Arrays.asList(fields).contains(name)) return true;
+        if (Arrays.asList(fields).contains(name)) {
+            return true;
+        }
         return false;
     }
 

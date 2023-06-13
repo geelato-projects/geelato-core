@@ -36,13 +36,21 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     }
 
     protected static String convertToSignString(FilterGroup.Operator operator) {
-        if (operator == FilterGroup.Operator.eq) return "=";
-        else if (operator == FilterGroup.Operator.neq) return "!=";
-        else if (operator == FilterGroup.Operator.lt) return "<";
-        else if (operator == FilterGroup.Operator.lte) return "<=";
-        else if (operator == FilterGroup.Operator.gt) return ">";
-        else if (operator == FilterGroup.Operator.gte) return ">=";
-        else if (operator == FilterGroup.Operator.in) return "in";
+        if (operator == FilterGroup.Operator.eq) {
+            return "=";
+        } else if (operator == FilterGroup.Operator.neq) {
+            return "!=";
+        } else if (operator == FilterGroup.Operator.lt) {
+            return "<";
+        } else if (operator == FilterGroup.Operator.lte) {
+            return "<=";
+        } else if (operator == FilterGroup.Operator.gt) {
+            return ">";
+        } else if (operator == FilterGroup.Operator.gte) {
+            return ">=";
+        } else if (operator == FilterGroup.Operator.in) {
+            return "in";
+        }
         return "=";
     }
 
@@ -70,8 +78,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         if (command.getCommands() != null) {
             command.getCommands().forEach(item -> {
                 BoundSql subBoundSql = generate((E) item);
-                if (boundSql.getBoundSqlMap() == null)
+                if (boundSql.getBoundSqlMap() == null) {
                     boundSql.setBoundSqlMap(new HashMap<>());
+                }
                 boundSql.getBoundSqlMap().put(subBoundSql.getName(), subBoundSql);
             });
         }
@@ -100,8 +109,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * @return
      */
     protected Object[] buildWhereParams(E command) {
-        if (command.getWhere() == null || command.getWhere().getFilters() == null || command.getWhere().getFilters().size() == 0)
+        if (command.getWhere() == null || command.getWhere().getFilters() == null || command.getWhere().getFilters().size() == 0) {
             return new Object[0];
+        }
         List<Object> list = new ArrayList<>();
         for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
             // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
@@ -131,8 +141,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * @return
      */
     protected int[] buildWhereTypes(E command) {
-        if (command.getWhere() == null || command.getWhere().getFilters() == null)
+        if (command.getWhere() == null || command.getWhere().getFilters() == null) {
             return new int[0];
+        }
         EntityMeta em = getEntityMeta(command);
         int[] types = new int[command.getWhere().getFilters().size()];
         int i = 0;
@@ -158,7 +169,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             while (iterator.hasNext()) {
                 FilterGroup.Filter filter = iterator.next();
                 //只构建当前实体的查询条件
-                if (filter.isRefField()) continue;
+                if (filter.isRefField()) {
+                    continue;
+                }
                 if (index > 0) {
                     sb.append(" ");
                     sb.append(logic.getText());
@@ -181,7 +194,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     protected void buildConditionSegment(StringBuilder sb, EntityMeta em, FilterGroup.Filter filter) {
         FieldMeta fm = em.getFieldMeta(filter.getField());
         FilterGroup.Operator operator = filter.getOperator();
-        if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
+        if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == FilterGroup.Operator.gte) {
             tryAppendKeywords(em, sb, fm);
             sb.append(enumToSignString.get(operator));
             sb.append("?");
@@ -206,8 +219,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     }
 
     protected boolean isKeywords(String field) {
-        if (field == null)
+        if (field == null) {
             return false;
+        }
         return keywordsMap.containsKey(field);
     }
 
@@ -241,7 +255,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         return this.tableAlias.get(tableName);
     }
 
-    public String getTableAlias(String tableName){
+    public String getTableAlias(String tableName) {
         return this.tableAlias.get(tableName);
     }
 }

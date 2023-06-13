@@ -22,7 +22,9 @@ public class GqlManager {
 
     public static GqlManager singleInstance() {
         lock.lock();
-        if (instance == null) instance = new GqlManager();
+        if (instance == null) {
+            instance = new GqlManager();
+        }
         lock.unlock();
         return instance;
     }

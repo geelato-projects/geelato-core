@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,6 @@ import java.util.Map;
  * TODO 分析哪些是静态的语句块，解析成静态脚本，以便采用prepareStatement，提高sql执行性能
  *
  * @author geemeta
- *
  */
 public class SqlScriptManager extends AbstractManager {
     private Logger logger = LoggerFactory.getLogger(SqlScriptManager.class);
@@ -44,6 +42,7 @@ public class SqlScriptManager extends AbstractManager {
 
     /**
      * 解析InputStream格式
+     *
      * @param inputStream 待解析的文件流
      * @throws IOException 解析异常
      */
@@ -68,7 +67,7 @@ public class SqlScriptManager extends AbstractManager {
      * @throws ScriptException
      */
     public String generate(String id, Map<String, Object> paramMap) {
-        if (jsProvider.contain(id))
+        if (jsProvider.contain(id)) {
             try {
                 String sql = jsProvider.execute(id, paramMap).asString();
                 if (logger.isInfoEnabled()) {
@@ -79,7 +78,7 @@ public class SqlScriptManager extends AbstractManager {
                 logger.error("sql脚本构建失败。", e);
                 return null;
             }
-        else {
+        } else {
             Assert.isTrue(false, "未找到sqlId：" + id + "，对应的语句。");
             return null;
         }

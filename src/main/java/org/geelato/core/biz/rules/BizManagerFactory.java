@@ -20,16 +20,16 @@ public class BizManagerFactory {
 
     public static BizRuleScriptManager getBizRuleScriptManager(String name) {
         lock.lock();
-        if (!bizRuleScriptManagerHashMap.containsKey(name))
-            bizRuleScriptManagerHashMap.put(name, new BizRuleScriptManager());
+        if (!bizRuleScriptManagerHashMap.containsKey(name)){
+            bizRuleScriptManagerHashMap.put(name, new BizRuleScriptManager());}
         lock.unlock();
         return bizRuleScriptManagerHashMap.get(name);
     }
 
     public static BizMvelRuleManager getBizMvelRuleManager(String name) {
         lock.lock();
-        if (!bizMvelRuleManagerHashMap.containsKey(name))
-            bizMvelRuleManagerHashMap.put(name, new BizMvelRuleManager());
+        if (!bizMvelRuleManagerHashMap.containsKey(name)){
+            bizMvelRuleManagerHashMap.put(name, new BizMvelRuleManager());}
         lock.unlock();
         return bizMvelRuleManagerHashMap.get(name);
     }
