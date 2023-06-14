@@ -26,6 +26,8 @@ public class BaseEntity extends IdEntity {
     private String buId;
     // 部门Id
     private String deptId;
+    // 租户编码
+    private String tenantCode;
 
     public BaseEntity() {
     }
@@ -103,6 +105,16 @@ public class BaseEntity extends IdEntity {
 
     public void setDeptId(String deptId) {
         this.deptId = deptId;
+    }
+
+    @Col(name = "tenant_code", nullable = true, charMaxlength = 64)
+    @Title(title = "租户编码")
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 
     /***
