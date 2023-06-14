@@ -1,10 +1,7 @@
 package org.geelato.core.meta.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Title;
 
@@ -24,7 +21,7 @@ public class BaseEntity extends IdEntity {
     private Long updater;
 
     // 逻辑删除的标识
-    private int delStatus = 0;
+    private int delStatus = ColumnDefault.DEL_STATUS_VALUE;
     // 单位Id
     private Long buId;
     // 部门Id
@@ -78,7 +75,7 @@ public class BaseEntity extends IdEntity {
     }
 
     @Col(name = "del_status")
-    @Title(title = "删除状态",description = "逻辑删除的状态，1：已删除、0：未删除")
+    @Title(title = "删除状态", description = "逻辑删除的状态，1：已删除、0：未删除")
     public int getDelStatus() {
         return delStatus;
     }

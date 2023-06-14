@@ -1,6 +1,7 @@
 
 package org.geelato.core.script.sql;
 
+import org.geelato.core.enums.TokenType;
 import org.geelato.core.script.AbstractParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

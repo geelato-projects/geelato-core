@@ -1,18 +1,25 @@
 package org.geelato.core.meta;
 
-import org.geelato.core.meta.annotation.Col;
+import com.alibaba.fastjson2.JSON;
+import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.constants.MetaDaoSql;
+import org.geelato.core.constants.ResourcesFiles;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.model.entity.EntityLiteMeta;
+import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.entity.TableForeignKey;
+import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.meta.model.entity.EntityMeta;
-import org.geelato.core.meta.model.entity.TableMeta;
+import org.geelato.core.meta.model.field.IndexMeta;
 import org.geelato.core.orm.Dao;
+import org.geelato.core.util.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,7 +28,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author geemeta
  */
 public class MetaManager {
-
 
 
     private static Lock lock = new ReentrantLock();
@@ -60,25 +66,77 @@ public class MetaManager {
     }
 
     public void parseDBMeta(Dao dao) {
-        this.MetaDao=dao;
+        this.MetaDao = dao;
         logger.info("解析数据库保存得实体元数据", Entity.class);
         //select * from platform_dev_table
-        List<Map<String,Object>> tableList=MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_table");
+        List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
         //select * from platform_dev_column
-        for (Map map:tableList) {
-            List columnList= MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
-            parseOne(map,columnList);
+        for (Map map : tableList) {
+            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and tableId='%s'", map.get("id")));
+            List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
+            parseOne(map, columnList, foreignList);
         }
     }
 
-    private void refreshDBMeta(){
+    public void refreshDBMeta(String entityName) {
         logger.info("刷新实体元数据", Entity.class);
-        List<Map<String,Object>> tableList=MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_table");
-        for (Map map:tableList) {
-            List columnList= MetaDao.getJdbcTemplate().queryForList("select * from platform_dev_column where tableid='"+map.get("id")+"'");
-            parseOne(map,columnList);
+        String tableListSql = MetaDaoSql.SQL_TABLE_LIST;
+        if (Strings.isNotEmpty(entityName)) {
+            tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
+        }
+        // 实体表数据
+        List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
+        // 重新进行实体缓存
+        for (Map map : tableList) {
+            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and tableId='%s'", map.get("id")));
+            List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
+            removeOne(map, columnList, foreignList);
+            parseOne(map, columnList, foreignList);
         }
     }
+
+    public List<IndexMeta> queryIndexes(String tableName) {
+        List<IndexMeta> indexList = new ArrayList<>();
+        if (Strings.isEmpty(tableName)) {
+            return indexList;
+        }
+        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
+        indexList = IndexMeta.buildIndexMetas(mapList);
+
+        return indexList;
+    }
+
+    public List<IndexMeta> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
+        List<IndexMeta> indexList = new ArrayList<>();
+        if (Strings.isEmpty(tableName)) {
+            return indexList;
+        }
+        String metaSql = String.format(MetaDaoSql.SQL_INDEXES, tableName);
+        List<String> whereSqls = new ArrayList<>();
+        if (Strings.isNotEmpty(columnName)) {
+            whereSqls.add("COLUMN_NAME=" + columnName);
+        }
+        if (isUnique != null) {
+            whereSqls.add("NON_UNIQUE=");
+        }
+
+        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
+        indexList = IndexMeta.buildIndexMetas(mapList);
+
+        return indexList;
+    }
+
+    public List<TableForeignKey> queryForeignKeys(String tableName) {
+        List<TableForeignKey> keyList = new ArrayList<>();
+        if (Strings.isEmpty(tableName)) {
+            return keyList;
+        }
+        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
+        keyList = TableForeignKey.buildTableForeignKeys(mapList);
+
+        return keyList;
+    }
+
     /**
      * 添加公共字段
      *
@@ -176,12 +234,12 @@ public class MetaManager {
         }
     }
 
-    public EntityMeta getByEntityName(String entityName,boolean cache){
-        if(cache) return getByEntityName(entityName);
-        refreshDBMeta();
-       return getByEntityName(entityName);
-
+    public EntityMeta getByEntityName(String entityName, boolean cache) {
+        if (cache) return getByEntityName(entityName);
+        refreshDBMeta(entityName);
+        return getByEntityName(entityName);
     }
+
     public boolean containsEntity(String entityName) {
         return entityMetadataMap.containsKey(entityName);
     }
@@ -302,103 +360,66 @@ public class MetaManager {
      */
     public void parseOne(Class clazz) {
         String entityName = MetaRelf.getEntityName(clazz);
-        if (!entityMetadataMap.containsKey(entityName)) {
+        if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(),entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
             if (logger.isDebugEnabled()) {
                 logger.debug("success in parsing class:{}", clazz.getName());
                 for (FieldMeta fm : entityMeta.getFieldMetas()) {
-                    if (!entityFieldNameTitleMap.containsKey(fm.getFieldName()))
-                        entityFieldNameTitleMap.put(fm.getFieldName(), fm.getTitle());
-                    if (!entityFieldNameTitleMap.containsKey(fm.getColumnName()))
-                        entityFieldNameTitleMap.put(fm.getColumnName(), fm.getTitle());
+                    if (!entityFieldNameTitleMap.containsKey(fm.getFieldName())) entityFieldNameTitleMap.put(fm.getFieldName(), fm.getTitle());
+                    if (!entityFieldNameTitleMap.containsKey(fm.getColumnName())) entityFieldNameTitleMap.put(fm.getColumnName(), fm.getTitle());
                 }
             }
         }
     }
+
     /**
      * 解析数据库记录map，并将其加入到实体元数据缓存中
      *
      * @param map 待解析的数据
      */
-    public void parseOne(Map map,List<HashMap> columnList) {
-        String entityName =map.get("entity_name").toString();
-        if (!entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map,columnList);
+    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
+        String entityName = map.get("entity_name").toString();
+        if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(),entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
         }
     }
 
-
-    public List<ColumnMeta> getDefaultUniqueColumnMeta(){
-        List<ColumnMeta> defaultColumnMetaList=new ArrayList<ColumnMeta>();
-
-        ColumnMeta idColumnMeta=new ColumnMeta();
-        idColumnMeta.setName("id");
-        idColumnMeta.setNullable(false);
-        idColumnMeta.setType("varchar(50)");
-        idColumnMeta.setTitle("主键");
-        idColumnMeta.setUnique(true);
-        defaultColumnMetaList.add(idColumnMeta);
-
-        return defaultColumnMetaList;
+    /**
+     * 从 实体元数据缓存中 移除
+     *
+     * @param map
+     */
+    public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
+        String entityName = map.get("entity_name").toString();
+        if (entityMetadataMap.containsKey(entityName)) {
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            entityMetadataMap.remove(entityMeta.getEntityName());
+            entityLiteMetaList.remove(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            tableNameMetadataMap.remove(entityMeta.getTableName());
+        }
     }
-    public List<ColumnMeta> getDefualtColumnMeta(){
 
-        List<ColumnMeta> defaultColumnMetaList=new ArrayList<ColumnMeta>();
+    public List<ColumnMeta> getDefaultColumn() {
+        List<ColumnMeta> defaultColumnMetaList = new ArrayList<ColumnMeta>();
 
-        ColumnMeta creatorColumnMeta=new ColumnMeta();
-        creatorColumnMeta.setName("creator");
-        creatorColumnMeta.setNullable(false);
-        creatorColumnMeta.setType("varchar(50)");
-        creatorColumnMeta.setTitle("创建者");
-        defaultColumnMetaList.add(creatorColumnMeta);
-
-        ColumnMeta updaterColumnMeta=new ColumnMeta();
-        updaterColumnMeta.setName("updater");
-        updaterColumnMeta.setNullable(true);
-        updaterColumnMeta.setType("varchar(50)");
-        updaterColumnMeta.setTitle("修改者");
-        defaultColumnMetaList.add(updaterColumnMeta);
-
-        ColumnMeta creatrAtColumnMeta=new ColumnMeta();
-        creatrAtColumnMeta.setName("create_at");
-        creatrAtColumnMeta.setNullable(false);
-        creatrAtColumnMeta.setType("datetime)");
-        creatrAtColumnMeta.setTitle("创建时间");
-        defaultColumnMetaList.add(creatrAtColumnMeta);
-
-        ColumnMeta updateAtColumnMeta=new ColumnMeta();
-        updateAtColumnMeta.setName("update_at");
-        updateAtColumnMeta.setNullable(true);
-        updateAtColumnMeta.setType("datetime)");
-        updateAtColumnMeta.setTitle("修改时间");
-        defaultColumnMetaList.add(updateAtColumnMeta);
-
-        ColumnMeta tenantCodeColumnMeta=new ColumnMeta();
-        tenantCodeColumnMeta.setName("tenant_code");
-        tenantCodeColumnMeta.setNullable(false);
-        tenantCodeColumnMeta.setType("varchar(50)");
-        tenantCodeColumnMeta.setTitle("租户编码");
-        defaultColumnMetaList.add(tenantCodeColumnMeta);
-
-        ColumnMeta buColumnMeta=new ColumnMeta();
-        buColumnMeta.setName("bu");
-        buColumnMeta.setNullable(false);
-        buColumnMeta.setType("varchar(50)");
-        buColumnMeta.setTitle("企业信息");
-        defaultColumnMetaList.add(buColumnMeta);
-
-        ColumnMeta delStatusColumnMeta=new ColumnMeta();
-        buColumnMeta.setName("del_status");
-        buColumnMeta.setNullable(false);
-        buColumnMeta.setType("int");
-        buColumnMeta.setTitle("是否删除");
-        defaultColumnMetaList.add(delStatusColumnMeta);
+        try {
+            String jsonStr = FastJsonUtils.readJsonFile(ResourcesFiles.COLUMN_DEFAULT_JSON);
+            List<ColumnMeta> columnMetaList = JSON.parseArray(jsonStr, ColumnMeta.class);
+            if (columnMetaList != null && !columnMetaList.isEmpty()) {
+                for (ColumnMeta meta : columnMetaList) {
+                    meta.afterSet();
+                    defaultColumnMetaList.add(meta);
+                }
+            }
+        } catch (IOException e) {
+            defaultColumnMetaList = null;
+        }
 
         return defaultColumnMetaList;
     }

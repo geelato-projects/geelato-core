@@ -1,11 +1,20 @@
 package org.geelato.core.meta.model.field;
 
-import org.geelato.core.meta.annotation.*;
+import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.constants.ColumnDefault;
+import org.geelato.core.meta.annotation.Col;
+import org.geelato.core.meta.annotation.DictDataSrc;
+import org.geelato.core.meta.annotation.Entity;
+import org.geelato.core.meta.annotation.Title;
 import org.geelato.core.meta.model.entity.BaseSortableEntity;
 import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author geemeta
@@ -39,7 +48,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     //COLUMN_TYPE  --varchar(100)
     private String type;
     //COLUMN_KEY,-- PRI
-    private String key;
+    private boolean key = false;
 
     //isNullable
     private boolean nullable = true;
@@ -48,8 +57,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     private String extra;
 
-    private boolean autoIncrement;
-    private boolean unique;
+    private boolean autoIncrement = false;
+    private boolean uniqued = false;
 
     //CHARACTER_MAXIMUM_LENGTH
     private long charMaxLength = 64;//默认长度
@@ -68,8 +77,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     // private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
-    private int enableStatus;
-    private int linked;
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+    private int linked = 1;
     private String description;
 
     //1-外表字段，默认0
@@ -80,6 +89,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String refColName;
     //外表表名
     private String refTables;
+    private boolean abstractColumn;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -177,7 +187,6 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         return ordinalPosition;
     }
 
-
     public void setOrdinalPosition(int ordinalPosition) {
         this.ordinalPosition = ordinalPosition;
     }
@@ -200,19 +209,15 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setType(String type) {
         this.type = type;
-        if (type != null && type.indexOf("unsigned") != -1)
-            setNumericSigned(false);
-        else
-            setNumericSigned(true);
     }
 
     @Col(name = "column_key")
     @Title(title = "列键")
-    public String getKey() {
+    public boolean isKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(boolean key) {
         this.key = key;
     }
 
@@ -230,7 +235,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     @DictDataSrc(group = "DATA_TYPE")
     @Col(name = "data_type")
-    @Title(title = "数据类型", description = "tinyint|int|bigint|varchar|datetime|date|time|timestamp|text|longText")
+    @Title(title = "数据类型", description = "BIT|VARCHAR|TEXT|LONGTEXT|TINYINT|INT|BIGINT|DECIMAL|YEAR|DATE|TIME|DATETIME|TIMESTAMP")
     public String getDataType() {
         return dataType;
     }
@@ -247,11 +252,10 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setExtra(String extra) {
         this.extra = extra;
-        if ("auto_increment".equalsIgnoreCase(this.extra)) autoIncrement = true;
-        else autoIncrement = false;
     }
 
-    @Transient
+    @Col(name = "auto_increment")
+    @Title(title = "自动递增")
     public boolean isAutoIncrement() {
         return autoIncrement;
     }
@@ -260,14 +264,17 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.autoIncrement = autoIncrement;
     }
 
-    @Transient
-    public boolean isUnique() {
-        return unique;
+    @DictDataSrc(group = "YES_OR_NO")
+    @Col(name = "is_unique", nullable = false)
+    @Title(title = "唯一约束")
+    public boolean isUniqued() {
+        return uniqued;
     }
 
-    public void setUnique(boolean unique) {
-        this.unique = unique;
+    public void setUniqued(boolean uniqued) {
+        this.uniqued = uniqued;
     }
+
 
     @Col(name = "character_maxinum_length")
     @Title(title = "长度")
@@ -299,13 +306,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.numericScale = numericScale;
     }
 
-    /**
-     * 注：数据库中没有该字段
-     *
-     * @return 是否小数位
-     */
-    @Transient
-    @Title(title = "小数位")
+    @Col(name = "numeric_signed")
+    @Title(title = "是否有符号")
     public boolean isNumericSigned() {
         return numericSigned;
     }
@@ -406,6 +408,9 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         return StringUtils.hasText(abstractColumnExpressions);
     }
 
+    public void setAbstractColumn(boolean abstractColumn) {
+        this.abstractColumn = abstractColumn;
+    }
 
     /**
      * TODO 改由TypeConvert提从转换
@@ -416,30 +421,55 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
      */
     @Override
     public void afterSet() {
-        if (dataType == null) return;
-        String t = null;
-        if ("int|bigint|tinyint".indexOf(dataType) != -1)
-            if (isNumericSigned()) {
-                t = dataType + "(" + (numericPrecision) + ")";
+        // 更加数据类型dataType 设置 type
+        if (Strings.isNotBlank(dataType)) {
+            dataType = dataType.toUpperCase(Locale.ENGLISH);
+            String columnType = null;
+            if (Arrays.asList(new String[]{"BIT"}).contains(dataType)) {
+                setCharMaxLength(1L);
+                columnType = dataType + "(" + charMaxLength + ")";
+            } else if (Arrays.asList(new String[]{"VARCHAR"}).contains(dataType)) {
+                columnType = dataType + "(" + charMaxLength + ")";
+            } else if (Arrays.asList(new String[]{"TEXT"}).contains(dataType)) {
+                setCharMaxLength(65535L);
+                setDefaultValue(null);
+                columnType = dataType;
+            } else if (Arrays.asList(new String[]{"LONGTEXT"}).contains(dataType)) {
+                setCharMaxLength(4294967295L);
+                setDefaultValue(null);
+                columnType = dataType;
+            } else if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT"}).contains(dataType)) {
+                setCharMaxLength(isNumericSigned() ? numericPrecision : (numericPrecision + 1));
+                columnType = dataType + (isNumericSigned() ? ("(" + numericPrecision + ")") : ("(" + (numericPrecision + 1) + ") unsigned"));
+            } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
+                setAutoIncrement(false);
+                setCharMaxLength(numericPrecision + numericScale);
+                columnType = dataType + "(" + charMaxLength + "," + numericScale + ")";
+            } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
+                columnType = dataType;
+            } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
+                columnType = dataType;
             } else {
-                t = dataType + "(" + (numericPrecision + 1) + ") unsigned";
+                columnType = dataType;
             }
-        else if ("varchar".indexOf(dataType) != -1) {
-            t = dataType + "(" + charMaxLength + ")";
-        } else if ("decimal".indexOf(dataType) != -1) {
-            t = dataType + "(" + numericPrecision + "," + numericScale + ")";
-        } else if ("datetime".indexOf(dataType) != -1) {
-            if (datetimePrecision > 0)
-                t = dataType + "(" + numericPrecision + ")";
-            else
-                t = dataType;
-        } else if ("enum".indexOf(dataType) != -1) {
-            //TODO enum('N','Y')
-            t = "enum";
-        } else {
-            //
-            t = dataType;
+            setDataType(dataType);
+            setType(columnType);
+            // 设置额外值
+            List<String> extras = new ArrayList<String>();
+            if (isUniqued()) {
+                extras.add("unique");
+            }
+            if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT", "DECIMAL"}).contains(dataType)) {
+                if (isAutoIncrement()) {
+                    extras.add("auto_increment");
+                }
+                if (!isNumericSigned()) {
+                    extras.add("unsigned");
+                }
+            }
+            setExtra(String.join(",", extras));
+            // 设置默认值
+            setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
         }
-        setType(t);
     }
 }

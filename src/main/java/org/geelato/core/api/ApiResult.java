@@ -1,6 +1,8 @@
 package org.geelato.core.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.geelato.core.constants.ApiResultCode;
+import org.geelato.core.constants.ApiResultStatus;
 
 /**
  * @author geemeta

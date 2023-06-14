@@ -3,12 +3,13 @@ package org.geelato.core.meta;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.meta.annotation.*;
-import org.geelato.core.meta.model.entity.TableForeign;
-import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
+import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
+import org.geelato.core.meta.model.field.FieldMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -79,8 +80,7 @@ public class MetaRelf {
         for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
             Field[] fields = superClass.getDeclaredFields();
             for (Field field : fields) {
-                if (!fieldMap.containsKey(field.getName()))
-                    fieldMap.put(field.getName(), field);
+                if (!fieldMap.containsKey(field.getName())) fieldMap.put(field.getName(), field);
             }
         }
         return fieldMap;
@@ -92,22 +92,25 @@ public class MetaRelf {
 
     /**
      * 基于类的title注解，解析出表元数据
+     *
      * @param clazz
      * @return
      */
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
-        return new TableMeta(getTableName(clazz),
-                title != null ? title.title():"",
-                getEntityName(clazz),
-                title != null ? title.description() : "");
+        return new TableMeta(getTableName(clazz), title != null ? title.title() : "", getEntityName(clazz), title != null ? title.description() : "");
     }
 
-    public static TableMeta getTableMeta(Map map){
-        String name=map.get("table_name").toString();
-        String title=map.get("title").toString();
-        String description=map.get("description").toString();
-        return new TableMeta(name,title,name,description);
+    public static TableMeta getTableMeta(Map map) {
+        TableMeta tableMeta = new TableMeta(map);
+        Integer delStatus = map.get("del_status") == null ? null : Integer.parseInt(map.get("del_status").toString());
+        Long id = map.get("id") == null ? null : Long.parseLong(map.get("id").toString());
+        String title = StringUtils.hasText(tableMeta.getTitle()) ? tableMeta.getTitle() : (org.geelato.core.util.StringUtils.isEmpty(tableMeta.getTableName()) ? tableMeta.getEntityName() : tableMeta.getTableName());
+        tableMeta.setId(id);
+        tableMeta.setDelStatus(delStatus);
+        tableMeta.setTitle(title);
+
+        return tableMeta;
     }
 
     public static EntityMeta getEntityMeta(Class clazz) {
@@ -122,28 +125,41 @@ public class MetaRelf {
         HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz, tableForeigns);
         em.setFieldMetas(map.values());
         em.setTableForeigns(tableForeigns);
-        if (em.getFieldMetas() != null)
-            for (FieldMeta fm : em.getFieldMetas()) {
-                fm.getColumn().setTableName(em.getTableMeta().getTableName());
-            }
+        if (em.getFieldMetas() != null) for (FieldMeta fm : em.getFieldMetas()) {
+            fm.getColumn().setTableName(em.getTableMeta().getTableName());
+        }
         em.setDictDataSourceMap(getDictDataSourceMap(clazz));
         return em;
     }
 
     //方法重载，通过数据库读取的数据，构造EntityMeta
-    public  static  EntityMeta getEntityMeta(Map tmap,List columnList){
+    public static EntityMeta getEntityMeta(Map tmap, List columnList) {
         EntityMeta em = new EntityMeta();
 //        em.setId(tmap.get("id")));
         em.setTableMeta(getTableMeta(tmap));
-        em.setEntityName(tmap.get("table_name").toString());
+        em.setEntityName(tmap.get("entity_name").toString());
         em.setEntityTitle(em.getTableMeta().getTitle());
 
         HashMap<String, FieldMeta> map = getColumnFieldMetas(columnList);
         em.setFieldMetas(map.values());
-        if (em.getFieldMetas() != null)
-            for (FieldMeta fm : em.getFieldMetas()) {
-                fm.getColumn().setTableName(em.getTableMeta().getTableName());
-            }
+        if (em.getFieldMetas() != null) for (FieldMeta fm : em.getFieldMetas()) {
+            fm.getColumn().setTableName(em.getTableMeta().getTableName());
+        }
+        return em;
+    }
+
+    public static EntityMeta getEntityMeta(Map tmap, List columnList, List foreignList) {
+        EntityMeta em = new EntityMeta();
+//        em.setId(tmap.get("id")));
+        em.setTableMeta(getTableMeta(tmap));
+        em.setEntityName(tmap.get("entity_name").toString());
+        em.setEntityTitle(em.getTableMeta().getTitle());
+
+        HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(columnList);
+        em.setFieldMetas(columnMap.values());
+        List<TableForeign> foreigns = getTableForeignMetas(foreignList);
+        em.setTableForeigns(foreigns);
+
         return em;
     }
 
@@ -156,8 +172,7 @@ public class MetaRelf {
      */
     public static String getTableName(Class clazz) {
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null)
-            return clazz.getSimpleName();
+        if (entity == null) return clazz.getSimpleName();
         if (StringUtils.hasText(entity.table())) {
             return entity.table();
         } else if (StringUtils.hasText(entity.name())) {
@@ -176,8 +191,7 @@ public class MetaRelf {
      */
     public static String getEntityName(Class clazz) {
         Entity entity = (Entity) clazz.getAnnotation(Entity.class);
-        if (entity == null)
-            return clazz.getSimpleName();
+        if (entity == null) return clazz.getSimpleName();
         if (StringUtils.hasText(entity.name())) {
             return entity.name();
         } else {
@@ -231,6 +245,7 @@ public class MetaRelf {
 
     /**
      * 解析get**方法或is**方法的映射，其它的，如set**方法不解析
+     *
      * @param clazz
      * @param tableForeigns 不为null时，解析表外键
      * @return
@@ -245,10 +260,8 @@ public class MetaRelf {
                     if (!method.getName().startsWith("get") && !method.getName().startsWith("is")) continue;
                     String fieldName = "";
                     //去掉get三个字符
-                    if (method.getName().startsWith("get"))
-                        fieldName = method.getName().substring(3);
-                    else if (method.getName().startsWith("is"))
-                        fieldName = method.getName().substring(2);
+                    if (method.getName().startsWith("get")) fieldName = method.getName().substring(3);
+                    else if (method.getName().startsWith("is")) fieldName = method.getName().substring(2);
                     //首字符变小写
                     fieldName = firstCharToLow(fieldName);
                     if (!map.containsKey(fieldName)) {
@@ -270,7 +283,7 @@ public class MetaRelf {
                             //cfm.setCol(column);
                             if (column != null) {
                                 cfm.getColumn().setNullable(column.nullable());
-                                cfm.getColumn().setUnique(column.unique());
+                                cfm.getColumn().setUniqued(column.unique());
                                 cfm.getColumn().setName(column.name());
                                 cfm.getColumn().setNumericPrecision(column.numericPrecision());
                                 cfm.getColumn().setNumericScale(column.numericScale());
@@ -283,8 +296,7 @@ public class MetaRelf {
                                 cfm.getColumn().setDataType(column.dataType());
                                 try {
                                     Object defaultValue = method.invoke(bean);
-                                    if (defaultValue != null)
-                                        cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
+                                    if (defaultValue != null) cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
                                 } catch (IllegalAccessException e) {
                                     logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
                                 } catch (InvocationTargetException e) {
@@ -295,7 +307,7 @@ public class MetaRelf {
                                 //解析外键
                                 if (tableForeigns != null) {
                                     ForeignKey foreignKey = method.getAnnotation(ForeignKey.class);
-                                    if(foreignKey != null){
+                                    if (foreignKey != null) {
                                         TableForeign tableForeign = new TableForeign();
                                         tableForeign.setMainTable(getEntityName(clazz));
                                         tableForeign.setMainTableCol(column.name());
@@ -331,36 +343,91 @@ public class MetaRelf {
 
     public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
-            for (Map c_map : columnList) {
-                try {
-                    String fieldName = c_map.get("field_name").toString();
-                    if (!map.containsKey(fieldName)) {
-                            String description = c_map.get("description").toString();
-                            FieldMeta cfm = new FieldMeta(fieldName, fieldName, fieldName);;
+        for (Map c_map : columnList) {
+            try {
+                String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
+                String title = c_map.get("title") == null ? null : c_map.get("title").toString();
+                String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
+                String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
+                String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
+                String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
+                Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
+                if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
+                    FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
 
-                                cfm.getColumn().setNullable(Boolean.parseBoolean(c_map.get("is_nullable").toString()));
-                                cfm.getColumn().setUnique(Boolean.parseBoolean(c_map.get("").toString()));
-                                cfm.getColumn().setName(fieldName);
-//                                cfm.getColumn().setNumericPrecision(c_map.get("").toString());
-//                                cfm.getColumn().setNumericScale(c_map.get("").toString());
-//                                cfm.getColumn().setIsRefColumn(c_map.get("").toString());
-//                                cfm.getColumn().setRefLocalCol(c_map.get("").toString());
-//                                cfm.getColumn().setRefColName(c_map.get("").toString());
-//                                cfm.getColumn().setRefTables(c_map.get("").toString());
-//                                cfm.getColumn().setDataType(c_map.get("").toString());
+                    cfm.getColumn().setFieldName(fieldName);
+                    cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? null : Boolean.parseBoolean(c_map.get("is_unique").toString()));
+                    cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? null : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
+                    cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? String.format("'%s'", defaultValue) : null);
+                    cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
+                    cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
+                    cfm.getColumn().setTitle(title);
+                    cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
+                    cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
+                    cfm.getColumn().setId(c_map.get("id") == null ? null : Long.parseLong(c_map.get("id").toString()));
+                    cfm.getColumn().setKey(c_map.get("column_key") == null ? null : Boolean.parseBoolean(c_map.get("column_key").toString()));
+                    cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
+                    cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
+                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? null : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
+                    cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? null : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
+                    cfm.getColumn().setDataType(dataType);
+                    cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
+                    cfm.getColumn().setName(columnName);
+                    cfm.getColumn().setTableId(c_map.get("tableId") == null ? null : c_map.get("tableId").toString());
+                    cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
+                    cfm.getColumn().setComment(String.format("'%s'", Strings.isNotBlank(comment) ? comment : title));
+                    cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
+                    cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
+                    cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);
 
-                            cfm.getColumn().setDescription(description);
-                            cfm.getColumn().afterSet();
-                            map.put(fieldName, cfm);
-                        }
+                    if (Arrays.asList(new String[]{"BIT"}).contains(dataType)) {
+                        cfm.setFieldType(Boolean.class);
+                        cfm.getColumn().setDefaultValue(Strings.isNotEmpty(defaultValue) ? defaultValue : null);
+                    } else if (Arrays.asList(new String[]{"VARCHAR"}).contains(dataType)) {
+                        cfm.setFieldType(String.class);
+                    } else if (Arrays.asList(new String[]{"TEXT", "LONGTEXT"}).contains(dataType)) {
+                        cfm.getColumn().setDefaultValue(null);
+                        cfm.setFieldType(String.class);
+                    } else if (Arrays.asList(new String[]{"TINYINT", "INT"}).contains(dataType)) {
+                        cfm.setFieldType(Integer.class);
+                    } else if (Arrays.asList(new String[]{"BIGINT"}).contains(dataType)) {
+                        cfm.setFieldType(Long.class);
+                    } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
+                        cfm.setFieldType(Double.class);
+                    } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
+                        cfm.setFieldType(Date.class);
+                    } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
+                        cfm.setFieldType(Enum.class);
+                    }
 
-                } catch (RuntimeException e) {
-                    throw e;
+                    map.put(fieldName, cfm);
                 }
+            } catch (RuntimeException e) {
+                throw e;
             }
+        }
 
         return map;
     }
+
+    public static List<TableForeign> getTableForeignMetas(List<HashMap> foreignList) {
+        List<TableForeign> foreigns = new ArrayList<>();
+        for (Map f_map : foreignList) {
+            try {
+                Integer delStatus = f_map.get("del_status") == null ? null : Integer.parseInt(f_map.get("del_status").toString());
+                Long id = f_map.get("id") == null ? null : Long.parseLong(f_map.get("id").toString());
+                TableForeign foreign = new TableForeign(f_map);
+                foreign.setId(id);
+                foreign.setDelStatus(delStatus);
+                foreigns.add(foreign);
+            } catch (RuntimeException e) {
+                throw e;
+            }
+        }
+
+        return foreigns;
+    }
+
     /**
      * 解析get**方法或is**方法的映射，其它的不解析
      *
@@ -448,10 +515,8 @@ public class MetaRelf {
         if (!methodName.startsWith("get") && !methodName.startsWith("is")) return null;
         String fieldName = "";
         //去掉get三个字符
-        if (methodName.startsWith("get"))
-            fieldName = methodName.substring(3);
-        if (methodName.startsWith("is"))
-            fieldName = methodName.substring(2);
+        if (methodName.startsWith("get")) fieldName = methodName.substring(3);
+        if (methodName.startsWith("is")) fieldName = methodName.substring(2);
         //首字符变小写
         return firstCharToLow(fieldName);
     }

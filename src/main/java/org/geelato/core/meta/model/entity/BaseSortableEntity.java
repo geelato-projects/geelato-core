@@ -1,6 +1,7 @@
 package org.geelato.core.meta.model.entity;
 
 
+import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Title;
 
@@ -9,7 +10,7 @@ import org.geelato.core.meta.annotation.Title;
  */
 public class BaseSortableEntity extends BaseEntity implements EntitySortable {
 
-    protected long seqNo;
+    protected long seqNo = ColumnDefault.SEQ_NO_VALUE;
 
     @Title(title = "次序")
     @Col(name = "seq_no")

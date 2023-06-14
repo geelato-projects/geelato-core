@@ -1,4 +1,4 @@
-package org.geelato.core.api;
+package org.geelato.core.constants;
 
 /**
  * @author geemeta

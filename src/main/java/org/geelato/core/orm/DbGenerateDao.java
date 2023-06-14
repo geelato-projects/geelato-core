@@ -1,6 +1,10 @@
 package org.geelato.core.orm;
 
 import com.alibaba.fastjson2.JSONObject;
+import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.constants.MetaDaoSql;
+import org.geelato.core.enums.EnableStatusEnum;
+import org.geelato.core.enums.TableTypeEnum;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.connect.ConnectMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
@@ -8,6 +12,7 @@ import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.core.meta.model.field.IndexMeta;
 import org.geelato.utils.SqlParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +41,7 @@ public class DbGenerateDao {
         InitDefaultColumn();
     }
 
-    private void InitDefaultColumn(){
+    private void InitDefaultColumn() {
         //todo chengx: init default column datatype,null,title
 
         //init default column length
@@ -156,14 +161,19 @@ public class DbGenerateDao {
      */
     public void createOrUpdateOneTable(String entityName, boolean dropBeforeCreate) {
         //createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
-
-        createOrUpdateOneTable(metaManager.getByEntityName(entityName,false));
+        EntityMeta entityMeta = metaManager.getByEntityName(entityName, false);
+        if (TableTypeEnum.TABLE.getCode().equals(entityMeta.getTableMeta().getTableType())) {
+            createOrUpdateOneTable(entityMeta);
+        } else if (TableTypeEnum.VIEW.getCode().equals(entityMeta.getTableMeta().getTableType())) {
+            createOrUpdateView(entityName, entityMeta.getTableMeta().getViewSql());
+        }
     }
 
     private void createOrUpdateOneTable(EntityMeta em) {
         boolean isExistsTable = true;
         Map existscolumnMap = new HashMap();
-        List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", em.getTableName()));
+        String tableName = Strings.isEmpty(em.getTableName()) ? em.getEntityName() : em.getTableName();
+        List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", tableName));
         if (columns == null || columns.size() == 0) {
             isExistsTable = false;
         } else {
@@ -179,9 +189,18 @@ public class DbGenerateDao {
         ArrayList<JSONObject> modifyList = new ArrayList<>();
         // 通过alert table删除的字段
         ArrayList<JSONObject> deleteList = new ArrayList<>();
+        // 数据表中 非主键的唯一约束索引
+        ArrayList<JSONObject> indexList = new ArrayList<>();
+        ArrayList<String> primaryList = new ArrayList<>();
         ArrayList<JSONObject> uniqueList = new ArrayList<>();
-
+        // 数据表中 外键
+        ArrayList<JSONObject> foreignList = new ArrayList<>();
+        ArrayList<JSONObject> delForeignList = new ArrayList<>();
+        // 排序
         for (FieldMeta fm : em.getFieldMetas()) {
+            if (fm.getColumn().getEnableStatus() == EnableStatusEnum.DISABLED.getCode()) {
+                continue;
+            }
             try {
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
                 if (existscolumnMap.containsKey(fm.getColumnName())) {
@@ -190,20 +209,46 @@ public class DbGenerateDao {
                     addList.add(jsonColumn);
                 }
                 createList.add(jsonColumn);
-                if (fm.getColumn().isUnique())
+                // primary key
+                if (fm.getColumn().isKey() && Strings.isNotEmpty(fm.getColumn().getName())) {
+                    primaryList.add(fm.getColumn().getName());
+                }
+                // unique index
+                if (fm.getColumn().isUniqued()) {
                     uniqueList.add(jsonColumn);
+                }
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1)
-                    logger.info("column " + fm.getColumnName() + " is exists，ignore.");
+                if (e.getMessage().indexOf("Duplicate column name") != -1) logger.info("column " + fm.getColumnName() + " is exists，ignore.");
                 else throw e;
             }
         }
-        if(isExistsTable){
-            createTable(em.getTableName(),createList);
-        }else{
-            upgradeTable(em.getTableName(),addList,modifyList,deleteList);
+        /*for (TableForeign tf : em.getTableForeigns()) {
+            if (tf.getEnableStatus() == EnableStatusEnum.DISABLED.getCode()) {
+                continue;
+            }
+            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(tf));
+            foreignList.add(jsonColumn);
+        }*/
+        if (!isExistsTable) {
+            createTable(em.getTableMeta(), createList, foreignList);
+        } else {
+            // 唯一约束索引
+            List<IndexMeta> indexMetaList = metaManager.queryIndexes(em.getTableName());
+            for (IndexMeta meta : indexMetaList) {
+                JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(meta));
+                indexList.add(jsonColumn);
+            }
+            // 外键
+            /*List<TableForeignKey> foreignKeyList = metaManager.queryForeignKeys(em.getTableName());
+            for (TableForeignKey meta : foreignKeyList) {
+                JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(meta));
+                delForeignList.add(jsonColumn);
+            }*/
+
+            upgradeTable(em.getTableMeta(), addList, modifyList, indexList, uniqueList, String.join(",", primaryList));
         }
     }
+
     private void createOrUpdateOneTable(EntityMeta em, boolean dropBeforeCreate) {
 
         if (dropBeforeCreate) {
@@ -237,6 +282,7 @@ public class DbGenerateDao {
             try {
                 if (defaultColumnLengthMap.containsKey(fm.getColumnName())) {
                     int len = defaultColumnLengthMap.get(fm.getColumnName()).intValue();
+
                     fm.getColumn().setCharMaxLength(len);
                     fm.getColumn().setNumericPrecision(len);
                     fm.getColumn().afterSet();
@@ -250,11 +296,9 @@ public class DbGenerateDao {
                     addList.add(jsonColumn);
                 }
                 createList.add(jsonColumn);
-                if (fm.getColumn().isUnique())
-                    uniqueList.add(jsonColumn);
+                if (fm.getColumn().isUniqued()) uniqueList.add(jsonColumn);
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1)
-                    logger.info("column " + fm.getColumnName() + " is exists，ignore.");
+                if (e.getMessage().indexOf("Duplicate column name") != -1) logger.info("column " + fm.getColumnName() + " is exists，ignore.");
                 else throw e;
             }
         }
@@ -271,32 +315,81 @@ public class DbGenerateDao {
         dao.execute("createOrUpdateOneTable", map);
     }
 
-    //创建表
-    private void createTable(String tableName,List<JSONObject> createColumnList){
+    /**
+     * 创建数据库表
+     *
+     * @param tableMeta
+     * @param createColumnList
+     */
+    private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList) {
         Map<String, Object> map = new HashMap<>();
-        ArrayList<JSONObject> defaultColumnList = getDefaultColumn();
-        createColumnList.addAll(defaultColumnList);  //add default column
-        ArrayList<JSONObject> uniqueColumnList = getDefaultUniqueColumn();
-        map.put("tableName",tableName);
-        map.put("createList",createColumnList);
+        // ArrayList<JSONObject> defaultColumnList = getDefaultColumn();
+        //  createColumnList.addAll(defaultColumnList);  //add org.geelato.core.meta.model.entity.BaseEntity
+        ArrayList<JSONObject> uniqueColumnList = getUniqueColumn(createColumnList);
+        String primaryKey = getPrimaryColumn(createColumnList);
+        // 表单信息
+        map.put("tableName", tableMeta.getEntityName());
+        map.put("tableTitle", String.format("'%s'", tableMeta.getTitle()));
+        // 表字段 - 添加
+        map.put("addList", createColumnList);
+        createColumnList.sort(new Comparator<JSONObject>() {
+            @Override
+            public int compare(JSONObject o1, JSONObject o2) {
+                return o1.getIntValue("ordinalPosition") - o2.getIntValue("ordinalPosition");
+            }
+        });
+        // 表索引 - 唯一约束 - 添加
         map.put("uniqueList", uniqueColumnList);
+        // 表索引 - 主键 - 添加
+        map.put("primaryKey", primaryKey);
+        // 表外键 - 添加
+        map.put("foreignList", foreignList);
         dao.execute("createOneTable", map);
+        createOrUpdateView("v_" + tableMeta.getEntityName(), String.format(MetaDaoSql.SQL_TABLE_DEFAULT_VIEW, tableMeta.getEntityName()));
     }
 
-    ///更新表
-    private void upgradeTable(String tableName,List<JSONObject> addList,List<JSONObject> modifyList,List<JSONObject> deleteList){
+    /**
+     * 更新数据库表
+     *
+     * @param tableMeta
+     * @param addList
+     * @param modifyList
+     * @param indexList
+     * @param uniqueList
+     * @param primaryKey
+     */
+    private void upgradeTable(TableMeta tableMeta, List<JSONObject> addList, List<JSONObject> modifyList, List<JSONObject> indexList, List<JSONObject> uniqueList, String primaryKey) {
         Map<String, Object> map = new HashMap<>();
-        map.put("tableName", tableName);
+        // 表单信息
+        map.put("tableName", tableMeta.getTableName());
+        // 表注释 - 更新
+        map.put("tableTitle", String.format("'%s'", tableMeta.getTitle()));
+        // 表字段 - 新增
         map.put("addList", addList);
+        addList.sort(new Comparator<JSONObject>() {
+            @Override
+            public int compare(JSONObject o1, JSONObject o2) {
+                return o1.getIntValue("ordinalPosition") - o2.getIntValue("ordinalPosition");
+            }
+        });
+        // 表字段 - 更新
         map.put("modifyList", modifyList);
-        map.put("deleteList", deleteList);
-
+        // map.put("deleteList", deleteList);
+        // 表索引 - 唯一约束 - 删除
+        map.put("indexList", indexList);
+        // 表索引 - 主键 - 删除、添加
+        map.put("primaryKey", primaryKey);
+        // 表索引 - 唯一约束 - 添加
+        map.put("uniqueList", uniqueList);
         dao.execute("upgradeOneTable", map);
+        createOrUpdateView("v_" + tableMeta.getEntityName(), String.format(MetaDaoSql.SQL_TABLE_DEFAULT_VIEW, tableMeta.getEntityName()));
     }
+
     private ArrayList<JSONObject> getDefaultColumn() {
         ArrayList<JSONObject> defaultColumnList = new ArrayList<>();
-        List<ColumnMeta> defaultColumnMetaList= MetaManager.singleInstance().getDefualtColumnMeta();
-        for (ColumnMeta columnMeta:defaultColumnMetaList){
+        List<ColumnMeta> defaultColumnMetaList = MetaManager.singleInstance().getDefaultColumn();
+        for (ColumnMeta columnMeta : defaultColumnMetaList) {
+            columnMeta.setComment(String.format("'%s'", Strings.isNotBlank(columnMeta.getComment()) ? columnMeta.getComment() : columnMeta.getTitle()));
             JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(columnMeta));
             defaultColumnList.add(jsonColumn);
         }
@@ -304,23 +397,31 @@ public class DbGenerateDao {
         return defaultColumnList;
     }
 
-    private ArrayList<JSONObject> getDefaultUniqueColumn() {
-        ArrayList<JSONObject> defaultUniqueColumnLsit = new ArrayList<>();
-        List<ColumnMeta> defaultColumnMetaList= MetaManager.singleInstance().getDefualtColumnMeta();
-        for (ColumnMeta columnMeta:defaultColumnMetaList){
-            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(columnMeta));
-            defaultUniqueColumnLsit.add(jsonColumn);
+    private ArrayList<JSONObject> getUniqueColumn(List<JSONObject> jsonObjectList) {
+        ArrayList<JSONObject> defaultColumnList = new ArrayList<>();
+        for (JSONObject jsonObject : jsonObjectList) {
+            if (jsonObject.getBoolean("uniqued")) {
+                defaultColumnList.add(jsonObject);
+            }
         }
-        return defaultUniqueColumnLsit;
+        return defaultColumnList;
     }
 
-
+    private String getPrimaryColumn(List<JSONObject> jsonObjectList) {
+        Set<String> columnNames = new HashSet<>();
+        for (JSONObject jsonObject : jsonObjectList) {
+            if (jsonObject.getBoolean("key") && Strings.isNotEmpty(jsonObject.getString("name"))) {
+                columnNames.add(jsonObject.getString("name"));
+            }
+        }
+        return String.join(",", columnNames);
+    }
 
 
     public void createOrUpdateView(String view, String sql) {
         Map<String, Object> map = new HashMap<>();
-        map.put("viewName",view);
-        map.put("viewSql",sql);   //TODO 对sql进行检查
+        map.put("viewName", view);
+        map.put("viewSql", sql);   //TODO 对sql进行检查
         dao.execute("createOneView", map);
     }
 }
