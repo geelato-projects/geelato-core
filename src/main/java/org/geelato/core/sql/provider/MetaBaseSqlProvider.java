@@ -114,12 +114,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 list.add(filter.getValue());
             }
         }
-//        Object[] params = new Object[command.getWhere().getFilters().size()];
-//        int i = 0;
-//        for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
-//            params[i] = filter.getValue();
-//            i++;
-//        }
         return list.toArray();
     }
 

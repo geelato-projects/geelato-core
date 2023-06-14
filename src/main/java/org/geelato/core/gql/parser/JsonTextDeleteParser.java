@@ -40,13 +40,8 @@ public class JsonTextDeleteParser {
 
         DeleteCommand command = new DeleteCommand();
         command.setEntityName(commandName);
-//        if (jo.keySet().size() == 0) return command;
-
         FilterGroup fg = new FilterGroup();
         command.setWhere(fg);
-
-//        HashMap<String,Object> params = new HashMap<>();
-
         jo.keySet().forEach(key -> {
             if (key.startsWith(KEYWORD_FLAG) && StringUtils.hasText(jo.getString(key))) {
                 //TODO 格式不对 throw
