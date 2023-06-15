@@ -67,6 +67,7 @@ public class SqlManager {
         return metaDeleteSqlProvider.generate(command);
     }
 
+
     //========================================================
     //                  基于元数据  model                   ==
     //========================================================
@@ -142,7 +143,6 @@ public class SqlManager {
     public BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup) {
         return generateDeleteSql(clazz, filterGroup, null);
     }
-
     private BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup, String[] fields) {
         DeleteCommand deleteCommand = new DeleteCommand();
         EntityMeta em = metaManager.get(clazz);

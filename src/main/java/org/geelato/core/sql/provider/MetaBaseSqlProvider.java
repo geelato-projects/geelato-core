@@ -65,7 +65,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         boundSql.setSql(buildOneSql(command));
         boundSql.setParams(buildParams(command));
         boundSql.setTypes(buildTypes(command));
-        //queryCommand.getEntityQueryMeta().getParams();
         // 解析子级的command
         if (command.getCommands() != null) {
             command.getCommands().forEach(item -> {

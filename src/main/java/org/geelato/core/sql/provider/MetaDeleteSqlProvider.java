@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MetaDeleteSqlProvider extends MetaBaseSqlProvider<DeleteCommand> {
+    private Boolean LogicDelete=true;
     private static Logger logger = LoggerFactory.getLogger(MetaDeleteSqlProvider.class);
 
     @Override
@@ -23,25 +24,32 @@ public class MetaDeleteSqlProvider extends MetaBaseSqlProvider<DeleteCommand> {
     protected int[] buildTypes(DeleteCommand command) {
         return buildWhereTypes(command);
     }
-
-    /**
-     * DELETE FROM 表名称
-     * DELETE FROM 表名称 WHERE 列名称 = 值
-     * DELETE FROM Person WHERE LastName = 'Wilson'
+        /**
      *
      * @param command
      * @return
      */
+    @Override
     protected String buildOneSql(DeleteCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
-        sb.append("delete from ");
-        sb.append(md.getTableName());
-        // where
-        FilterGroup fg = command.getWhere();
-        if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
-            sb.append(" where ");
-            buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+        if(!LogicDelete){
+            sb.append("delete from ");
+            sb.append(md.getTableName());
+            FilterGroup fg = command.getWhere();
+            if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
+                sb.append(" where ");
+                buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+            }
+        }else{
+            sb.append("update   ");
+            sb.append(md.getTableName());
+            sb.append(" set del_status=1 ");
+            FilterGroup fg = command.getWhere();
+            if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
+                sb.append(" where ");
+                buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+            }
         }
         return sb.toString();
     }
