@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MetaDeleteSqlProvider extends MetaBaseSqlProvider<DeleteCommand> {
-    private Boolean LogicDelete=true;
+
     private static Logger logger = LoggerFactory.getLogger(MetaDeleteSqlProvider.class);
 
     @Override

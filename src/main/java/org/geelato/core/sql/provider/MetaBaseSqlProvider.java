@@ -18,6 +18,7 @@ import java.util.*;
  * @author geemeta
  */
 public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
+    protected  Boolean LogicDelete=true;
     private static Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
     protected static final Map<String, Boolean> keywordsMap = new HashedMap();
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
