@@ -87,7 +87,7 @@ public class BaseEntity extends IdEntity {
     }
 
 
-    @Col(name = "bu", nullable = true, charMaxlength = 32)
+    @Col(name = "bu_id", nullable = true, charMaxlength = 32)
     @Title(title = "单位", description = "bu即business unit，记录（分）公司的编码信息，可用于分公司、或事业部，主要用于数据权限的区分，如分公司可看自己分公司的数据。")
     public String getBuId() {
         return buId;
@@ -97,7 +97,7 @@ public class BaseEntity extends IdEntity {
         this.buId = buId;
     }
 
-    @Col(name = "dept", nullable = true, charMaxlength = 32)
+    @Col(name = "dept_id", nullable = true, charMaxlength = 32)
     @Title(title = "部门")
     public String getDeptId() {
         return deptId;
