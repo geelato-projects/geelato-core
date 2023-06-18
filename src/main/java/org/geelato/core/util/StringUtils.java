@@ -1,5 +1,9 @@
 package org.geelato.core.util;
 
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 继承org.springframework.util.StringUtils,
  * 增加join
@@ -7,6 +11,7 @@ package org.geelato.core.util;
  * @author geemeta
  */
 public class StringUtils extends org.springframework.util.StringUtils {
+    private static Pattern UNDERLINE_PATTERN = Pattern.compile("_([a-z])");
 
     /***
      * @param separator 连接字符串
@@ -101,5 +106,24 @@ public class StringUtils extends org.springframework.util.StringUtils {
         } else {
             return template;
         }
+    }
+
+    /**
+     * _a 转成驼峰结构
+     *
+     * @param s 字符串
+     * @return
+     */
+    public static String toCamelCase(String s) {
+        Matcher matcher = UNDERLINE_PATTERN.matcher(s);
+        StringBuffer sb = new StringBuffer(s);
+        if (matcher.find()) {
+            sb = new StringBuffer();
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase(Locale.ENGLISH));
+            matcher.appendTail(sb);
+        } else {
+            return sb.toString().replaceAll("_", "");
+        }
+        return toCamelCase(sb.toString());
     }
 }

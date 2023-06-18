@@ -2,7 +2,6 @@ package org.geelato.core.orm;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.logging.log4j.util.Strings;
-import org.geelato.core.constants.MetaDaoSql;
 import org.geelato.core.enums.EnableStatusEnum;
 import org.geelato.core.enums.TableTypeEnum;
 import org.geelato.core.meta.MetaManager;
@@ -12,12 +11,17 @@ import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.meta.model.field.IndexMeta;
+import org.geelato.core.meta.schema.SchemaIndex;
+import org.geelato.core.meta.schema.SchemaTable;
+import org.geelato.core.util.ConnectUtils;
 import org.geelato.utils.SqlParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -46,13 +50,15 @@ public class DbGenerateDao {
 
         //init default column length
         defaultColumnLengthMap = new HashMap<>();
-        defaultColumnLengthMap.put("id", 1024);
-        defaultColumnLengthMap.put("createAt", 1024);
-        defaultColumnLengthMap.put("updateAt", 1024);
-        defaultColumnLengthMap.put("creator", 1024);
-        defaultColumnLengthMap.put("updater", 1024);
-        defaultColumnLengthMap.put("bu", 1024);
-        defaultColumnLengthMap.put("del_status", 1024);
+        defaultColumnLengthMap.put("id", 32);
+        defaultColumnLengthMap.put("dept_id", 32);
+        defaultColumnLengthMap.put("bu_id", 32);
+        defaultColumnLengthMap.put("tenant_code", 64);
+        defaultColumnLengthMap.put("del_status", 10);
+        defaultColumnLengthMap.put("update_at", 0);
+        defaultColumnLengthMap.put("updater", 32);
+        defaultColumnLengthMap.put("create_at", 0);
+        defaultColumnLengthMap.put("creator", 32);
     }
 
     /**
@@ -236,8 +242,8 @@ public class DbGenerateDao {
             createTable(em.getTableMeta(), createList, foreignList);
         } else {
             // 唯一约束索引
-            List<IndexMeta> indexMetaList = metaManager.queryIndexes(em.getTableName());
-            for (IndexMeta meta : indexMetaList) {
+            List<SchemaIndex> schemaIndexList = metaManager.queryIndexes(em.getTableName());
+            for (SchemaIndex meta : schemaIndexList) {
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(meta));
                 indexList.add(jsonColumn);
             }
@@ -353,7 +359,6 @@ public class DbGenerateDao {
         // 表外键 - 添加
         map.put("foreignList", foreignList);
         dao.execute("createOneTable", map);
-        createOrUpdateView("v_" + tableMeta.getEntityName(), String.format(MetaDaoSql.SQL_TABLE_DEFAULT_VIEW, tableMeta.getEntityName()));
     }
 
     /**
@@ -390,7 +395,6 @@ public class DbGenerateDao {
         // 表索引 - 唯一约束 - 添加
         map.put("uniqueList", uniqueList);
         dao.execute("upgradeOneTable", map);
-        createOrUpdateView("v_" + tableMeta.getEntityName(), String.format(MetaDaoSql.SQL_TABLE_DEFAULT_VIEW, tableMeta.getEntityName()));
     }
 
     private ArrayList<JSONObject> getDefaultColumn() {
@@ -427,9 +431,33 @@ public class DbGenerateDao {
 
 
     public void createOrUpdateView(String view, String sql) {
+        if (Strings.isBlank(view) || Strings.isBlank(sql)) {
+            return;
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("viewName", view);
         map.put("viewSql", sql);   //TODO 对sql进行检查
         dao.execute("createOneView", map);
+    }
+
+    public boolean validateViewSql(String connectId, String sql) throws SQLException {
+        if (Strings.isBlank(connectId) || Strings.isBlank(sql)) {
+            return false;
+        }
+        // 查询数据库连接信息
+        ConnectMeta connectMeta = dao.queryForObject(ConnectMeta.class, connectId);
+        // 创建一个数据库连接对象，但不要打开连接。
+        Connection conn = ConnectUtils.getConnection(connectMeta);
+        // 创建一个 Statement 对象，但不要执行它。
+        Statement stmt = conn.createStatement();
+        // 使用 Statement 对象的 setQueryTimeout() 方法设置查询超时时间，以确保 SQL 语句在一定时间内执行完毕。
+        // 设置查询超时时间为 1 秒
+        stmt.setQueryTimeout(1);
+        // 使用 Statement 对象的 execute() 方法执行 SQL 语句。如果 SQL 语句正确，execute() 方法将返回 true，否则返回 false。
+        boolean isValid = stmt.execute(sql);
+        stmt.close();
+        conn.close();
+
+        return isValid;
     }
 }

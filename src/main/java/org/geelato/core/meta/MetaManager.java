@@ -7,11 +7,11 @@ import org.geelato.core.constants.ResourcesFiles;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.model.entity.EntityLiteMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
-import org.geelato.core.meta.model.entity.TableForeignKey;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.meta.model.field.IndexMeta;
+import org.geelato.core.meta.schema.SchemaForeign;
+import org.geelato.core.meta.schema.SchemaIndex;
 import org.geelato.core.orm.Dao;
 import org.geelato.core.util.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
@@ -71,9 +71,9 @@ public class MetaManager {
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
         //select * from platform_dev_column
         for (Map map : tableList) {
-            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and tableId='%s'", map.get("id")));
-            List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
-            parseOne(map, columnList, foreignList);
+            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            //List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
+            parseOne(map, columnList);
         }
     }
 
@@ -87,26 +87,26 @@ public class MetaManager {
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
         // 重新进行实体缓存
         for (Map map : tableList) {
-            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and tableId='%s'", map.get("id")));
-            List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
-            removeOne(map, columnList, foreignList);
-            parseOne(map, columnList, foreignList);
+            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            // List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
+            removeOne(map, columnList);
+            parseOne(map, columnList);
         }
     }
 
-    public List<IndexMeta> queryIndexes(String tableName) {
-        List<IndexMeta> indexList = new ArrayList<>();
+    public List<SchemaIndex> queryIndexes(String tableName) {
+        List<SchemaIndex> indexList = new ArrayList<>();
         if (Strings.isEmpty(tableName)) {
             return indexList;
         }
         List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
-        indexList = IndexMeta.buildIndexMetas(mapList);
+        indexList = SchemaIndex.buildData(mapList);
 
         return indexList;
     }
 
-    public List<IndexMeta> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
-        List<IndexMeta> indexList = new ArrayList<>();
+    public List<SchemaIndex> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
+        List<SchemaIndex> indexList = new ArrayList<>();
         if (Strings.isEmpty(tableName)) {
             return indexList;
         }
@@ -120,18 +120,18 @@ public class MetaManager {
         }
 
         List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
-        indexList = IndexMeta.buildIndexMetas(mapList);
+        indexList = SchemaIndex.buildData(mapList);
 
         return indexList;
     }
 
-    public List<TableForeignKey> queryForeignKeys(String tableName) {
-        List<TableForeignKey> keyList = new ArrayList<>();
+    public List<SchemaForeign> queryForeignKeys(String tableName) {
+        List<SchemaForeign> keyList = new ArrayList<>();
         if (Strings.isEmpty(tableName)) {
             return keyList;
         }
         List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
-        keyList = TableForeignKey.buildTableForeignKeys(mapList);
+        keyList = SchemaForeign.buildTableForeignKeys(mapList);
 
         return keyList;
     }
@@ -390,10 +390,19 @@ public class MetaManager {
      *
      * @param map 待解析的数据
      */
+    public void parseOne(Map map, List<HashMap> columnList) {
+        parseOne(map, columnList, null);
+    }
+
     public void parseOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            EntityMeta entityMeta = null;
+            if (foreignList != null && !foreignList.isEmpty()) {
+                entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            } else {
+                entityMeta = MetaRelf.getEntityMeta(map, columnList);
+            }
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
@@ -405,10 +414,19 @@ public class MetaManager {
      *
      * @param map
      */
+    public void removeOne(Map map, List<HashMap> columnList) {
+        removeOne(map, columnList, null);
+    }
+
     public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            EntityMeta entityMeta = null;
+            if (foreignList != null && !foreignList.isEmpty()) {
+                entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            } else {
+                entityMeta = MetaRelf.getEntityMeta(map, columnList);
+            }
             entityMetadataMap.remove(entityMeta.getEntityName());
             entityLiteMetaList.remove(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.remove(entityMeta.getTableName());

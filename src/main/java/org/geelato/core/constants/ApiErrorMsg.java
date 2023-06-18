@@ -14,4 +14,5 @@ public class ApiErrorMsg {
     public static final String DELETE_FAIL = "删除失败";
     public static final String QUERY_FAIL = "查询失败";
     public static final String IS_EXIST = "已存在";
+    public static final String OBJECT_DISABLED = "已禁用";
 }

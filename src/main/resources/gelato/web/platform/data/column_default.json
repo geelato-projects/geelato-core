@@ -101,7 +101,7 @@
   },
   {
     "autoIncrement": false,
-    "charMaxLength": 19,
+    "charMaxLength": 10,
     "comment": "逻辑删除状态，1：已删除、0：未删除",
     "dataType": "INT",
     "datetimePrecision": 0,
@@ -115,13 +115,13 @@
     "linked": 1,
     "name": "del_status",
     "nullable": false,
-    "numericPrecision": 19,
+    "numericPrecision": 10,
     "numericScale": 0,
     "numericSigned": true,
     "ordinalPosition": 95,
     "seqNo": 95,
     "title": "删除状态",
-    "type": "INT(19)",
+    "type": "INT(10)",
     "uniqued": false
   },
   {

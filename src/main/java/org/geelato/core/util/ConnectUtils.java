@@ -56,4 +56,17 @@ public class ConnectUtils {
         return false;
     }
 
+    public static Connection getConnection(ConnectMeta meta) throws SQLException {
+        Assert.notNull(meta, ApiErrorMsg.IS_NULL);
+        if (Strings.isNotBlank(meta.getDbType())) {
+            String dialect = meta.getDbType().toUpperCase(Locale.ENGLISH);
+            if (Dialects.MYSQL.name().equals(dialect)) {
+                String url = String.format(ConnectUtils.MYSQL_URL, meta.getDbHostnameIp(), Integer.toString(meta.getDbPort()), meta.getDbName());
+                return DriverManager.getConnection(url, meta.getDbUserName(), meta.getDbPassword());
+            }
+        }
+
+        return null;
+    }
+
 }

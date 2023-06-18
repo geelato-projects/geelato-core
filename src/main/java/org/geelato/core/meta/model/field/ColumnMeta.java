@@ -102,6 +102,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.abstractColumnExpressions = abstractColumnExpressions;
     }
 
+    @Col(name = "table_id")
     @Title(title = "表ID")
     public String getTableId() {
         return tableId;
@@ -444,7 +445,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
                 setAutoIncrement(false);
                 setCharMaxLength(numericPrecision + numericScale);
-                columnType = dataType + "(" + charMaxLength + "," + numericScale + ")";
+                columnType = dataType + "(" + numericPrecision + "," + numericScale + ")";
             } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
                 columnType = dataType;
             } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
@@ -454,6 +455,10 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             }
             setDataType(dataType);
             setType(columnType);
+            // 设置是否自动新增，数值型主键才能自动新增
+            if (!(isKey() && Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT"}).contains(dataType))) {
+                setAutoIncrement(false);
+            }
             // 设置额外值
             List<String> extras = new ArrayList<String>();
             if (isUniqued()) {

@@ -8,25 +8,24 @@ import org.geelato.core.meta.annotation.Title;
 import java.util.Map;
 
 /**
+ * @author liuwq
  * @Description 实体外键关系
- * @Date 2020/3/20 14:42 by liuwq
+ * @Date 2020/3/20 14:42
  */
 @Title(title = "实体外键关系")
 @Entity(name = "platform_dev_table_foreign")
 public class TableForeign extends BaseSortableEntity implements EntityEnableAble {
 
+    private String mainTableSchema;
+    private String mainTableId;
     private String mainTable;
-
     private String mainTableCol;
-
+    private String foreignTableSchema;
+    private String foreignTableId;
     private String foreignTable;
-
     private String foreignTableCol;
-
-    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
-
     private String description;
-
+    private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
     private String deleteAction = ColumnDefault.FOREIGN_ACTION_VALUE;// 删除时
     private String updateAction = ColumnDefault.FOREIGN_ACTION_VALUE;// 更新时
 
@@ -99,7 +98,7 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     }
 
     @Col(name = "delete_action")
-    @Title(title = "描述")
+    @Title(title = "删除时触发操作")
     public String getDeleteAction() {
         return deleteAction;
     }
@@ -109,7 +108,7 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     }
 
     @Col(name = "update_action")
-    @Title(title = "描述")
+    @Title(title = "更新时触发操作")
     public String getUpdateAction() {
         return updateAction;
     }
@@ -118,12 +117,49 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
         this.updateAction = updateAction;
     }
 
+    @Col(name = "main_table_schema")
+    public String getMainTableSchema() {
+        return mainTableSchema;
+    }
+
+    public void setMainTableSchema(String mainTableSchema) {
+        this.mainTableSchema = mainTableSchema;
+    }
+
+    @Col(name = "main_table_id")
+    public String getMainTableId() {
+        return mainTableId;
+    }
+
+    public void setMainTableId(String mainTableId) {
+        this.mainTableId = mainTableId;
+    }
+
+    @Col(name = "foreign_table_schema")
+    public String getForeignTableSchema() {
+        return foreignTableSchema;
+    }
+
+    public void setForeignTableSchema(String foreignTableSchema) {
+        this.foreignTableSchema = foreignTableSchema;
+    }
+
+    @Col(name = "foreign_table_id")
+    public String getForeignTableId() {
+        return foreignTableId;
+    }
+
+    public void setForeignTableId(String foreignTableId) {
+        this.foreignTableId = foreignTableId;
+    }
+
     public TableForeign(Map map) {
         this.mainTable = map.get("main_table") == null ? null : map.get("main_table").toString();
         this.mainTableCol = map.get("main_table_col") == null ? null : map.get("main_table_col").toString();
         this.foreignTable = map.get("foreign_table") == null ? null : map.get("foreign_table").toString();
         this.foreignTableCol = map.get("foreign_table_col") == null ? null : map.get("foreign_table_col").toString();
-        this.enableStatus = map.get("enable_status") == null ? null : Integer.parseInt(map.get("enable_status").toString());
+        Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
+        this.enableStatus = enableStatus ? 1 : 0;
         this.description = map.get("description") == null ? null : map.get("description").toString();
         this.deleteAction = map.get("delete_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("delete_action").toString();
         this.updateAction = map.get("update_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("update_action").toString();

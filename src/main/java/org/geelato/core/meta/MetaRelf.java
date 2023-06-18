@@ -390,7 +390,7 @@ public class MetaRelf {
                     cfm.getColumn().setDataType(dataType);
                     cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
                     cfm.getColumn().setName(columnName);
-                    cfm.getColumn().setTableId(c_map.get("tableId") == null ? null : c_map.get("tableId").toString());
+                    cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
                     cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
                     cfm.getColumn().setComment(String.format("'%s'", Strings.isNotBlank(comment) ? comment : title));
                     cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
