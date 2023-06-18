@@ -158,45 +158,4 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         sb.deleteCharAt(sb.length() - 1);
     }
 
-//    protected void buildConditions(StringBuilder sb, EntityMeta md, List<FilterGroup.Filter> list, FilterGroup.Logic logic) {
-//        if (list != null && list.size() > 0) {
-//            Iterator<FilterGroup.Filter> iterator = list.iterator();
-//            int index = 0;
-//            while (iterator.hasNext()) {
-//                FilterGroup.Filter filter = iterator.next();
-//                //只构建当前实体的查询条件
-//                if (filter.isRefField()) continue;
-//                if (index > 0) {
-//                    sb.append(" ");
-//                    sb.append(logic.getText());
-//                    sb.append(" ");
-//                }
-//                buildConditionSegment(sb, md, filter);
-//                index += 1;
-//            }
-//        }
-//    }
-//
-//    
-//  
-//    protected void buildConditionSegment(StringBuilder sb, EntityMeta md, FilterGroup.Filter filter) {
-//
-//        String columnName = md.getColumnName(filter.getField());
-//        FilterGroup.Operator operator = filter.getOperator();
-//        if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == operator.gte) {
-//            sb.append(columnName);
-//            sb.append(enumToSignString.getBizRuleScriptManager(operator));
-//            sb.append("?");
-//        } else if (operator == FilterGroup.Operator.startWith) {
-//            sb.append(columnName);
-//            sb.append(" like CONCAT('',?,'%')");
-//        } else if (operator == FilterGroup.Operator.endWith) {
-//            sb.append(columnName);
-//            sb.append(" like CONCAT('%',?,'')");
-//        } else if (operator == FilterGroup.Operator.contains) {
-//            sb.append(columnName);
-//            sb.append(" like CONCAT('%',?,'%')");
-//        }
-//    }
-
 }

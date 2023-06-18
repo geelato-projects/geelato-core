@@ -103,14 +103,6 @@ public class FilterGroup {
         private boolean isRefField;
         private String refEntityName;
 
-//        public String getColumnName() {
-//            return columnName;
-//        }
-//
-//        public void setColumnName(String columnName) {
-//            this.columnName = columnName;
-//        }
-
         public String getField() {
             return field;
         }
@@ -162,7 +154,6 @@ public class FilterGroup {
             return this.refEntityName;
         }
 
-        //filter: { field: "name", operator: "startswith", value: "Jane" }
     }
 
 

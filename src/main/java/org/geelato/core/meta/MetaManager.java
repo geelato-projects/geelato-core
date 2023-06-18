@@ -279,6 +279,7 @@ public class MetaManager {
      * @param parkeName
      */
     private void scanAndParse(String parkeName) {
+        //TODO 启动的时候扫描实体类，这里做个开关，如果开启，就默认将实体类更新至数据库。
         logger.debug("开始从包{}中扫描到包含注解{}的实体......", parkeName, Entity.class);
         List<Class<?>> classes = ClassScanner.scan(parkeName, true, Entity.class);
         if (classes == null) {

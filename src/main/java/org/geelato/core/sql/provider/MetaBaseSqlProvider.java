@@ -18,6 +18,7 @@ import java.util.*;
  * @author geemeta
  */
 public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
+    protected  Boolean LogicDelete=true;
     private static Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
     protected static final Map<String, Boolean> keywordsMap = new HashedMap();
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
@@ -73,7 +74,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         boundSql.setSql(buildOneSql(command));
         boundSql.setParams(buildParams(command));
         boundSql.setTypes(buildTypes(command));
-        //queryCommand.getEntityQueryMeta().getParams();
         // 解析子级的command
         if (command.getCommands() != null) {
             command.getCommands().forEach(item -> {
@@ -124,12 +124,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 list.add(filter.getValue());
             }
         }
-//        Object[] params = new Object[command.getWhere().getFilters().size()];
-//        int i = 0;
-//        for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
-//            params[i] = filter.getValue();
-//            i++;
-//        }
         return list.toArray();
     }
 

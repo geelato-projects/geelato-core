@@ -38,10 +38,9 @@ public class Dao {
     /**
      * 默认取第一个：primaryJdbcTemplate，可在dao外进行设置更换
      */
-//    @Autowired
-//    @Qualifier("primaryJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
-
+    private Boolean defaultFilterOption=false;
+    private FilterGroup defaultFilterGroup;
     private static Logger logger = LoggerFactory.getLogger(Dao.class);
     private static Map<String, Object> defaultParams = new HashMap<>();
     public final static String SQL_TEMPLATE_MANAGER = "sql";
@@ -50,12 +49,7 @@ public class Dao {
     private GqlManager gqlManager = GqlManager.singleInstance();
     private SqlManager sqlManager = SqlManager.singleInstance();
     private EntityManager entityManager = EntityManager.singleInstance();
-//    private static HashMap<String, String> ignoreFieldsMap = new HashMap<String, String>(1);
 
-
-//    static {
-//        ignoreFieldsMap.put("createDate", "createDate");
-//    }
 
     /**
      * <p>注意: 在使用之前，需先设置JdbcTemplate
@@ -69,6 +63,10 @@ public class Dao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public void SetDefaultFilter(Boolean defaultFilter,FilterGroup defaultFilterGroup ){
+        this.defaultFilterOption=defaultFilter;
+        this.defaultFilterGroup=defaultFilterGroup;
+    }
     /**
      * @return 若需执行自己构建的语句，可以获取jdbcTemplate
      */
@@ -150,7 +148,6 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-//        result.setResult(convertLongToString(list));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
@@ -171,7 +168,6 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiMultiPagedResult.PageData result = new ApiMultiPagedResult.PageData();
-//        result.setResult(convertLongToString(list));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
@@ -343,7 +339,12 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
-        filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
+        if(defaultFilterOption){
+            filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
+            for (FilterGroup.Filter filter: defaultFilterGroup.getFilters()){
+                filterGroup.addFilter(filter);
+            }
+        }
         QueryCommand command = new QueryCommand();
         command.setPageNum(pageNum);
         command.setPageSize(pageSize);
