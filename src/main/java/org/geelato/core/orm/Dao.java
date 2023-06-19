@@ -3,8 +3,6 @@ package org.geelato.core.orm;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
-import org.geelato.core.constants.ColumnDefault;
-import org.geelato.core.enums.DeleteStatusEnum;
 import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
@@ -39,7 +37,7 @@ public class Dao {
      * 默认取第一个：primaryJdbcTemplate，可在dao外进行设置更换
      */
     private JdbcTemplate jdbcTemplate;
-    private Boolean defaultFilterOption=false;
+    private Boolean defaultFilterOption = false;
     private FilterGroup defaultFilterGroup;
     private static Logger logger = LoggerFactory.getLogger(Dao.class);
     private static Map<String, Object> defaultParams = new HashMap<>();
@@ -63,10 +61,11 @@ public class Dao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void SetDefaultFilter(Boolean defaultFilter,FilterGroup defaultFilterGroup ){
-        this.defaultFilterOption=defaultFilter;
-        this.defaultFilterGroup=defaultFilterGroup;
+    public void SetDefaultFilter(Boolean defaultFilter, FilterGroup defaultFilterGroup) {
+        this.defaultFilterOption = defaultFilter;
+        this.defaultFilterGroup = defaultFilterGroup;
     }
+
     /**
      * @return 若需执行自己构建的语句，可以获取jdbcTemplate
      */
@@ -326,7 +325,11 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
-        filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
+        if (defaultFilterOption && defaultFilterGroup != null) {
+            for (FilterGroup.Filter filter : defaultFilterGroup.getFilters()) {
+                filterGroup.addFilter(filter);
+            }
+        }
         BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
@@ -339,9 +342,8 @@ public class Dao {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }
-        if(defaultFilterOption){
-            filterGroup.addFilter(ColumnDefault.DEL_STATUS_FIELD, String.valueOf(DeleteStatusEnum.NO.getCode()));
-            for (FilterGroup.Filter filter: defaultFilterGroup.getFilters()){
+        if (defaultFilterOption && defaultFilterGroup != null) {
+            for (FilterGroup.Filter filter : defaultFilterGroup.getFilters()) {
                 filterGroup.addFilter(filter);
             }
         }

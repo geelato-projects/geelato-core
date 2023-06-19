@@ -28,6 +28,27 @@ public class SchemaForeign implements Serializable {
     private String updateRule;
     private String deleteRule;
 
+    public static List<SchemaForeign> buildTableForeignKeys(List<Map<String, Object>> mapList) {
+        List<SchemaForeign> schemaForeigns = new ArrayList<>();
+        if (mapList != null && !mapList.isEmpty()) {
+            for (Map<String, Object> map : mapList) {
+                schemaForeigns.add(SchemaForeign.buildTableForeignKey(map));
+            }
+        }
+        return schemaForeigns;
+    }
+
+    public static SchemaForeign buildTableForeignKey(Map<String, Object> map) {
+        SchemaForeign key = new SchemaForeign();
+        key.setTableName(map.get("TABLE_NAME") == null ? null : map.get("TABLE_NAME").toString());
+        key.setConstraintType(map.get("CONSTRAINT_TYPE") == null ? null : map.get("CONSTRAINT_TYPE").toString());
+        key.setConstraintName(map.get("CONSTRAINT_NAME") == null ? null : map.get("CONSTRAINT_NAME").toString());
+        key.setReferencedTableName(map.get("REFERENCED_TABLE_NAME") == null ? null : map.get("REFERENCED_TABLE_NAME").toString());
+        key.setReferencedColumnName(map.get("REFERENCED_COLUMN_NAME") == null ? null : map.get("REFERENCED_COLUMN_NAME").toString());
+
+        return key;
+    }
+
     public String getConstraintCatalog() {
         return constraintCatalog;
     }
@@ -130,27 +151,6 @@ public class SchemaForeign implements Serializable {
 
     public void setDeleteRule(String deleteRule) {
         this.deleteRule = deleteRule;
-    }
-
-    public static List<SchemaForeign> buildTableForeignKeys(List<Map<String, Object>> mapList) {
-        List<SchemaForeign> schemaForeigns = new ArrayList<>();
-        if (mapList != null && !mapList.isEmpty()) {
-            for (Map<String, Object> map : mapList) {
-                schemaForeigns.add(SchemaForeign.buildTableForeignKey(map));
-            }
-        }
-        return schemaForeigns;
-    }
-
-    public static SchemaForeign buildTableForeignKey(Map<String, Object> map) {
-        SchemaForeign key = new SchemaForeign();
-        key.setTableName(map.get("TABLE_NAME") == null ? null : map.get("TABLE_NAME").toString());
-        key.setConstraintType(map.get("CONSTRAINT_TYPE") == null ? null : map.get("CONSTRAINT_TYPE").toString());
-        key.setConstraintName(map.get("CONSTRAINT_NAME") == null ? null : map.get("CONSTRAINT_NAME").toString());
-        key.setReferencedTableName(map.get("REFERENCED_TABLE_NAME") == null ? null : map.get("REFERENCED_TABLE_NAME").toString());
-        key.setReferencedColumnName(map.get("REFERENCED_COLUMN_NAME") == null ? null : map.get("REFERENCED_COLUMN_NAME").toString());
-
-        return key;
     }
 
     public TableForeign convertTableForeign(TableForeign meta) {

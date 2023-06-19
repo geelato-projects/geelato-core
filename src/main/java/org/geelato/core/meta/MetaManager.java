@@ -398,12 +398,7 @@ public class MetaManager {
     public void parseOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = null;
-            if (foreignList != null && !foreignList.isEmpty()) {
-                entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
-            } else {
-                entityMeta = MetaRelf.getEntityMeta(map, columnList);
-            }
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
@@ -420,14 +415,8 @@ public class MetaManager {
     }
 
     public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
-        String entityName = map.get("entity_name").toString();
-        if (entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = null;
-            if (foreignList != null && !foreignList.isEmpty()) {
-                entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
-            } else {
-                entityMeta = MetaRelf.getEntityMeta(map, columnList);
-            }
+        if (entityMetadataMap.containsKey(map.get("entity_name").toString())) {
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
             entityMetadataMap.remove(entityMeta.getEntityName());
             entityLiteMetaList.remove(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.remove(entityMeta.getTableName());

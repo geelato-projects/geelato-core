@@ -138,7 +138,6 @@ public class MetaRelf {
     //方法重载，通过数据库读取的数据，构造EntityMeta
     public static EntityMeta getEntityMeta(Map tmap, List columnList) {
         EntityMeta em = new EntityMeta();
-//        em.setId(tmap.get("id")));
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("entity_name").toString());
         em.setEntityTitle(em.getTableMeta().getTitle());
@@ -150,12 +149,14 @@ public class MetaRelf {
                 fm.getColumn().setTableName(em.getTableMeta().getTableName());
             }
         }
+        // 主键、id
+        em.setId(getPrimaryKey(map));
+
         return em;
     }
 
     public static EntityMeta getEntityMeta(Map tmap, List columnList, List foreignList) {
         EntityMeta em = new EntityMeta();
-//        em.setId(tmap.get("id")));
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("entity_name").toString());
         em.setEntityTitle(em.getTableMeta().getTitle());
@@ -164,6 +165,8 @@ public class MetaRelf {
         em.setFieldMetas(columnMap.values());
         List<TableForeign> foreigns = getTableForeignMetas(foreignList);
         em.setTableForeigns(foreigns);
+        // 主键、id
+        em.setId(getPrimaryKey(columnMap));
 
         return em;
     }
@@ -373,8 +376,8 @@ public class MetaRelf {
                     FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
 
                     cfm.getColumn().setFieldName(fieldName);
-                    cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? null : Boolean.parseBoolean(c_map.get("is_unique").toString()));
-                    cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? null : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
+                    cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? false : Boolean.parseBoolean(c_map.get("is_unique").toString()));
+                    cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? true : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
                     cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? String.format("'%s'", defaultValue) : null);
                     cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
                     cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
@@ -382,11 +385,11 @@ public class MetaRelf {
                     cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
                     cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
                     cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
-                    cfm.getColumn().setKey(c_map.get("column_key") == null ? null : Boolean.parseBoolean(c_map.get("column_key").toString()));
+                    cfm.getColumn().setKey(c_map.get("column_key") == null ? false : Boolean.parseBoolean(c_map.get("column_key").toString()));
                     cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
                     cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
-                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? null : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
-                    cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? null : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
+                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? true : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
+                    cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? false : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                     cfm.getColumn().setDataType(dataType);
                     cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
                     cfm.getColumn().setName(columnName);
@@ -427,18 +430,43 @@ public class MetaRelf {
         return map;
     }
 
+    /**
+     * 筛选出主键
+     *
+     * @param columnList
+     * @return
+     */
+    public static FieldMeta getPrimaryKey(HashMap<String, FieldMeta> columnMap) {
+        FieldMeta fieldMeta = null;
+        if (columnMap != null && !columnMap.isEmpty()) {
+            for (Map.Entry<String, FieldMeta> map : columnMap.entrySet()) {
+                if (map.getValue().getColumn().isKey()) {
+                    fieldMeta = map.getValue();
+                    break;
+                }
+            }
+            if (fieldMeta == null) {
+                fieldMeta = columnMap.get("id");
+            }
+        }
+
+        return fieldMeta;
+    }
+
     public static List<TableForeign> getTableForeignMetas(List<HashMap> foreignList) {
         List<TableForeign> foreigns = new ArrayList<>();
-        for (Map f_map : foreignList) {
-            try {
-                Integer delStatus = f_map.get("del_status") == null ? null : Integer.parseInt(f_map.get("del_status").toString());
-                String id = f_map.get("id") == null ? null : f_map.get("id").toString();
-                TableForeign foreign = new TableForeign(f_map);
-                foreign.setId(id);
-                foreign.setDelStatus(delStatus);
-                foreigns.add(foreign);
-            } catch (RuntimeException e) {
-                throw e;
+        if (foreignList != null && !foreignList.isEmpty()) {
+            for (Map f_map : foreignList) {
+                try {
+                    Integer delStatus = f_map.get("del_status") == null ? null : Integer.parseInt(f_map.get("del_status").toString());
+                    String id = f_map.get("id") == null ? null : f_map.get("id").toString();
+                    TableForeign foreign = new TableForeign(f_map);
+                    foreign.setId(id);
+                    foreign.setDelStatus(delStatus);
+                    foreigns.add(foreign);
+                } catch (RuntimeException e) {
+                    throw e;
+                }
             }
         }
 

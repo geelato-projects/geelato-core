@@ -3,10 +3,8 @@ package org.geelato.core.meta.schema;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.model.field.ColumnMeta;
-import org.geelato.core.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 /**
  * @author diabl
@@ -234,11 +232,11 @@ public class SchemaColumn implements Serializable {
         meta.setDefaultValue(this.columnDefault == null ? null : this.columnDefault);
         meta.setType(this.columnType);
         meta.setKey("PRI".equals(this.columnKey));
-        meta.setNullable(Strings.isBlank(this.isNullable) ? true : "YES".equals(this.isNullable));
+        meta.setNullable(Strings.isBlank(this.isNullable) || "YES".equals(this.isNullable));
         meta.setDataType(this.dataType);
         // meta.setExtra(this.extra);
         meta.setAutoIncrement(Strings.isNotEmpty(this.extra) && this.extra.indexOf("auto_increment") != -1);
-        meta.setUniqued(this.unique || false);
+        meta.setUniqued(this.unique);
         meta.setDatetimePrecision(Strings.isBlank(this.datetimePrecision) ? 0 : Integer.parseInt(this.datetimePrecision));
         meta.setCharMaxLength(Strings.isBlank(this.characterMaximumLength) ? 0 : Long.parseLong(this.characterMaximumLength));
         meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision));
