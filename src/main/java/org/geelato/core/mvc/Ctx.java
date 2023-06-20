@@ -1,5 +1,8 @@
 package org.geelato.core.mvc;
 
+import org.geelato.core.env.EnvManager;
+import org.geelato.core.env.entity.User;
+
 import java.util.HashMap;
 
 /**
@@ -9,5 +12,7 @@ import java.util.HashMap;
  *
  */
 public class Ctx extends HashMap<String, String> {
-
+    public User getCurrentUser(){
+        return EnvManager.singleInstance().getCurrentUser();
+    }
 }
