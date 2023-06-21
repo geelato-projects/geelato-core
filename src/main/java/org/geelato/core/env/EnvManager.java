@@ -28,6 +28,7 @@ public class EnvManager {
     }
 
     public void InitCurrentUser(String userId) {
+        //TODO 根据用户ID产生当前用户信息
         User user=new User();
         user.setUserId(userId);
         currentUser=user;
