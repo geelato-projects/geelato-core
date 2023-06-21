@@ -23,10 +23,10 @@ public class JsonTextDeleteParser {
     public DeleteCommand parse(String jsonText, Ctx ctx) {
         JSONObject jo = JSON.parseObject(jsonText);
         CommandValidator validator = new CommandValidator();
-        if (jo.size() != 2 || !jo.containsKey(KW_BIZ)) {
-            validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
-            Assert.isTrue(validator.isSuccess(), validator.getMessage());
-        }
+//        if (jo.size() != 2 || !jo.containsKey(KW_BIZ)) {
+//            validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
+//            Assert.isTrue(validator.isSuccess(), validator.getMessage());
+//        }
         // TODO biz怎么用起来
         String biz = jo.getString(KW_BIZ);
         jo.remove(KW_BIZ);
