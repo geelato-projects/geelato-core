@@ -230,6 +230,11 @@ public class SchemaColumn implements Serializable {
         meta.setOrdinalPosition(Strings.isBlank(this.ordinalPosition) ? 1 : Integer.parseInt(this.ordinalPosition));
         meta.setSeqNo(meta.getOrdinalPosition());
         meta.setDefaultValue(this.columnDefault == null ? null : this.columnDefault);
+        if ("b'0'".equals(this.columnDefault)) {
+            meta.setDefaultValue(String.valueOf(0));
+        } else if ("b'1'".equals(this.columnDefault)) {
+            meta.setDefaultValue(String.valueOf(1));
+        }
         meta.setType(this.columnType);
         meta.setKey("PRI".equals(this.columnKey));
         meta.setNullable(Strings.isBlank(this.isNullable) || "YES".equals(this.isNullable));
@@ -243,6 +248,7 @@ public class SchemaColumn implements Serializable {
         meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
         meta.setNumericSigned(Strings.isNotEmpty(this.columnType) && this.columnType.indexOf("unsigned") == -1);
         meta.setEnableStatus(ColumnDefault.ENABLE_STATUS_VALUE);
+        meta.setSelectType(this.dataType);
         meta.afterSet();
 
         return meta;

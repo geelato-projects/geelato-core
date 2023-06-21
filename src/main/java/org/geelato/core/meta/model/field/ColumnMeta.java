@@ -2,6 +2,8 @@ package org.geelato.core.meta.model.field;
 
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
+import org.geelato.core.enums.DataTypeRadiusEnum;
+import org.geelato.core.enums.MysqlDataTypeEnum;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.DictDataSrc;
 import org.geelato.core.meta.annotation.Entity;
@@ -90,6 +92,10 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     //外表表名
     private String refTables;
     private boolean abstractColumn;
+    // 数据选择类型
+    private String selectType;
+    private boolean autoAdd = false;
+    private String autoName;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -413,6 +419,36 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.abstractColumn = abstractColumn;
     }
 
+    @Col(name = "select_type")
+    @Title(title = "选择类型")
+    public String getSelectType() {
+        return selectType;
+    }
+
+    public void setSelectType(String selectType) {
+        this.selectType = selectType;
+    }
+
+    @Col(name = "auto_add")
+    @Title(title = "选择类型")
+    public boolean isAutoAdd() {
+        return autoAdd;
+    }
+
+    public void setAutoAdd(boolean autoAdd) {
+        this.autoAdd = autoAdd;
+    }
+
+    @Col(name = "auto_name")
+    @Title(title = "选择类型")
+    public String getAutoName() {
+        return autoName;
+    }
+
+    public void setAutoName(String autoName) {
+        this.autoName = autoName;
+    }
+
     /**
      * TODO 改由TypeConvert提从转换
      * 应在所有属性都设置完成之后，依据当前的属性值生成,例如：
@@ -425,30 +461,26 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         // 更加数据类型dataType 设置 type
         if (Strings.isNotBlank(dataType)) {
             dataType = dataType.toUpperCase(Locale.ENGLISH);
+            selectType = Strings.isNotBlank(selectType) ? selectType.toUpperCase(Locale.ENGLISH) : dataType;
+            DataTypeRadius radius = DataTypeRadiusEnum.getRadius(dataType);
             String columnType = null;
-            if (Arrays.asList(new String[]{"BIT"}).contains(dataType)) {
+            if (MysqlDataTypeEnum.getBooleans().contains(dataType)) {
                 setCharMaxLength(1L);
                 columnType = dataType + "(" + charMaxLength + ")";
-            } else if (Arrays.asList(new String[]{"VARCHAR"}).contains(dataType)) {
+            } else if (MysqlDataTypeEnum.getChars().contains(dataType)) {
                 columnType = dataType + "(" + charMaxLength + ")";
-            } else if (Arrays.asList(new String[]{"TEXT"}).contains(dataType)) {
-                setCharMaxLength(65535L);
+            } else if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
+                setCharMaxLength(radius.getMax());
                 setDefaultValue(null);
                 columnType = dataType;
-            } else if (Arrays.asList(new String[]{"LONGTEXT"}).contains(dataType)) {
-                setCharMaxLength(4294967295L);
-                setDefaultValue(null);
-                columnType = dataType;
-            } else if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT"}).contains(dataType)) {
-                setCharMaxLength(isNumericSigned() ? numericPrecision : (numericPrecision + 1));
-                columnType = dataType + (isNumericSigned() ? ("(" + numericPrecision + ")") : ("(" + (numericPrecision + 1) + ") unsigned"));
-            } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
+            } else if (MysqlDataTypeEnum.getIntegers().contains(dataType)) {
+                setCharMaxLength(0);
+                columnType = dataType + (isNumericSigned() ? ("(" + numericPrecision + ")") : ("(" + numericPrecision + ") unsigned"));
+            } else if (MysqlDataTypeEnum.getDecimals().contains(dataType)) {
                 setAutoIncrement(false);
-                setCharMaxLength(numericPrecision + numericScale);
+                setCharMaxLength(0);
                 columnType = dataType + "(" + numericPrecision + "," + numericScale + ")";
-            } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
-                columnType = dataType;
-            } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
+            } else if (MysqlDataTypeEnum.getDates().contains(dataType)) {
                 columnType = dataType;
             } else {
                 columnType = dataType;
@@ -456,7 +488,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             setDataType(dataType);
             setType(columnType);
             // 设置是否自动新增，数值型主键才能自动新增
-            if (!(isKey() && Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT"}).contains(dataType))) {
+            if (!(isKey() && MysqlDataTypeEnum.getIntegers().contains(dataType))) {
                 setAutoIncrement(false);
             }
             // 设置额外值
@@ -464,9 +496,10 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             if (isUniqued()) {
                 extras.add("unique");
             }
-            if (Arrays.asList(new String[]{"TINYINT", "INT", "BIGINT", "DECIMAL"}).contains(dataType)) {
+            if (Arrays.asList(new String[]{"TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT", "DECIMAL"}).contains(dataType)) {
                 if (isAutoIncrement()) {
                     extras.add("auto_increment");
+                    setDefaultValue(null);
                 }
                 if (!isNumericSigned()) {
                     extras.add("unsigned");
