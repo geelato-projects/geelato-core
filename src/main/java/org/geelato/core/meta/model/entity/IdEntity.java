@@ -11,12 +11,9 @@ import java.io.Serializable;
 //@MappedSuperclass
 public abstract class IdEntity implements Serializable {
 
-//    private static final long serialVersionUID = 1L;
-
     protected String id;
 
     @Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Title(title = "序号")
     public String getId() {
         return id;

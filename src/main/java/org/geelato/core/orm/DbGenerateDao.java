@@ -12,7 +12,6 @@ import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaIndex;
-import org.geelato.core.meta.schema.SchemaTable;
 import org.geelato.core.util.ConnectUtils;
 import org.geelato.utils.SqlParams;
 import org.slf4j.Logger;
@@ -34,32 +33,14 @@ public class DbGenerateDao {
 
     private static Logger logger = LoggerFactory.getLogger(DbGenerateDao.class);
     private static HashMap<String, Integer> defaultColumnLengthMap;
-    private static HashMap<String, Boolean> defaultColumnNullMap;
-    private static HashMap<String, String> defaultColumnDataTypeMap;
-    private static HashMap<String, String> defaultColumnTitleMap;
     private Dao dao;
 
     private MetaManager metaManager = MetaManager.singleInstance();
 
     public DbGenerateDao() {
-        InitDefaultColumn();
     }
 
-    private void InitDefaultColumn() {
-        //todo chengx: init default column datatype,null,title
 
-        //init default column length
-        defaultColumnLengthMap = new HashMap<>();
-        defaultColumnLengthMap.put("id", 32);
-        defaultColumnLengthMap.put("dept_id", 32);
-        defaultColumnLengthMap.put("bu_id", 32);
-        defaultColumnLengthMap.put("tenant_code", 64);
-        defaultColumnLengthMap.put("del_status", 10);
-        defaultColumnLengthMap.put("update_at", 0);
-        defaultColumnLengthMap.put("updater", 32);
-        defaultColumnLengthMap.put("create_at", 0);
-        defaultColumnLengthMap.put("creator", 32);
-    }
 
     /**
      * @param dao
@@ -107,13 +88,6 @@ public class DbGenerateDao {
                 logger.info("ignore createTable for entity: {}.", em.getEntityName());
             }
         }
-        // 先清空元数据
-//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_column");
-//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_table");
-//        this.dao.getJdbcTemplate().execute("TRUNCATE TABLE platform_dev_db_connect");
-
-        // 创建数据库连接
-        // TODO 改成数据文件中获取
         ConnectMeta connectMeta = new ConnectMeta();
         connectMeta.setDbName("geelato");
         connectMeta.setDbConnectName("geelato-local");
@@ -146,8 +120,6 @@ public class DbGenerateDao {
                 ColumnMeta cm = fm.getColumn();
                 cm.setTableId(table.get("id").toString());
                 cm.setLinked(1);
-                // 已有name不需再设置
-                // cm.setTableId(em.getTableMeta().getTableName());
                 dao.save(cm);
             }
             // 保存外键关系
@@ -183,9 +155,7 @@ public class DbGenerateDao {
         if (columns == null || columns.size() == 0) {
             isExistsTable = false;
         } else {
-            for (Map<String, Object> columnMap : columns) {
-                existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
-            }
+            for (Map<String, Object> columnMap : columns) existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
         }
         // 通过create table创建的字段
         ArrayList<JSONObject> createList = new ArrayList<>();
@@ -268,13 +238,13 @@ public class DbGenerateDao {
 
         // 检查表是否存在，或取已存在的列元数据
         boolean isExistsTable = true;
-        Map existscolumnMap = new HashMap();
+        Map existsColumnMap = new HashMap();
         List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", em.getTableName()));
         if (columns == null || columns.size() == 0) {
             isExistsTable = false;
         } else {
             for (Map<String, Object> columnMap : columns) {
-                existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
+                existsColumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
             }
         }
         // 通过create table创建的字段
@@ -299,7 +269,7 @@ public class DbGenerateDao {
 
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
 
-                if (existscolumnMap.containsKey(fm.getColumnName())) {
+                if (existsColumnMap.containsKey(fm.getColumnName())) {
                     modifyList.add(jsonColumn);
                 } else {
                     addList.add(jsonColumn);
@@ -337,8 +307,6 @@ public class DbGenerateDao {
      */
     private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList) {
         Map<String, Object> map = new HashMap<>();
-        // ArrayList<JSONObject> defaultColumnList = getDefaultColumn();
-        //  createColumnList.addAll(defaultColumnList);  //add org.geelato.core.meta.model.entity.BaseEntity
         ArrayList<JSONObject> uniqueColumnList = getUniqueColumn(createColumnList);
         String primaryKey = getPrimaryColumn(createColumnList);
         // 表单信息
@@ -395,18 +363,6 @@ public class DbGenerateDao {
         // 表索引 - 唯一约束 - 添加
         map.put("uniqueList", uniqueList);
         dao.execute("upgradeOneTable", map);
-    }
-
-    private ArrayList<JSONObject> getDefaultColumn() {
-        ArrayList<JSONObject> defaultColumnList = new ArrayList<>();
-        List<ColumnMeta> defaultColumnMetaList = MetaManager.singleInstance().getDefaultColumn();
-        for (ColumnMeta columnMeta : defaultColumnMetaList) {
-            columnMeta.setComment(String.format("'%s'", Strings.isNotBlank(columnMeta.getComment()) ? columnMeta.getComment() : columnMeta.getTitle()));
-            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(columnMeta));
-            defaultColumnList.add(jsonColumn);
-        }
-
-        return defaultColumnList;
     }
 
     private ArrayList<JSONObject> getUniqueColumn(List<JSONObject> jsonObjectList) {

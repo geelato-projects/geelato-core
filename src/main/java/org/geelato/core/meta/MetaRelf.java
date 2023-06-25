@@ -343,8 +343,6 @@ public class MetaRelf {
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());
 //                            logger.debug("cfm.getColumn().getDataType())>>{}",cfm.getColumn().getDataType());
-                            //如果未指定类型（如特殊的json），则采用方法的返回类型
-                            //TODO 会导致 cfm.setFieldType与cfm.getColumn().getDataType())不一致,需为mybatis自定义一个JSON类型
                             if (Strings.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             }
@@ -374,7 +372,6 @@ public class MetaRelf {
                 Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
                 if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
                     FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
-
                     cfm.getColumn().setFieldName(fieldName);
                     cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? false : Boolean.parseBoolean(c_map.get("is_unique").toString()));
                     cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? true : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
@@ -432,9 +429,6 @@ public class MetaRelf {
 
     /**
      * 筛选出主键
-     *
-     * @param columnList
-     * @return
      */
     public static FieldMeta getPrimaryKey(HashMap<String, FieldMeta> columnMap) {
         FieldMeta fieldMeta = null;

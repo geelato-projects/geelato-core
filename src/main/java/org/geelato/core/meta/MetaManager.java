@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author geemeta
  */
-public class MetaManager {
+public class MetaManager  {
 
 
     private static Lock lock = new ReentrantLock();
@@ -34,9 +34,6 @@ public class MetaManager {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
     private HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
     private List<EntityLiteMeta> entityLiteMetaList = new ArrayList<>();
-    // key：entityName,value：boolean
-//    private HashMap<String, Boolean> entityCacheAble = new HashMap<String, Boolean>();
-    // TODO 多库同表名的场景暂未支持
     private HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<String, EntityMeta>();
     private static HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
     private Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
@@ -66,10 +63,8 @@ public class MetaManager {
 
     public void parseDBMeta(Dao dao) {
         this.MetaDao = dao;
-        logger.info("解析数据库保存得实体元数据", Entity.class);
-        //select * from platform_dev_table
+        logger.info("解析数据库保存得实体元数据");
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
-        //select * from platform_dev_column
         for (Map map : tableList) {
             List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             //List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
@@ -78,7 +73,7 @@ public class MetaManager {
     }
 
     public void refreshDBMeta(String entityName) {
-        logger.info("刷新实体元数据", Entity.class);
+        logger.info("刷新实体元数据");
         String tableListSql = MetaDaoSql.SQL_TABLE_LIST;
         if (Strings.isNotEmpty(entityName)) {
             tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
@@ -319,7 +314,6 @@ public class MetaManager {
                     break;
                 }
             }
-//                Metadata metadata = entityMetadataMap.values().stream().filter(p -> p.getTableName().equalsIgnoreCase(TABLE_NAME)).findFirst().getBizRuleScriptManager();
             if (entityMapping == null) {
                 continue;
             }

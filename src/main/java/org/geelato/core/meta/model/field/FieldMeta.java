@@ -8,7 +8,6 @@ import java.io.Serializable;
 public class FieldMeta implements Serializable {
     private ColumnMeta columnMeta;
     private String fieldName;
-    //@TODO java类中的类型？
     private Class fieldType;
 
     public FieldMeta(String columnName, String fieldName, String title) {
@@ -35,7 +34,6 @@ public class FieldMeta implements Serializable {
      * 驼峰式
      * columnMeta.getName()是数据库中的字段格式
      *
-     * @return
      */
     public String getFieldName() {
         return fieldName;
@@ -66,7 +64,6 @@ public class FieldMeta implements Serializable {
      * 列名、字段名是否一致
      * 如果columnName或fieldName为空，则返回false
      *
-     * @return
      */
     public boolean isEquals() {
         if (this.getColumn().getName() == null || fieldName == null) {
