@@ -4,11 +4,14 @@ import com.alibaba.fastjson2.JSON;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.MetaDaoSql;
 import org.geelato.core.constants.ResourcesFiles;
+import org.geelato.core.enums.DataTypeRadiusEnum;
+import org.geelato.core.enums.MysqlToJavaEnum;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.model.entity.EntityLiteMeta;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
+import org.geelato.core.meta.model.field.ColumnSelectType;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaForeign;
 import org.geelato.core.meta.schema.SchemaIndex;
@@ -430,9 +433,45 @@ public class MetaManager  {
                 }
             }
         } catch (IOException e) {
-            defaultColumnMetaList = null;
+            defaultColumnMetaList = new ArrayList<>();
         }
 
         return defaultColumnMetaList;
+    }
+
+    public List<ColumnSelectType> getColumnSelectType() {
+        List<ColumnSelectType> columnSelectTypes = new ArrayList<ColumnSelectType>();
+
+        try {
+            String jsonStr = FastJsonUtils.readJsonFile(ResourcesFiles.COLUMN_SELECT_TYPE_JSON);
+            List<ColumnSelectType> selectTypeList = JSON.parseArray(jsonStr, ColumnSelectType.class);
+            if (selectTypeList != null && !selectTypeList.isEmpty()) {
+                for (ColumnSelectType selectType : selectTypeList) {
+                    if (Strings.isBlank(selectType.getLabel()) || Strings.isBlank(selectType.getValue()) ||
+                            Strings.isBlank(selectType.getMysql())) {
+                        continue;
+                    }
+                    selectType.setValue(selectType.getValue().toUpperCase(Locale.ENGLISH));
+                    selectType.setMysql(selectType.getMysql().toUpperCase(Locale.ENGLISH));
+                    selectType.setJava(MysqlToJavaEnum.getJava(selectType.getMysql()));
+                    selectType.setRadius(DataTypeRadiusEnum.getRadius(selectType.getMysql()));
+                    // 固定长度时，默认长度为null、0时，默认长度为数据类型的最大值
+                    if (selectType.getFixed() && (selectType.getExtent() == null || selectType.getExtent() == 0)) {
+                        selectType.setExtent(selectType.getRadius().getMax());
+                    }
+                    columnSelectTypes.add(selectType);
+                }
+                columnSelectTypes.sort(new Comparator<ColumnSelectType>() {
+                    @Override
+                    public int compare(ColumnSelectType o1, ColumnSelectType o2) {
+                        return o1.getSeqNo().intValue() - o2.getSeqNo().intValue();
+                    }
+                });
+            }
+        } catch (IOException e) {
+            columnSelectTypes = new ArrayList<>();
+        }
+
+        return columnSelectTypes;
     }
 }

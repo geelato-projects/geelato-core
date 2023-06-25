@@ -1,0 +1,193 @@
+[
+  {
+    "group": "字符串",
+    "label": "字符[0~255]",
+    "value": "char",
+    "mysql": "char",
+    "disabled": false,
+    "seqNo": 101
+  },
+  {
+    "group": "字符串",
+    "label": "文本[0~21845]",
+    "value": "varchar",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 64,
+    "seqNo": 102
+  },
+  {
+    "group": "字符串",
+    "label": "数据字典[64]",
+    "value": "dictionary",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": true,
+    "extent": 64,
+    "seqNo": 103
+  },
+  {
+    "group": "字符串",
+    "label": "标题[255]",
+    "value": "title",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": true,
+    "extent": 255,
+    "seqNo": 104
+  },
+  {
+    "group": "字符串",
+    "label": "备注[1024]",
+    "value": "remark",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": true,
+    "extent": 1024,
+    "seqNo": 105
+  },
+  {
+    "group": "字符串",
+    "label": "组织[0~21845]",
+    "value": "org",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 64,
+    "seqNo": 106
+  },
+  {
+    "group": "字符串",
+    "label": "用户[0~21845]",
+    "value": "user",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 64,
+    "seqNo": 107
+  },
+  {
+    "group": "字符串",
+    "label": "新闻[65535]",
+    "value": "text",
+    "mysql": "text",
+    "disabled": false,
+    "fixed": true,
+    "extent": 65535,
+    "seqNo": 108
+  },
+  {
+    "group": "字符串",
+    "label": "富文本[16777215]",
+    "value": "richText",
+    "mysql": "mediumtext",
+    "disabled": false,
+    "fixed": true,
+    "extent": 16777215,
+    "seqNo": 109
+  },
+  {
+    "group": "字符串",
+    "label": "脚本[4294967295]",
+    "value": "script",
+    "mysql": "longtext",
+    "disabled": false,
+    "fixed": true,
+    "extent": 4294967295,
+    "seqNo": 110
+  },
+  {
+    "group": "布尔值",
+    "label": "是否[1/0]",
+    "value": "bit",
+    "mysql": "bit",
+    "disabled": false,
+    "seqNo": 201
+  },
+  {
+    "group": "数值类型",
+    "label": "很小的整数[±127]",
+    "value": "tinyint",
+    "mysql": "tinyint",
+    "disabled": false,
+    "seqNo": 301
+  },
+  {
+    "group": "数值类型",
+    "label": "较小的整数[±32767]",
+    "value": "smallint",
+    "mysql": "smallint",
+    "disabled": false,
+    "seqNo": 302
+  },
+  {
+    "group": "数值类型",
+    "label": "中等的整数[±8388607]",
+    "value": "mediumint",
+    "mysql": "mediumint",
+    "disabled": false,
+    "seqNo": 303
+  },
+  {
+    "group": "数值类型",
+    "label": "普通的整数[±2147483647]",
+    "value": "int",
+    "mysql": "int",
+    "disabled": false,
+    "seqNo": 304
+  },
+  {
+    "group": "数值类型",
+    "label": "极大的整数[±8.08922E+21]",
+    "value": "bigint",
+    "mysql": "bigint",
+    "disabled": false,
+    "seqNo": 305
+  },
+  {
+    "group": "数值类型",
+    "label": "精准的小数[D(0~60,0~30)]",
+    "value": "decimal",
+    "mysql": "decimal",
+    "disabled": false,
+    "seqNo": 306
+  },
+  {
+    "group": "日期时间",
+    "label": "年份[YYYY]",
+    "value": "year",
+    "mysql": "year",
+    "disabled": false,
+    "seqNo": 401
+  },
+  {
+    "group": "日期时间",
+    "label": "日期[YYYY-MM-DD]",
+    "value": "date",
+    "mysql": "date",
+    "disabled": false,
+    "seqNo": 402
+  },
+  {
+    "group": "日期时间",
+    "label": "时间[HH:mm:ss]",
+    "value": "time",
+    "mysql": "time",
+    "disabled": false,
+    "seqNo": 403
+  },
+  {
+    "group": "日期时间",
+    "label": "日期时间[YYYY-MM-DD HH:mm:ss]",
+    "value": "dateTime",
+    "mysql": "dateTime",
+    "disabled": false,
+    "seqNo": 404
+  },
+  {
+    "group": "日期时间",
+    "label": "时间戳[YYYY-MM-DD HH:mm:ss]",
+    "value": "timeStamp",
+    "mysql": "timeStamp",
+    "disabled": false,
+    "seqNo": 405
+  }
+]

@@ -89,7 +89,7 @@
     "key": false,
     "linked": 1,
     "name": "tenant_code",
-    "nullable": false,
+    "nullable": true,
     "numericPrecision": 0,
     "numericScale": 0,
     "numericSigned": true,

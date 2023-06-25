@@ -311,7 +311,7 @@ public class DbGenerateDao {
         String primaryKey = getPrimaryColumn(createColumnList);
         // 表单信息
         map.put("tableName", tableMeta.getEntityName());
-        map.put("tableTitle", String.format("'%s'", tableMeta.getTitle()));
+        map.put("tableTitle", tableMeta.getTitle());
         // 表字段 - 添加
         map.put("addList", createColumnList);
         createColumnList.sort(new Comparator<JSONObject>() {
@@ -344,7 +344,7 @@ public class DbGenerateDao {
         // 表单信息
         map.put("tableName", tableMeta.getTableName());
         // 表注释 - 更新
-        map.put("tableTitle", String.format("'%s'", tableMeta.getTitle()));
+        map.put("tableTitle", tableMeta.getTitle());
         // 表字段 - 新增
         map.put("addList", addList);
         addList.sort(new Comparator<JSONObject>() {

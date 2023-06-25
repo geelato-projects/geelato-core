@@ -4,6 +4,8 @@ package org.geelato.core.meta;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.enums.MysqlDataTypeEnum;
+import org.geelato.core.enums.MysqlToJavaEnum;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.meta.annotation.*;
 import org.geelato.core.meta.model.entity.EntityMeta;
@@ -396,27 +398,13 @@ public class MetaRelf {
                     cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
                     cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
                     cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);
+                    cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
+                    cfm.getColumn().setAutoAdd(c_map.get("auto_add") == null ? false : Boolean.parseBoolean(c_map.get("auto_add").toString()));
 
-                    if (Arrays.asList(new String[]{"BIT"}).contains(dataType)) {
-                        cfm.setFieldType(Boolean.class);
-                        cfm.getColumn().setDefaultValue(Strings.isNotEmpty(defaultValue) ? defaultValue : null);
-                    } else if (Arrays.asList(new String[]{"VARCHAR"}).contains(dataType)) {
-                        cfm.setFieldType(String.class);
-                    } else if (Arrays.asList(new String[]{"TEXT", "LONGTEXT"}).contains(dataType)) {
+                    if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
                         cfm.getColumn().setDefaultValue(null);
-                        cfm.setFieldType(String.class);
-                    } else if (Arrays.asList(new String[]{"TINYINT", "INT"}).contains(dataType)) {
-                        cfm.setFieldType(Integer.class);
-                    } else if (Arrays.asList(new String[]{"BIGINT"}).contains(dataType)) {
-                        cfm.setFieldType(Long.class);
-                    } else if (Arrays.asList(new String[]{"DECIMAL"}).contains(dataType)) {
-                        cfm.setFieldType(Double.class);
-                    } else if (Arrays.asList(new String[]{"YEAR", "DATE", "TIME", "DATETIME", "TIMESTAMP", "ENUM"}).contains(dataType)) {
-                        cfm.setFieldType(Date.class);
-                    } else if (Arrays.asList(new String[]{"ENUM"}).contains(dataType)) {
-                        cfm.setFieldType(Enum.class);
                     }
-
+                    cfm.setFieldType(MysqlToJavaEnum.getJava(dataType));
                     map.put(fieldName, cfm);
                 }
             } catch (RuntimeException e) {
@@ -429,6 +417,9 @@ public class MetaRelf {
 
     /**
      * 筛选出主键
+     *
+     * @param columnMap
+     * @return
      */
     public static FieldMeta getPrimaryKey(HashMap<String, FieldMeta> columnMap) {
         FieldMeta fieldMeta = null;
