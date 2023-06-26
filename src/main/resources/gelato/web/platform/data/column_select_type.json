@@ -95,6 +95,24 @@
     "seqNo": 110
   },
   {
+    "group": "字符串",
+    "label": "数组",
+    "value": "arrays",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": true,
+    "extent": 1024,
+    "seqNo": 111
+  },
+  {
+    "group": "字符串",
+    "label": "Json",
+    "value": "json",
+    "mysql": "json",
+    "disabled": false,
+    "seqNo": 112
+  },
+  {
     "group": "布尔值",
     "label": "是否[1/0]",
     "value": "bit",

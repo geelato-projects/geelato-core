@@ -15,7 +15,7 @@ public class MetaDaoSql {
     /**
      * 查询 platform_dev_column
      */
-    public static final String SQL_COLUMN_LIST_BY_TABLE = String.format("select * from platform_dev_column where del_status=%d", ColumnDefault.DEL_STATUS_VALUE);
+    public static final String SQL_COLUMN_LIST_BY_TABLE = String.format("select * from platform_dev_column where 1=1", ColumnDefault.DEL_STATUS_VALUE);
     /**
      * 查询 platform_dev_view
      */
@@ -39,5 +39,23 @@ public class MetaDaoSql {
      */
     public static final String SQL_FOREIGN_KEY = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME FROM information_schema.TABLE_CONSTRAINTS i LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_SCHEMA = DATABASE() AND i.TABLE_NAME = '%s';";
 
-    public static final String SQL_TABLE_DEFAULT_VIEW = "SELECT %s FROM %s WHERE 1=1;";
+    public static final String SQL_TABLE_DEFAULT_VIEW = "SELECT %s FROM %s";
+
+    /**
+     * 数据库表，修改表信息
+     */
+    public static final String SQL_ALTER_TABLE = "ALTER TABLE %s COMMENT = '%s';";
+    /**
+     * 数据库表，复制表信息，不会复制数据。第一个：新表名；第二个：旧表名
+     */
+    public static final String SQL_COPY_TABLE = "CREATE TABLE %s LIKE %s;";
+    /**
+     * 数据库表，复制表数据，全插入。第一个：新表名；第二个：旧表名
+     */
+    public static final String SQL_COPY_TABLE_DATA = "INSERT %s SELECT * FROM %s;";
+    /**
+     * 数据库表，重命名表，第一个：旧表名；第二个：新表名
+     */
+    public static final String SQL_RENAME_TABLE = "RENAME TABLE %s TO %s;";
+
 }

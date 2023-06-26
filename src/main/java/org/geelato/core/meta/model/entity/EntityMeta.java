@@ -93,7 +93,9 @@ public class EntityMeta {
 
     public void setId(FieldMeta id) {
         this.id = id;
-        ignoreUpdateFieldMap.put(id.getFieldName(), true);
+        if (id != null) {
+            ignoreUpdateFieldMap.put(id.getFieldName(), true);
+        }
     }
 
     public TableMeta getTableMeta() {

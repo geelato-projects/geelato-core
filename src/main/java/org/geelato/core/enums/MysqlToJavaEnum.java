@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public enum MysqlToJavaEnum {
     // 字符串
-    STRING(String.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.CHAR, MysqlDataTypeEnum.VARCHAR, MysqlDataTypeEnum.TINYTEXT, MysqlDataTypeEnum.TEXT, MysqlDataTypeEnum.MEDIUMTEXT, MysqlDataTypeEnum.LONGTEXT}),
+    STRING(String.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.CHAR, MysqlDataTypeEnum.VARCHAR, MysqlDataTypeEnum.TINYTEXT, MysqlDataTypeEnum.TEXT, MysqlDataTypeEnum.MEDIUMTEXT, MysqlDataTypeEnum.LONGTEXT, MysqlDataTypeEnum.JSON}),
     // 布尔值
     BOOLEAN(Boolean.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.BIT}),
     // 整数
