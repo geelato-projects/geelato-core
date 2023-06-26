@@ -8,6 +8,17 @@ import java.util.List;
  */
 public class BaseCommand<E extends BaseCommand> {
 
+    /**
+     * TODO 客户端生成的唯一标识，用于缓存
+     */
+    private String key;
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
     protected BaseCommand<E> parentCommand;
 
     protected CommandType commandType;

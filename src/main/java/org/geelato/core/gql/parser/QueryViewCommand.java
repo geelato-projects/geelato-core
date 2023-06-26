@@ -4,12 +4,9 @@ import org.apache.commons.collections.map.HashedMap;
 
 import java.util.Map;
 
-/**
- * @author geemeta
- */
-public class QueryTreeCommand extends BaseCommand<QueryTreeCommand> {
+public class QueryViewCommand extends BaseCommand<QueryViewCommand> {
 
-    private boolean queryForList = false;
+    private boolean queryForList = true;
     /**
      * @param pageNum，第几页，从1开始。
      */
@@ -27,8 +24,9 @@ public class QueryTreeCommand extends BaseCommand<QueryTreeCommand> {
     private String groupBy;
     private String orderBy;
     private FilterGroup having;
+    private String viewName;
 
-    public QueryTreeCommand() {
+    public QueryViewCommand() {
         setCommandType(CommandType.Query);
     }
 
@@ -37,10 +35,6 @@ public class QueryTreeCommand extends BaseCommand<QueryTreeCommand> {
     }
 
 
-
-    /**
-     * 是查询单条记录还是多条记录，默认值为false，即查询单条记录
-     */
     public boolean isQueryForList() {
         return queryForList;
     }
@@ -71,7 +65,6 @@ public class QueryTreeCommand extends BaseCommand<QueryTreeCommand> {
     }
 
     public void setOrderBy(String orderBy) {
-        //orderBy中的列，应该出现在group by子句中
         this.orderBy = orderBy;
     }
 
@@ -97,5 +90,13 @@ public class QueryTreeCommand extends BaseCommand<QueryTreeCommand> {
 
     public void setAlias(Map alias) {
         this.alias = alias;
+    }
+
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 }

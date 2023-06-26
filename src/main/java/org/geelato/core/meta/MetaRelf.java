@@ -12,6 +12,7 @@ import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.core.meta.model.view.ViewMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -151,13 +152,11 @@ public class MetaRelf {
                 fm.getColumn().setTableName(em.getTableMeta().getTableName());
             }
         }
-        // 主键、id
         em.setId(getPrimaryKey(map));
-
         return em;
     }
 
-    public static EntityMeta getEntityMeta(Map tmap, List columnList, List foreignList) {
+    public static EntityMeta getEntityMeta(Map tmap, List columnList,List viewList , List foreignList) {
         EntityMeta em = new EntityMeta();
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("entity_name").toString());
@@ -165,9 +164,12 @@ public class MetaRelf {
 
         HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(columnList);
         em.setFieldMetas(columnMap.values());
+
+        HashMap<String, ViewMeta> viewMap = getViewMetas(viewList);
+        em.setViewMetas(viewMap.values());
+
         List<TableForeign> foreigns = getTableForeignMetas(foreignList);
         em.setTableForeigns(foreigns);
-        // 主键、id
         em.setId(getPrimaryKey(columnMap));
 
         return em;
@@ -361,6 +363,23 @@ public class MetaRelf {
         return map;
     }
 
+    public static HashMap<String, ViewMeta> getViewMetas(List<HashMap> viewList) {
+        HashMap<String, ViewMeta> map = new HashMap<String, ViewMeta>();
+        for (Map v_map : viewList) {
+            try {
+                String viewName = v_map.get("view_name") == null ? null : v_map.get("view_name").toString();
+                String viewConstruct = v_map.get("view_construct") == null ? null : v_map.get("view_construct").toString();
+                String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
+                if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
+                    ViewMeta vm = new ViewMeta(viewName,viewType,viewConstruct);
+                    map.put(viewName, vm);
+                }
+            }catch (RuntimeException e) {
+                throw e;
+            }
+        }
+        return map;
+    }
     public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
         for (Map c_map : columnList) {
@@ -539,7 +558,6 @@ public class MetaRelf {
             }
         }
         jsonResult.deleteCharAt(jsonResult.length() - 1);
-        //TODO error 目前新增实体时，结果为"]"，需完善
         return jsonResult.append("]").toString();
     }
 

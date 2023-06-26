@@ -8,10 +8,7 @@ import java.util.Map;
  * @author geemeta
  */
 public class QueryCommand extends BaseCommand<QueryCommand> {
-    /**
-     * TODO 客户端生成的唯一标识，用于缓存
-     */
-    private String key;
+
     private boolean queryForList = false;
     /**
      * @param pageNum，第几页，从1开始。
@@ -42,14 +39,6 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
 
     public boolean isPagingQuery() {
         return pageNum > 0 && pageSize > 0;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     /**

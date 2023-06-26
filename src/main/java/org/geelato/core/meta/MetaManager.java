@@ -70,8 +70,9 @@ public class MetaManager  {
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
         for (Map map : tableList) {
             List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            List viewList=MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
             //List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
-            parseOne(map, columnList);
+            parseOne(map, columnList,viewList);
         }
     }
 
@@ -337,12 +338,9 @@ public class MetaManager  {
 
             FieldMeta fm = entityMapping.getFieldMetaByColumn(COLUMN_NAME);
             if (fm != null) {
-                //TODO 确认还有哪些字段属性需设置
-//                logger.debug("字段" + TABLE_NAME + "." + fm.getColumn().getName() + "长度：" + Integer.parseInt(CHARACTER_MAXIMUM_LENGTH));
                 fm.getColumn().setCharMaxLength(Integer.parseInt(CHARACTER_MAXIMUM_LENGTH));
                 fm.getColumn().setNullable("NO".equalsIgnoreCase(IS_NULLABLE) ? false : true);
                 fm.getColumn().setExtra(EXTRA);
-//                        fm.getColumn().setDefaultValue();
                 fm.getColumn().setNumericPrecision(Integer.parseInt(NUMERIC_PRECISION));
                 fm.getColumn().setNumericScale(Integer.parseInt(NUMERIC_SCALE));
                 fm.getColumn().setComment(COLUMN_COMMENT);
@@ -350,10 +348,7 @@ public class MetaManager  {
                     fm.getColumn().setTitle(COLUMN_COMMENT);
                 }
                 fm.getColumn().setOrdinalPosition(Integer.parseInt(ORDINAL_POSITION));
-
             }
-
-
         }
     }
 
@@ -383,19 +378,18 @@ public class MetaManager  {
         }
     }
 
-    /**
-     * 解析数据库记录map，并将其加入到实体元数据缓存中
-     *
-     * @param map 待解析的数据
-     */
+
+
     public void parseOne(Map map, List<HashMap> columnList) {
         parseOne(map, columnList, null);
     }
-
-    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
+    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> viewList) {
+        parseOne(map, columnList, viewList, null);
+    }
+    public void parseOne(Map map, List<HashMap> columnList,  List<HashMap> viewList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList,viewList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
@@ -413,7 +407,7 @@ public class MetaManager  {
 
     public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
         if (entityMetadataMap.containsKey(map.get("entity_name").toString())) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, foreignList);
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map,columnList);
             entityMetadataMap.remove(entityMeta.getEntityName());
             entityLiteMetaList.remove(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.remove(entityMeta.getTableName());
