@@ -37,6 +37,7 @@ public enum MysqlDataTypeEnum {
     DATETIME,
     TIMESTAMP,
 
+    JSON,
     ENUM;
 
     /**
@@ -91,7 +92,8 @@ public enum MysqlDataTypeEnum {
                 MysqlDataTypeEnum.TINYTEXT,
                 MysqlDataTypeEnum.TEXT,
                 MysqlDataTypeEnum.MEDIUMTEXT,
-                MysqlDataTypeEnum.LONGTEXT};
+                MysqlDataTypeEnum.LONGTEXT,
+                MysqlDataTypeEnum.JSON};
         return MysqlDataTypeEnum.getNames(typeEnums);
     }
 

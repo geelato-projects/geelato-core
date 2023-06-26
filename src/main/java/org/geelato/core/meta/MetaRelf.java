@@ -381,7 +381,7 @@ public class MetaRelf {
                     cfm.getColumn().setFieldName(fieldName);
                     cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? false : Boolean.parseBoolean(c_map.get("is_unique").toString()));
                     cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? true : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
-                    cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? String.format("%s", defaultValue) : null);
+                    cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
                     cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
                     cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
                     cfm.getColumn().setTitle(title);
@@ -398,7 +398,7 @@ public class MetaRelf {
                     cfm.getColumn().setName(columnName);
                     cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
                     cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
-                    cfm.getColumn().setComment(String.format("%s", Strings.isNotBlank(comment) ? comment : title));
+                    cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
                     cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
                     cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
                     cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);

@@ -2,6 +2,7 @@ package org.geelato.core.orm;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.enums.DeleteStatusEnum;
 import org.geelato.core.enums.EnableStatusEnum;
 import org.geelato.core.enums.TableTypeEnum;
 import org.geelato.core.meta.MetaManager;
@@ -12,7 +13,6 @@ import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaIndex;
-import org.geelato.core.meta.schema.SchemaTable;
 import org.geelato.core.util.ConnectUtils;
 import org.geelato.utils.SqlParams;
 import org.slf4j.Logger;
@@ -212,9 +212,13 @@ public class DbGenerateDao {
                 if (existscolumnMap.containsKey(fm.getColumnName())) {
                     modifyList.add(jsonColumn);
                 } else {
-                    addList.add(jsonColumn);
+                    if (fm.getColumn().getDelStatus() == DeleteStatusEnum.NO.getCode()) {
+                        addList.add(jsonColumn);
+                    }
                 }
-                createList.add(jsonColumn);
+                if (fm.getColumn().getDelStatus() == DeleteStatusEnum.NO.getCode()) {
+                    createList.add(jsonColumn);
+                }
                 // primary key
                 if (fm.getColumn().isKey() && Strings.isNotEmpty(fm.getColumn().getName())) {
                     primaryList.add(fm.getColumn().getName());
