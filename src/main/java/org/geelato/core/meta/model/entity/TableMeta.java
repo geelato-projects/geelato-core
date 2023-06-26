@@ -4,6 +4,8 @@ import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
+import org.geelato.core.meta.model.entity.BaseSortableEntity;
+import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.geelato.core.util.StringUtils;
 
 import java.util.Map;

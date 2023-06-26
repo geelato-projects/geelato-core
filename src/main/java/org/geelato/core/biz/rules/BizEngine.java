@@ -25,8 +25,7 @@ public class BizEngine {
      * @throws ScriptException 脚本解析出错
      */
     public void compile(String ruleScript) throws ScriptException {
-        //从ruleScript中解析出fun
-        //TODO
+        //TODO 从ruleScript中解析出fun
         String fun = "";
 
         BizRule bizRule = new BizRule();

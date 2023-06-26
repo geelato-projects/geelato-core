@@ -20,7 +20,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EntityManager {
     private static Lock lock = new ReentrantLock();
     private static EntityManager instance;
-    //    private MetaManager metaManager = MetaManager.singleInstance();
     private EntitySaveParser entitySaveParser = new EntitySaveParser();
     private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
     private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();

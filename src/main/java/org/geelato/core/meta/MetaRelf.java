@@ -345,8 +345,6 @@ public class MetaRelf {
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());
 //                            logger.debug("cfm.getColumn().getDataType())>>{}",cfm.getColumn().getDataType());
-                            //如果未指定类型（如特殊的json），则采用方法的返回类型
-                            //TODO 会导致 cfm.setFieldType与cfm.getColumn().getDataType())不一致,需为mybatis自定义一个JSON类型
                             if (Strings.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             }
@@ -371,13 +369,11 @@ public class MetaRelf {
                 String title = c_map.get("title") == null ? null : c_map.get("title").toString();
                 String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
                 String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
-                String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
                 String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
                 String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
                 Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
                 if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
                     FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
-
                     cfm.getColumn().setFieldName(fieldName);
                     cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? false : Boolean.parseBoolean(c_map.get("is_unique").toString()));
                     cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? true : Boolean.parseBoolean(c_map.get("is_nullable").toString()));

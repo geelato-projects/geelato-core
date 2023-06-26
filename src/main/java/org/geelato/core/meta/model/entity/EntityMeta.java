@@ -4,6 +4,7 @@ package org.geelato.core.meta.model.entity;
 import org.geelato.core.meta.DictDataSource;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.field.SimpleFieldMeta;
+import org.geelato.core.meta.model.view.ViewMeta;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -21,12 +22,15 @@ public class EntityMeta {
     private FieldMeta id;
     private TableMeta tableMeta;
     private String tableAlias;
+    private String[] fieldNames;
     private Collection<FieldMeta> fieldMetas;
     private Collection<TableForeign> tableForeigns;
-    private String[] fieldNames;
+
     private Map<String, DictDataSource> dictDataSourceMap;
     //冗余，用于快速获取列信息
     private LinkedHashMap<String, FieldMeta> fieldMetaMap;
+    //冗余，用于快速获取模型视图信息
+    private LinkedHashMap<String, ViewMeta> viewMetaMap;
     //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
     private LinkedHashMap<String, SimpleFieldMeta> simpleFieldMetaMap;
     //冗余，用于快速获取外键关系
@@ -113,8 +117,6 @@ public class EntityMeta {
         if (fieldMetas == null) {
             return;
         }
-        // 对字段做排序
-        // id、name、title、...、
         FieldMeta idMeta = null;
         FieldMeta titleMeta = null;
         FieldMeta nameMeta = null;
