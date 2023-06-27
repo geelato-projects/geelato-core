@@ -230,7 +230,7 @@ public class Dao {
      */
     public <T> T queryForObject(Class<T> entityType, String fieldName, Object value) {
         FilterGroup filterGroup = new FilterGroup().addFilter(fieldName, value.toString());
-        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
+        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup, null);
         logger.info(boundSql.toString());
         return jdbcTemplate.queryForObject(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
@@ -245,7 +245,7 @@ public class Dao {
      */
     public Map queryForMap(Class entityType, String fieldName, Object value) {
         FilterGroup filterGroup = new FilterGroup().addFilter(fieldName, value.toString());
-        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
+        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup, null);
         return jdbcTemplate.queryForMap(boundSql.getSql(), boundSql.getParams());
     }
 
@@ -270,7 +270,7 @@ public class Dao {
      * @return map通用格式的实体信息列表
      */
     public List<Map<String, Object>> queryForMapList(Class entityType, FilterGroup filterGroup) {
-        BoundSql boundSql = sqlManager.generateQueryForListSql(entityType, filterGroup);
+        BoundSql boundSql = sqlManager.generateQueryForListSql(entityType, filterGroup, null);
         return jdbcTemplate.queryForList(boundSql.getSql(), boundSql.getParams());
     }
 
@@ -281,7 +281,7 @@ public class Dao {
      * @return map通用格式的实体信息列表
      */
     public List<Map<String, Object>> queryForMapList(Class entityType) {
-        BoundSql boundSql = sqlManager.generateQueryForListSql(entityType, null);
+        BoundSql boundSql = sqlManager.generateQueryForListSql(entityType, null, null);
         return jdbcTemplate.queryForList(boundSql.getSql(), boundSql.getParams());
     }
 
@@ -318,7 +318,7 @@ public class Dao {
         return ctx;
     }
 
-    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params) {
+    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, String orderBy) {
         FilterGroup filterGroup = new FilterGroup();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
@@ -330,12 +330,12 @@ public class Dao {
                 filterGroup.addFilter(filter);
             }
         }
-        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup);
+        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup, orderBy);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
 
-    public <T> List<T> queryList(Class<T> entityType, int pageNum, int pageSize, Map<String, Object> params) {
+    public <T> List<T> queryList(Class<T> entityType, int pageNum, int pageSize, String orderBy, Map<String, Object> params) {
         FilterGroup filterGroup = new FilterGroup();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
@@ -350,6 +350,7 @@ public class Dao {
         QueryCommand command = new QueryCommand();
         command.setPageNum(pageNum);
         command.setPageSize(pageSize);
+        command.setOrderBy(orderBy);
         BoundSql boundSql = sqlManager.generatePageQuerySql(command, entityType, true, filterGroup, null);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
