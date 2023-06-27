@@ -63,24 +63,4 @@ public class QueryKeyManager {
     }
 
 
-    public static void main(String[] args) {
-
-        columnResolve();
-        //
-        DbType dbType = JdbcConstants.MYSQL; // 可以是ORACLE、POSTGRESQL、SQLSERVER、ODPS等
-        String sql = "select * from t";
-        List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType);
-        SQLSelectItem selectItem = SQLUtils.toSelectItem(sql, dbType);
-
-
-        sql = "select t1.id,t1.name,t2.code from platform_app_page t1,User t2 where ti.userId=t2.id";
-        stmtList = SQLUtils.parseStatements(sql, dbType);
-        selectItem = SQLUtils.toSelectItem(sql, dbType);
-
-
-        sql = "select id,name from platform_app_page";
-        stmtList = SQLUtils.parseStatements(sql, dbType);
-
-
-    }
 }

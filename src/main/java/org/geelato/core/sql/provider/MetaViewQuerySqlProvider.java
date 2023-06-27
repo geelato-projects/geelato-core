@@ -1,41 +1,48 @@
 package org.geelato.core.sql.provider;
 
+import org.geelato.core.enums.ViewTypeEnum;
 import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.gql.parser.QueryCommand;
+import org.geelato.core.gql.parser.QueryViewCommand;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.core.meta.model.view.ViewMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.management.Query;
 import java.util.Map;
 
-/**
- * @author geemeta
- */
+
 @Component
-public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
-    private static Logger logger = LoggerFactory.getLogger(MetaQuerySqlProvider.class);
+public class MetaViewQuerySqlProvider extends MetaBaseSqlProvider<QueryViewCommand> {
+    private static Logger logger = LoggerFactory.getLogger(MetaViewQuerySqlProvider.class);
 
     @Override
-    protected Object[] buildParams(QueryCommand command) {
+    protected Object[] buildParams(QueryViewCommand command) {
         return buildWhereParams(command);
     }
 
     @Override
-    protected int[] buildTypes(QueryCommand command) {
+    protected int[] buildTypes(QueryViewCommand command) {
         return buildWhereTypes(command);
     }
-
     @Override
-    protected String buildOneSql(QueryCommand command) {
+    protected String buildOneSql(QueryViewCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
-        sb.append("select ");
-        buildSelectFields(sb, md, command.getFields(), command.getAlias());
+        sb.append("select  * ");
         sb.append(" from ");
-        sb.append(md.getTableName());
+        ViewMeta vm= md.getViewMeta(command.getViewName());
+        if(vm.getViewType().equals(ViewTypeEnum.DEFAULT.getCode())){
+            sb.append("(");
+            sb.append(vm.getViewConstruct());
+            sb.append(") as vt");
+        }else {
+            sb.append(vm.getViewName());
+        }
         // where
         FilterGroup fg = command.getWhere();
         if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
@@ -66,14 +73,13 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         }
         return sb.toString();
     }
-
     /**
      * 构健统计数据
      *
      * @param command
      * @return
      */
-    public String buildCountSql(QueryCommand command) {
+    public String buildCountSql(QueryViewCommand command) {
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
         sb.append("select count(*) from (");
@@ -135,21 +141,15 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
             if (alias.containsKey(fieldName)) {
                 // 有指定的重命名要求时
                 tryAppendKeywords(sb, fm.getColumnName());
-//                sb.append(fm.getColumnName());
                 sb.append(" ");
                 tryAppendKeywords(sb, alias.get(fieldName).toString());
-//                sb.append(alias.get(fieldName));
             } else {
-                // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
                 if (fm.isEquals()) {
                     tryAppendKeywords(sb, fm.getColumnName());
-//                    sb.append(fm.getColumnName());
                 } else {
                     tryAppendKeywords(sb, fm.getColumnName());
-//                    sb.append(fm.getColumnName());
                     sb.append(" ");
                     tryAppendKeywords(sb, fm.getFieldName());
-//                    sb.append(fm.getFieldName());
                 }
             }
             sb.append(",");

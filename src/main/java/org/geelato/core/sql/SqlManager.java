@@ -21,6 +21,7 @@ public class SqlManager {
     private static SqlManager instance;
     private MetaManager metaManager = MetaManager.singleInstance();
     private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
+    private MetaViewQuerySqlProvider metaViewQuerySqlProvider = new MetaViewQuerySqlProvider();
     private MetaQuerySqlMultiProvider metaQuerySqlMultiProvider = new MetaQuerySqlMultiProvider();
     private MetaQueryTreeSqlProvider metaQueryTreeSqlProvider = new MetaQueryTreeSqlProvider();
     private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
@@ -163,5 +164,14 @@ public class SqlManager {
         queryCommand.setQueryForList(isArray);
         queryCommand.setWhere(filterGroup);
         return metaQuerySqlProvider.generate(queryCommand);
+    }
+
+    public <T> BoundSql generatePageQuerySql(QueryViewCommand queryCommand, String entityName, boolean isArray, FilterGroup filterGroup, String[] fields) {
+        EntityMeta em = metaManager.getByEntityName(entityName);
+        queryCommand.setEntityName(em.getEntityName());
+        queryCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        queryCommand.setQueryForList(isArray);
+        queryCommand.setWhere(filterGroup);
+        return metaViewQuerySqlProvider.generate(queryCommand);
     }
 }

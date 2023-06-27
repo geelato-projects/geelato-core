@@ -1,11 +1,18 @@
 package org.geelato.core.meta.model.view;
 
 
+import org.geelato.core.meta.model.field.ColumnMeta;
+
 public class ViewMeta {
     private TableView viewMeta;
     private String viewName;
     private String  viewType;
-
+    private String viewConstruct;
+    public ViewMeta(String viewName, String viewType, String viewConstruct) {
+        this.viewName = viewName;
+        this.viewType = viewType;
+        this.viewConstruct = viewConstruct;
+    }
     public TableView getViewMeta() {
         return viewMeta;
     }
@@ -28,5 +35,13 @@ public class ViewMeta {
 
     public void setViewType(String viewType) {
         this.viewType = viewType;
+    }
+
+    public String getViewConstruct() {
+        return viewConstruct;
+    }
+
+    public void setViewConstruct(String viewConstruct) {
+        this.viewConstruct = viewConstruct;
     }
 }

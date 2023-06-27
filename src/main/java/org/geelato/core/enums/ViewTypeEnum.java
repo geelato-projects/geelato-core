@@ -6,7 +6,7 @@ package org.geelato.core.enums;
  * @date 2023/6/15 10:42
  */
 public enum ViewTypeEnum {
-    DEFAULT("default", "默认视图"), CUSTOM(" ", "自定义视图");
+    DEFAULT("default", "默认视图"), CUSTOM("custom", "自定义视图");
 
     private String code;
     private String name;

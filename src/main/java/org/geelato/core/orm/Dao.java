@@ -8,6 +8,7 @@ import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.gql.parser.QueryCommand;
+import org.geelato.core.gql.parser.QueryViewCommand;
 import org.geelato.core.gql.parser.SaveCommand;
 import org.geelato.core.meta.EntityManager;
 import org.geelato.core.meta.MetaManager;
@@ -354,6 +355,21 @@ public class Dao {
         BoundSql boundSql = sqlManager.generatePageQuerySql(command, entityType, true, filterGroup, null);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
+    }
+    public List<Map<String,Object>> queryListByView(String  entityName, String viewName,int pageNum, int pageSize, Map<String, Object> params) {
+        FilterGroup filterGroup = new FilterGroup();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
+            }
+        }
+        QueryViewCommand command = new QueryViewCommand();
+        command.setPageNum(pageNum);
+        command.setPageSize(pageSize);
+        command.setViewName(viewName);
+        BoundSql boundSql = sqlManager.generatePageQuerySql(command, entityName, true, filterGroup, null);
+        logger.info(boundSql.toString());
+        return jdbcTemplate.queryForList(boundSql.getSql());
     }
 
     public int delete(Class entityType, String fieldName, Object value) {

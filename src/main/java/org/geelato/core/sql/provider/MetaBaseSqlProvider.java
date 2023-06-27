@@ -8,6 +8,7 @@ import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.core.meta.model.view.ViewMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -240,6 +241,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         Assert.notNull(em, "未能通过entityName：" + command.getEntityName() + ",获取元数据信息EntityMeta。");
         return em;
     }
+
 
     //表别名
     public String buildTableAlias(String tableName) {

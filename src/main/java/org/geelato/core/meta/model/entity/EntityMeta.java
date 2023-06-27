@@ -24,6 +24,7 @@ public class EntityMeta {
     private String tableAlias;
     private String[] fieldNames;
     private Collection<FieldMeta> fieldMetas;
+    private Collection<ViewMeta> viewMetas;
     private Collection<TableForeign> tableForeigns;
 
     private Map<String, DictDataSource> dictDataSourceMap;
@@ -315,5 +316,23 @@ public class EntityMeta {
 
     public Map<String, TableForeign> getTableForeignsMap() {
         return tableForeignsMap;
+    }
+
+    public Collection<ViewMeta> getViewMetas() {
+        return viewMetas;
+    }
+    public ViewMeta getViewMeta(String viewName) {
+        if (this.viewMetas == null || this.viewMetas.size() == 0) {
+            return null;
+        }
+        for (ViewMeta vm : viewMetas) {
+            if (vm.getViewName().equals(viewName)) {
+                return vm;
+            }
+        }
+        return null;
+    }
+    public void setViewMetas(Collection<ViewMeta> viewMetas) {
+        this.viewMetas = viewMetas;
     }
 }
