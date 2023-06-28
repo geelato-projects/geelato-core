@@ -1,6 +1,7 @@
 package org.geelato.core.orm;
 
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.aop.annotation.MethodLog;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
 import org.geelato.core.gql.GqlManager;
@@ -355,6 +356,7 @@ public class Dao {
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
+    @MethodLog(type = "queryListByView")
     public List<Map<String,Object>> queryListByView(String  entityName, String viewName,int pageNum, int pageSize, Map<String, Object> params) {
         FilterGroup filterGroup = new FilterGroup();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
