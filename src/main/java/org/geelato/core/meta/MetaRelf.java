@@ -156,7 +156,7 @@ public class MetaRelf {
         return em;
     }
 
-    public static EntityMeta getEntityMeta(Map tmap, List columnList,List viewList , List foreignList) {
+    public static EntityMeta getEntityMeta(Map tmap, List columnList, List viewList, List foreignList) {
         EntityMeta em = new EntityMeta();
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("entity_name").toString());
@@ -365,21 +365,25 @@ public class MetaRelf {
 
     public static HashMap<String, ViewMeta> getViewMetas(List<HashMap> viewList) {
         HashMap<String, ViewMeta> map = new HashMap<String, ViewMeta>();
-        for (Map v_map : viewList) {
-            try {
-                String viewName = v_map.get("view_name") == null ? null : v_map.get("view_name").toString();
-                String viewConstruct = v_map.get("view_construct") == null ? null : v_map.get("view_construct").toString();
-                String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
-                if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
-                    ViewMeta vm = new ViewMeta(viewName,viewType,viewConstruct);
-                    map.put(viewName, vm);
+        if (viewList != null && !viewList.isEmpty()) {
+            for (Map v_map : viewList) {
+                try {
+                    String viewName = v_map.get("view_name") == null ? null : v_map.get("view_name").toString();
+                    String viewConstruct = v_map.get("view_construct") == null ? null : v_map.get("view_construct").toString();
+                    String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
+                    if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
+                        ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct);
+                        map.put(viewName, vm);
+                    }
+                } catch (RuntimeException e) {
+                    throw e;
                 }
-            }catch (RuntimeException e) {
-                throw e;
             }
         }
+
         return map;
     }
+
     public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
         for (Map c_map : columnList) {

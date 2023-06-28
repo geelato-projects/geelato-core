@@ -74,12 +74,12 @@ public class SqlManager {
     //========================================================
     //                  基于元数据  model                   ==
     //========================================================
-    public <T> BoundSql generateQueryForObjectOrMapSql(Class<T> clazz, FilterGroup filterGroup) {
-        return generateQuerySql(clazz, false, filterGroup, null);
+    public <T> BoundSql generateQueryForObjectOrMapSql(Class<T> clazz, FilterGroup filterGroup, String orderBy) {
+        return generateQuerySql(clazz, false, filterGroup, orderBy, null);
     }
 
-    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup) {
-        return generateQuerySql(clazz, true, filterGroup, null);
+    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String orderBy) {
+        return generateQuerySql(clazz, true, filterGroup, orderBy, null);
     }
 
     /**
@@ -89,8 +89,8 @@ public class SqlManager {
      * @param <T>
      * @return 单列列表查询语句
      */
-    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String field) {
-        return generateQuerySql(clazz, true, filterGroup, new String[]{field});
+    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String orderBy, String field) {
+        return generateQuerySql(clazz, true, filterGroup, orderBy, new String[]{field});
     }
 
     /**
@@ -100,8 +100,8 @@ public class SqlManager {
      * @param <T>
      * @return 多列列表查询语句
      */
-    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String[] fields) {
-        return generateQuerySql(clazz, true, filterGroup, fields);
+    public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String orderBy, String[] fields) {
+        return generateQuerySql(clazz, true, filterGroup, orderBy, fields);
     }
 
 
@@ -113,13 +113,14 @@ public class SqlManager {
      * @param <T>
      * @return 多列列表查询语句
      */
-    private <T> BoundSql generateQuerySql(Class<T> clazz, boolean isArray, FilterGroup filterGroup, String[] fields) {
+    private <T> BoundSql generateQuerySql(Class<T> clazz, boolean isArray, FilterGroup filterGroup, String orderBy, String[] fields) {
         QueryCommand queryCommand = new QueryCommand();
         EntityMeta em = metaManager.get(clazz);
         queryCommand.setEntityName(em.getEntityName());
         queryCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
         queryCommand.setQueryForList(isArray);
         queryCommand.setWhere(filterGroup);
+        queryCommand.setOrderBy(orderBy);
         return metaQuerySqlProvider.generate(queryCommand);
     }
 
@@ -146,6 +147,7 @@ public class SqlManager {
     public BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup) {
         return generateDeleteSql(clazz, filterGroup, null);
     }
+
     private BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup, String[] fields) {
         DeleteCommand deleteCommand = new DeleteCommand();
         EntityMeta em = metaManager.get(clazz);

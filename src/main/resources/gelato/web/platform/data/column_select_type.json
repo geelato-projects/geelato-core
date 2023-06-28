@@ -96,16 +96,6 @@
   },
   {
     "group": "字符串",
-    "label": "数组",
-    "value": "arrays",
-    "mysql": "varchar",
-    "disabled": false,
-    "fixed": true,
-    "extent": 1024,
-    "seqNo": 111
-  },
-  {
-    "group": "字符串",
     "label": "Json",
     "value": "json",
     "mysql": "json",
