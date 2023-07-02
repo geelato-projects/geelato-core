@@ -19,6 +19,7 @@ public class TableView extends BaseSortableEntity implements EntityEnableAble {
     private String viewName;
     private String viewType;
     private String viewConstruct;
+    private String viewColumn;
     private String description;
     private int linked;
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
@@ -81,6 +82,16 @@ public class TableView extends BaseSortableEntity implements EntityEnableAble {
 
     public void setViewConstruct(String viewConstruct) {
         this.viewConstruct = viewConstruct;
+    }
+
+    @Col(name = "view_column")
+    @Title(title = "视图语句")
+    public String getViewColumn() {
+        return viewColumn;
+    }
+
+    public void setViewColumn(String viewColumn) {
+        this.viewColumn = viewColumn;
     }
 
     @Col(name = "description")
