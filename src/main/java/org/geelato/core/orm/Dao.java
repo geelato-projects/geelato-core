@@ -17,6 +17,7 @@ import org.geelato.core.gql.parser.SaveCommand;
 import org.geelato.core.meta.EntityManager;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.CommonRowMapper;
+import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.mvc.Ctx;
 import org.geelato.core.script.sql.SqlScriptManager;
@@ -152,7 +153,7 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-        list=Convert(list);
+        list=Convert(list,metaManager.getByEntityName(command.getEntityName()));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
@@ -164,22 +165,42 @@ public class Dao {
         return result;
     }
 
-    private List<Map<String,Object>> Convert(List<Map<String,Object>> data) {
+    private List<Map<String, Object>> Convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
         for (Map<String, Object> map : data) {
             for (String key : map.keySet()) {
-                Object value = map.get(key);
-                String str = (value != null) ? value.toString() : "";
-                if (str.startsWith("{") && str.endsWith("}")) {
-                    JSONObject jsonObject = JSONObject.parse(value.toString());
-                    map.replace(key, value, jsonObject);
-                } else if (str.startsWith("[") && str.endsWith("]")) {
-                    JSONArray jsonArray = JSONArray.parse(value.toString());
-                    map.replace(key, value, jsonArray);
+                String columnType=entityMeta.getFieldMeta(key).getColumn().getDataType();
+                if(columnType.equals("JSON")){
+                    Object value = map.get(key);
+                    String str = (value != null) ? value.toString() : "";
+                    if (str.startsWith("{") && str.endsWith("}")) {
+                        JSONObject jsonObject = JSONObject.parse(value.toString());
+                        map.replace(key, value, jsonObject);
+                    } else if (str.startsWith("[") && str.endsWith("]")) {
+                        JSONArray jsonArray = JSONArray.parse(value.toString());
+                        map.replace(key, value, jsonArray);
+                    }
                 }
             }
         }
         return data;
     }
+
+//    private List<Map<String,Object>> Convert(List<Map<String,Object>> data) {
+//        for (Map<String, Object> map : data) {
+//            for (String key : map.keySet()) {
+//                Object value = map.get(key);
+//                String str = (value != null) ? value.toString() : "";
+//                if (str.startsWith("{") && str.endsWith("}")) {
+//                    JSONObject jsonObject = JSONObject.parse(value.toString());
+//                    map.replace(key, value, jsonObject);
+//                } else if (str.startsWith("[") && str.endsWith("]")) {
+//                    JSONArray jsonArray = JSONArray.parse(value.toString());
+//                    map.replace(key, value, jsonArray);
+//                }
+//            }
+//        }
+//        return data;
+//    }
 
     /**
      * @param boundPageSql
