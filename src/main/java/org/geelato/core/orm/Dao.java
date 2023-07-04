@@ -19,6 +19,7 @@ import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.CommonRowMapper;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
+import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.mvc.Ctx;
 import org.geelato.core.script.sql.SqlScriptManager;
 import org.geelato.core.script.sql.SqlScriptManagerFactory;
@@ -168,16 +169,19 @@ public class Dao {
     private List<Map<String, Object>> Convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
         for (Map<String, Object> map : data) {
             for (String key : map.keySet()) {
-                String columnType=entityMeta.getFieldMeta(key).getColumn().getDataType();
-                if(columnType.equals("JSON")){
-                    Object value = map.get(key);
-                    String str = (value != null) ? value.toString() : "";
-                    if (str.startsWith("{") && str.endsWith("}")) {
-                        JSONObject jsonObject = JSONObject.parse(value.toString());
-                        map.replace(key, value, jsonObject);
-                    } else if (str.startsWith("[") && str.endsWith("]")) {
-                        JSONArray jsonArray = JSONArray.parse(value.toString());
-                        map.replace(key, value, jsonArray);
+                FieldMeta fieldMeta = entityMeta.getFieldMeta(key);
+                if (fieldMeta != null) {
+                    String columnType = entityMeta.getFieldMeta(key).getColumn().getDataType();
+                    if (columnType.equals("JSON")) {
+                        Object value = map.get(key);
+                        String str = (value != null) ? value.toString() : "";
+                        if (str.startsWith("{") && str.endsWith("}")) {
+                            JSONObject jsonObject = JSONObject.parse(value.toString());
+                            map.replace(key, value, jsonObject);
+                        } else if (str.startsWith("[") && str.endsWith("]")) {
+                            JSONArray jsonArray = JSONArray.parse(value.toString());
+                            map.replace(key, value, jsonArray);
+                        }
                     }
                 }
             }
