@@ -157,6 +157,17 @@ public class SqlManager {
         return metaDeleteSqlProvider.generate(deleteCommand);
     }
 
+    public BoundSql generateDeleteSql(String entityName, FilterGroup filterGroup) {
+        return generateDeleteSql(entityName, filterGroup, null);
+    }
+    private BoundSql generateDeleteSql(String entityName, FilterGroup filterGroup, String[] fields) {
+        DeleteCommand deleteCommand = new DeleteCommand();
+        EntityMeta em = metaManager.getByEntityName(entityName);
+        deleteCommand.setEntityName(em.getEntityName());
+        deleteCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        deleteCommand.setWhere(filterGroup);
+        return metaDeleteSqlProvider.generate(deleteCommand);
+    }
     public <T> BoundSql generatePageQuerySql(QueryCommand queryCommand, Class<T> clazz, boolean isArray, FilterGroup filterGroup, String[] fields) {
         EntityMeta em = metaManager.get(clazz);
         queryCommand.setEntityName(em.getEntityName());
