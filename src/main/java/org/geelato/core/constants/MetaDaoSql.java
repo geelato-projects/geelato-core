@@ -15,7 +15,7 @@ public class MetaDaoSql {
     /**
      * 查询 platform_dev_column
      */
-    public static final String SQL_COLUMN_LIST_BY_TABLE = String.format("select * from platform_dev_column where 1=1", ColumnDefault.DEL_STATUS_VALUE);
+    public static final String SQL_COLUMN_LIST_BY_TABLE = String.format("select * from platform_dev_column where del_status=%d", ColumnDefault.DEL_STATUS_VALUE);
     /**
      * 查询 platform_dev_view
      */
