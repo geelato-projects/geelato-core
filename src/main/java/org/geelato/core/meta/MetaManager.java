@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author geemeta
  */
-public class MetaManager  {
+public class MetaManager {
 
 
     private static Lock lock = new ReentrantLock();
@@ -70,9 +70,9 @@ public class MetaManager  {
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
         for (Map map : tableList) {
             List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
-            List viewList=MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
+            List viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
             //List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
-            parseOne(map, columnList,viewList);
+            parseOne(map, columnList, viewList);
         }
     }
 
@@ -268,6 +268,18 @@ public class MetaManager  {
     }
 
     public List<EntityLiteMeta> getAllEntityLiteMetas() {
+        if (!entityLiteMetaList.isEmpty()) {
+            List<EntityLiteMeta> liteMetas = new ArrayList<>();
+            Set<String> entityName = new HashSet<>();
+            for (EntityLiteMeta liteMeta : entityLiteMetaList) {
+                if (entityName.contains(liteMeta.getEntityName())) {
+                    liteMetas.add(liteMeta);
+                }
+                entityName.add(liteMeta.getEntityName());
+            }
+            entityLiteMetaList.removeAll(liteMetas);
+        }
+
         return entityLiteMetaList;
     }
 
@@ -379,18 +391,20 @@ public class MetaManager  {
     }
 
 
-
     public void parseOne(Map map, List<HashMap> columnList) {
         parseOne(map, columnList, null);
     }
+
     public void parseOne(Map map, List<HashMap> columnList, List<HashMap> viewList) {
         parseOne(map, columnList, viewList, null);
     }
-    public void parseOne(Map map, List<HashMap> columnList,  List<HashMap> viewList, List<HashMap> foreignList) {
+
+    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> viewList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList,viewList, foreignList);
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, viewList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+            removeLiteMeta(entityMeta.getEntityName());
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
         }
@@ -407,10 +421,24 @@ public class MetaManager  {
 
     public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
         if (entityMetadataMap.containsKey(map.get("entity_name").toString())) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map,columnList);
+            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList);
             entityMetadataMap.remove(entityMeta.getEntityName());
-            entityLiteMetaList.remove(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            removeLiteMeta(entityMeta.getEntityName());
             tableNameMetadataMap.remove(entityMeta.getTableName());
+        }
+    }
+
+    private void removeLiteMeta(String entityName) {
+        List<EntityLiteMeta> removeList = new ArrayList<>();
+        if (!entityLiteMetaList.isEmpty()) {
+            for (EntityLiteMeta liteMeta : entityLiteMetaList) {
+                if (liteMeta.getEntityName().equals(entityName)) {
+                    removeList.add(liteMeta);
+                }
+            }
+            if (!removeList.isEmpty()) {
+                entityLiteMetaList.removeAll(removeList);
+            }
         }
     }
 
@@ -441,8 +469,7 @@ public class MetaManager  {
             List<ColumnSelectType> selectTypeList = JSON.parseArray(jsonStr, ColumnSelectType.class);
             if (selectTypeList != null && !selectTypeList.isEmpty()) {
                 for (ColumnSelectType selectType : selectTypeList) {
-                    if (Strings.isBlank(selectType.getLabel()) || Strings.isBlank(selectType.getValue()) ||
-                            Strings.isBlank(selectType.getMysql())) {
+                    if (Strings.isBlank(selectType.getLabel()) || Strings.isBlank(selectType.getValue()) || Strings.isBlank(selectType.getMysql())) {
                         continue;
                     }
                     selectType.setValue(selectType.getValue().toUpperCase(Locale.ENGLISH));
