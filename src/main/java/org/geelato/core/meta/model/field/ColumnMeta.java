@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -475,11 +474,11 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
                 columnType = dataType;
             } else if (MysqlDataTypeEnum.getIntegers().contains(dataType)) {
                 setCharMaxLength(0);
-                columnType = dataType + (isNumericSigned() ? ("(" + numericPrecision + ")") : ("(" + numericPrecision + ") unsigned"));
+                columnType = dataType + "(" + numericPrecision + ")" + (isNumericSigned() ? "" : " UNSIGNED");
             } else if (MysqlDataTypeEnum.getDecimals().contains(dataType)) {
                 setAutoIncrement(false);
                 setCharMaxLength(0);
-                columnType = dataType + "(" + numericPrecision + "," + numericScale + ")";
+                columnType = dataType + "(" + (numericPrecision + numericScale) + "," + numericScale + ")" + (isNumericSigned() ? "" : " UNSIGNED");
             } else if (MysqlDataTypeEnum.getDates().contains(dataType)) {
                 columnType = dataType;
             } else {
@@ -494,15 +493,15 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             // 设置额外值
             List<String> extras = new ArrayList<String>();
             if (isUniqued()) {
-                extras.add("unique");
+                extras.add("UNIQUE");
             }
-            if (Arrays.asList(new String[]{"TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT", "DECIMAL"}).contains(dataType)) {
+            if (MysqlDataTypeEnum.getNumbers().contains(dataType)) {
                 if (isAutoIncrement()) {
-                    extras.add("auto_increment");
+                    extras.add("AUTO_INCREMENT");
                     setDefaultValue(null);
                 }
                 if (!isNumericSigned()) {
-                    extras.add("unsigned");
+                    extras.add("UNSIGNED");
                 }
             }
             setExtra(String.join(",", extras));

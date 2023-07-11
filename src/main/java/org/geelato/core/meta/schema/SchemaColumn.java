@@ -2,9 +2,11 @@ package org.geelato.core.meta.schema;
 
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
+import org.geelato.core.enums.MysqlDataTypeEnum;
 import org.geelato.core.meta.model.field.ColumnMeta;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * @author diabl
@@ -240,13 +242,18 @@ public class SchemaColumn implements Serializable {
         meta.setNullable(Strings.isBlank(this.isNullable) || "YES".equals(this.isNullable));
         meta.setDataType(this.dataType);
         // meta.setExtra(this.extra);
-        meta.setAutoIncrement(Strings.isNotEmpty(this.extra) && this.extra.indexOf("auto_increment") != -1);
+        meta.setAutoIncrement(Strings.isNotEmpty(this.extra) && this.extra.toUpperCase(Locale.ENGLISH).indexOf("AUTO_INCREMENT") != -1);
         meta.setUniqued(this.unique);
         meta.setDatetimePrecision(Strings.isBlank(this.datetimePrecision) ? 0 : Integer.parseInt(this.datetimePrecision));
         meta.setCharMaxLength(Strings.isBlank(this.characterMaximumLength) ? 0 : Long.parseLong(this.characterMaximumLength));
-        meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision));
-        meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
-        meta.setNumericSigned(Strings.isNotEmpty(this.columnType) && this.columnType.indexOf("unsigned") == -1);
+        if (MysqlDataTypeEnum.getDecimals().contains(dataType)) {
+            meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
+            meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision) - meta.getNumericScale());
+        } else {
+            meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision));
+            meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
+        }
+        meta.setNumericSigned(Strings.isNotEmpty(this.columnType) && this.columnType.toUpperCase(Locale.ENGLISH).indexOf("UNSIGNED") == -1);
         meta.setEnableStatus(ColumnDefault.ENABLE_STATUS_VALUE);
         meta.setSelectType(this.dataType);
         meta.afterSet();
