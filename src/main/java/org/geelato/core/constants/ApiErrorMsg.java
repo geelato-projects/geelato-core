@@ -15,4 +15,11 @@ public class ApiErrorMsg {
     public static final String QUERY_FAIL = "查询失败";
     public static final String IS_EXIST = "已存在";
     public static final String OBJECT_DISABLED = "已禁用";
+    public static final String PARAMETER_MISSING = "重要参数缺失";
+    public static final String AUTH_CODE_ERROR = "验证码错误";
+    public static final String AUTH_CODE_GET_ERROR = "验证码获取失败";
+    public static final String VALIDATE_USER = "验证失败";
+    public static final String VALIDATE_USER_PASSWORD = "账号密码验证失败";
+    public static final String VALIDATE_USER_MOBILE = "手机号码验证失败";
+    public static final String VALIDATE_USER_EMAIL = "电子邮箱验证失败";
 }
