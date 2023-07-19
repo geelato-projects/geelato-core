@@ -6,11 +6,15 @@ public class ViewMeta {
     private String viewName;
     private String viewType;
     private String viewConstruct;
+    private String viewColumn;
+    private String subjectEntity;
 
-    public ViewMeta(String viewName, String viewType, String viewConstruct) {
+    public ViewMeta(String viewName, String viewType, String viewConstruct,String viewColumn,String entityName) {
         this.viewName = viewName;
         this.viewType = viewType;
         this.viewConstruct = viewConstruct;
+        this.viewColumn=viewColumn;
+        this.subjectEntity=entityName;
     }
 
     public TableView getViewMeta() {
@@ -43,5 +47,21 @@ public class ViewMeta {
 
     public void setViewConstruct(String viewConstruct) {
         this.viewConstruct = viewConstruct;
+    }
+
+    public String getViewColumn() {
+        return viewColumn;
+    }
+
+    public void setViewColumn(String viewColumn) {
+        this.viewColumn = viewColumn;
+    }
+
+    public String getSubjectEntity() {
+        return subjectEntity;
+    }
+
+    public void setSubjectEntity(String subjectEntity) {
+        this.subjectEntity = subjectEntity;
     }
 }

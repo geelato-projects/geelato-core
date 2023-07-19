@@ -370,10 +370,13 @@ public class MetaRelf {
                 try {
                     String viewName = v_map.get("view_name") == null ? null : v_map.get("view_name").toString();
                     String viewConstruct = v_map.get("view_construct") == null ? null : v_map.get("view_construct").toString();
+                    String viewColumn = v_map.get("view_column") == null ? null : v_map.get("view_column").toString();
                     String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
+                    String entityName = v_map.get("entity_name") == null ? null : v_map.get("entity_name").toString();
                     if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
-                        ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct);
+                        ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct,viewColumn,entityName);
                         map.put(viewName, vm);
+                        ViewManager.singleInstance().addViewMeta(viewName,vm);
                     }
                 } catch (RuntimeException e) {
                     throw e;

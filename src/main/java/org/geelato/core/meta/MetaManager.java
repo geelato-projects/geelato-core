@@ -44,6 +44,14 @@ public class MetaManager {
     private Dao MetaDao;
 
 
+    public static MetaManager singleInstance() {
+        lock.lock();
+        if (instance == null) {
+            instance = new MetaManager();
+        }
+        lock.unlock();
+        return instance;
+    }
     private MetaManager() {
 
         // 解析内置的类
@@ -167,15 +175,6 @@ public class MetaManager {
      */
     public FieldMeta getCommonFieldMeta(String columnName) {
         return commonFieldMetas.get(columnName);
-    }
-
-    public static MetaManager singleInstance() {
-        lock.lock();
-        if (instance == null) {
-            instance = new MetaManager();
-        }
-        lock.unlock();
-        return instance;
     }
 
 
@@ -404,6 +403,7 @@ public class MetaManager {
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, viewList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+
             removeLiteMeta(entityMeta.getEntityName());
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
