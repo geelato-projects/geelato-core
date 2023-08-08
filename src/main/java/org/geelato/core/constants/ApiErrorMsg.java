@@ -22,4 +22,5 @@ public class ApiErrorMsg {
     public static final String VALIDATE_USER_PASSWORD = "账号密码验证失败";
     public static final String VALIDATE_USER_MOBILE = "手机号码验证失败";
     public static final String VALIDATE_USER_EMAIL = "电子邮箱验证失败";
+    public static final String SERIAL_USE_UP = "当前流水号已用完，请扩容";
 }
