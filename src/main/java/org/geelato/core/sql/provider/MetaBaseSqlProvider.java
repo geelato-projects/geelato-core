@@ -117,10 +117,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
             // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
             if (filter.getOperator().equals(FilterGroup.Operator.in)) {
-                String[] ary = filter.getValue().split(",");
-                for (String s : ary) {
-                    list.add(s);
-                }
+                // String[] ary = filter.getValue().split(",");
+                Object[] ary = filter.getValueAsArray();
+                list.addAll(Arrays.asList(ary));
             } else {
                 list.add(filter.getValue());
             }
@@ -132,8 +131,8 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * 基于条件部分，构建参数类型数组
      * 对于update、insert、delete的sql provider，即结合字段设值部分的需要，组合调整
      *
-     * @param command
-     * @return
+     * @param command 命令
+     * @return types
      */
     protected int[] buildWhereTypes(E command) {
         if (command.getWhere() == null || command.getWhere().getFilters() == null) {
@@ -204,7 +203,8 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             sb.append(" like CONCAT('%',?,'%')");
         } else if (operator == FilterGroup.Operator.in) {
             tryAppendKeywords(em, sb, fm);
-            String[] ary = filter.getValue().split(",");
+            // String[] ary = filter.getValue().split(",");
+            Object[] ary = filter.getValueAsArray();
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
             sb.append(")");
