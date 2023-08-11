@@ -7,7 +7,6 @@ import java.util.List;
  * @author geemeta
  */
 public class BaseCommand<E extends BaseCommand> {
-
     /**
      * TODO 客户端生成的唯一标识，用于缓存
      */
@@ -115,4 +114,7 @@ public class BaseCommand<E extends BaseCommand> {
     public boolean hasNotJoin(String alias) {
         return this.from.indexOf(alias) == -1;
     }
+
+
+
 }

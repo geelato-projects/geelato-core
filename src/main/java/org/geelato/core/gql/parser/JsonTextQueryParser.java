@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.geelato.core.meta.MetaManager;
+import org.geelato.core.mvc.Ctx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -49,7 +50,7 @@ public class JsonTextQueryParser {
      * @param queryJsonText
      * @return
      */
-    public List<QueryCommand> parseMulti(String queryJsonText) {
+    public List<QueryCommand> parseMulti(String queryJsonText,Ctx ctx) {
         JSONArray ja = JSON.parseArray(queryJsonText);
         CommandValidator validator = new CommandValidator();
         List list = new ArrayList<QueryCommand>(ja.size());
@@ -60,7 +61,7 @@ public class JsonTextQueryParser {
                 Assert.isTrue(validator.isSuccess(), validator.getMessage());
             }
             String key = jo.keySet().iterator().next();
-            list.add(parse(key, jo.getJSONObject(key), validator));
+            list.add(parse(key, jo.getJSONObject(key), validator,ctx));
         }
         return list;
     }
@@ -71,7 +72,7 @@ public class JsonTextQueryParser {
      * @param queryJsonText
      * @return
      */
-    public QueryCommand parse(String queryJsonText) {
+    public QueryCommand parse(String queryJsonText,Ctx ctx) {
         JSONObject jo = JSON.parseObject(queryJsonText);
         CommandValidator validator = new CommandValidator();
         if (jo.size() != 1) {
@@ -79,20 +80,17 @@ public class JsonTextQueryParser {
             Assert.isTrue(validator.isSuccess(), validator.getMessage());
         }
         String key = jo.keySet().iterator().next();
-        return parse(key, jo.getJSONObject(key), validator);
+        return parse(key, jo.getJSONObject(key), validator,ctx);
     }
 
-    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator) {
+    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator,Ctx ctx) {
         Assert.isTrue(validator.validateEntity(entityName), validator.getMessage());
 
         QueryCommand command = new QueryCommand();
         command.setEntityName(entityName);
-//        if (jo.keySet().size() == 0) return command;
-
         FilterGroup fg = new FilterGroup();
+        fg.addFilter("tenantCode",ctx.getCurrentTenantCode());
         command.setWhere(fg);
-
-//        HashMap<String,Object> params = new HashMap<>();
 
         jo.keySet().forEach(key -> {
             if (key.startsWith(KEYWORD_FLAG) && StringUtils.hasText(jo.getString(key))) {
@@ -171,13 +169,11 @@ public class JsonTextQueryParser {
                 }
             } else if (key.startsWith(SUB_ENTITY_FLAG)) {
                 //解析子实体
-                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator));
+                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator,ctx));
             } else {
                 //where子句过滤条件
                 String[] ary = key.split(FILTER_FLAG);
                 String field = ary[0];
-                //TODO
-//                if(!"draw".equals(field)){
                 validator.validateField(field, "where");
                 if (ary.length == 1) {
                     //等值
@@ -201,8 +197,6 @@ public class JsonTextQueryParser {
                     //TODO 格式不对 throw
                 }
             }
-
-//            }
         });
 
         Assert.isTrue(validator.isSuccess(), validator.getMessage());

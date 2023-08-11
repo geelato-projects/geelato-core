@@ -361,8 +361,7 @@ public class Dao {
      */
     protected Ctx getSessionCtx() {
         Ctx ctx = new Ctx();
-        //TODO 从会话中获取
-        ctx.put("userId", String.valueOf(1));
+        ctx.put("userId",ctx.getCurrentUser().getUserId());
         return ctx;
     }
 

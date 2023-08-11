@@ -34,15 +34,15 @@ public class GqlManager {
     //                  基于元数据  gql                      ==
     //========================================================
     public QueryCommand generateQuerySql(String jsonText, Ctx ctx) {
-        return jsonTextQueryParser.parse(jsonText);
+        return jsonTextQueryParser.parse(jsonText,ctx);
     }
 
     public List<QueryCommand> generateMultiQuerySql(String jsonText, Ctx ctx) {
-        return jsonTextQueryParser.parseMulti(jsonText);
+        return jsonTextQueryParser.parseMulti(jsonText,ctx);
     }
 
     public QueryCommand generatePageQuerySql(String jsonText, Ctx ctx) {
-        return jsonTextQueryParser.parse(jsonText);
+        return jsonTextQueryParser.parse(jsonText,ctx);
     }
 
     public SaveCommand generateSaveSql(String jsonText, Ctx ctx) {

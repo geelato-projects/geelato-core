@@ -25,6 +25,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
     protected MetaManager metaManager = MetaManager.singleInstance();
 
+
     //表别名MAP
     private Map<String, String> tableAlias = new HashMap<>(8);
 
@@ -35,6 +36,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         keywordsMap.put("inner", true);
         keywordsMap.put("enable", true);
         keywordsMap.put("key", true);
+
     }
 
     protected static String convertToSignString(FilterGroup.Operator operator) {

@@ -58,7 +58,6 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         // having
         if (command.getHaving() != null) {
             sb.append(" having ");
-            // TODO: 2020/3/16 替换别名
             sb.append(command.getHaving());
         }
         // order by

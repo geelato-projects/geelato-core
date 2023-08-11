@@ -149,7 +149,9 @@ public class JsonTextSaveParser {
             if (entity.containsKey("updater")) {
                 entity.put("updater", ctx.get("userId"));
             }
-
+            if (entity.containsKey("tenantCode")) {
+                entity.put("tenantCode", ctx.get("tenantCode"));
+            }
             String[] insertFields = new String[entity.size()];
             entity.keySet().toArray(insertFields);
             command.setFields(insertFields);

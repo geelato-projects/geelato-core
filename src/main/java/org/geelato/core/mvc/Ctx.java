@@ -12,7 +12,17 @@ import java.util.HashMap;
  *
  */
 public class Ctx extends HashMap<String, String> {
+
+    public Ctx(){
+        this.put("userId",getCurrentUser().getUserId());
+        this.put("tenantCode",getCurrentTenantCode());
+    }
+
     public User getCurrentUser(){
         return EnvManager.singleInstance().getCurrentUser();
+    }
+
+    public String getCurrentTenantCode() {
+        return EnvManager.singleInstance().getCurrentTenantCode();
     }
 }

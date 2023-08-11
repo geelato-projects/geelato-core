@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class EnvManager {
     private User currentUser;
+    private String currentTenantCode;
     private static Lock lock = new ReentrantLock();
 
     private static EnvManager instance;
@@ -31,10 +32,15 @@ public class EnvManager {
         //TODO 根据用户ID产生当前用户信息
         User user=new User();
         user.setUserId(userId);
+        this.currentTenantCode="geelato";
         currentUser=user;
     }
 
     public User  getCurrentUser() {
         return currentUser;
+    }
+
+    public String  getCurrentTenantCode() {
+        return currentTenantCode;
     }
 }
