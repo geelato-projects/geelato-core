@@ -1,6 +1,7 @@
 package org.geelato.core.gql.parser;
 
 
+import com.alibaba.fastjson2.JSONArray;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -99,6 +100,8 @@ public class FilterGroup {
         private String field;
         private Operator operator;
         private String value;
+
+        private Object[] arrayValue;
         //        private String columnName;
         private boolean isRefField;
         private String refEntityName;
@@ -138,8 +141,28 @@ public class FilterGroup {
             return value;
         }
 
+        /**
+         * 一般用于in查询
+         * @return 值的数组格式
+         */
+        public Object[] getValueAsArray() {
+            if (arrayValue != null) {
+                return arrayValue;
+            }
+            // in 查询时，value格式为数组的字符串格式，需进行转换 ["1","2",...]
+            if (value.startsWith("[") && value.endsWith("]")) {
+                JSONArray ary = JSONArray.parse(value);
+                arrayValue = ary.toArray();
+            } else {
+                // 同时也支持非标准数组的格式："1","2",...，即少了符号：[]
+                arrayValue = value.split(",");
+            }
+            return arrayValue;
+        }
+
         public Filter setValue(String value) {
             this.value = value;
+            this.arrayValue = null;
             return this;
         }
 
