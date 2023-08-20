@@ -12,6 +12,8 @@ public class SaveCommand extends BaseCommand<SaveCommand> {
     private String PK;
     private Map<String, Object> valueMap;
 
+    private Map<String,Object> originValueMap;
+
     /**
      * 与fields同步，冗余。
      * @see #fields
@@ -31,5 +33,13 @@ public class SaveCommand extends BaseCommand<SaveCommand> {
 
     public void setPK(String PK) {
         this.PK = PK;
+    }
+
+    public Map<String, Object> getOriginValueMap() {
+        return originValueMap;
+    }
+
+    public void setOriginValueMap(Map<String, Object> originValueMap) {
+        this.originValueMap = originValueMap;
     }
 }

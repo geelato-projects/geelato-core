@@ -105,7 +105,7 @@
     "comment": "逻辑删除状态，1：已删除、0：未删除",
     "dataType": "INT",
     "datetimePrecision": 0,
-    "defaultValue": "0",
+    "defaultValue": 0,
     "delStatus": 0,
     "description": "逻辑删除的状态，1：已删除、0：未删除",
     "enableStatus": 1,

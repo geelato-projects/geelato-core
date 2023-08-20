@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.aop.annotation.MethodLog;
+import org.geelato.core.aop.annotation.OpLog;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
 import org.geelato.core.gql.GqlManager;
@@ -188,23 +189,6 @@ public class Dao {
         }
         return data;
     }
-
-//    private List<Map<String,Object>> Convert(List<Map<String,Object>> data) {
-//        for (Map<String, Object> map : data) {
-//            for (String key : map.keySet()) {
-//                Object value = map.get(key);
-//                String str = (value != null) ? value.toString() : "";
-//                if (str.startsWith("{") && str.endsWith("}")) {
-//                    JSONObject jsonObject = JSONObject.parse(value.toString());
-//                    map.replace(key, value, jsonObject);
-//                } else if (str.startsWith("[") && str.endsWith("]")) {
-//                    JSONArray jsonArray = JSONArray.parse(value.toString());
-//                    map.replace(key, value, jsonArray);
-//                }
-//            }
-//        }
-//        return data;
-//    }
 
     /**
      * @param boundPageSql
