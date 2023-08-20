@@ -27,17 +27,6 @@ public class CommonRowMapper<T> implements RowMapper<T> {
 
     public CommonRowMapper() {
         ConvertUtils.register(new DateLocaleConverter(), Date.class);
-//        ConvertUtils.register(new Converter() {
-//            @Override
-//            public <T> T convert(Class<T> type, Object value) {
-//
-//                try {
-//                    return (T) sdf.parse(value.toString());
-//                } catch (ParseException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        }, Date.class);
         ConvertUtils.deregister(Date.class);
         ConvertUtils.register(new DateTimeConverter(), Date.class);
 

@@ -5,6 +5,7 @@ import java.util.List;
 public class User {
     private String userId;
     private String userName;
+    private String loginName;
     private String defaultOrgId;
     private String defaultOrgName;
 
@@ -59,5 +60,13 @@ public class User {
 
     public void setRoles(List<UserRole> roles) {
         this.roles = roles;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 }
