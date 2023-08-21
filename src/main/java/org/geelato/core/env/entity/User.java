@@ -1,5 +1,6 @@
 package org.geelato.core.env.entity;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 public class User {
@@ -15,7 +16,11 @@ public class User {
     private List<UserOrg> orgs;
     private List<UserRole> roles;
 
+    private List<UserMenu> menus;
 
+    private List<DataPermission> dataPermissions;
+
+    private List<ElementPermission> elementPermissions;
 
     public String getUserId() {
         return userId;
@@ -87,5 +92,29 @@ public class User {
 
     public void setDeptId(String deptId) {
         this.deptId = deptId;
+    }
+
+    public List<UserMenu> getMenus() {
+        return menus;
+    }
+
+    public void setMenus(List<UserMenu> menus) {
+        this.menus = menus;
+    }
+
+    public List<DataPermission> getDataPermissions() {
+        return dataPermissions;
+    }
+
+    public void setDataPermissions(List<DataPermission> dataPermissions) {
+        this.dataPermissions = dataPermissions;
+    }
+
+    public List<ElementPermission> getElementPermissions() {
+        return elementPermissions;
+    }
+
+    public void setElementPermissions(List<ElementPermission> elementPermissions) {
+        this.elementPermissions = elementPermissions;
     }
 }

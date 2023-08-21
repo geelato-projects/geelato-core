@@ -1,15 +1,22 @@
 package org.geelato.core.env;
 
 
+import org.geelato.core.enums.permission.DataPermissionEnum;
+import org.geelato.core.enums.permission.ElementPermissionEnum;
+import org.geelato.core.env.entity.DataPermission;
+import org.geelato.core.env.entity.ElementPermission;
 import org.geelato.core.env.entity.User;
-import org.geelato.core.meta.model.CommonRowMapper;
+import org.geelato.core.env.entity.UserMenu;
 import org.geelato.core.orm.Dao;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class EnvManager {
+
     private Dao  EnvDao;
 
     private User currentUser;
@@ -37,12 +44,55 @@ public class EnvManager {
     }
 
     public void InitCurrentUser(String loginName) {
-        //TODO 根据用户ID产生当前用户信息
-//        User user=new User();
         String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName,name as userName,bu_id as buId,dept_id as deptId from platform_user  where login_name =?";
         User dbUser = EnvDao.getJdbcTemplate().queryForObject(sql,new BeanPropertyRowMapper<User>(User.class),new Object[]{loginName});
         this.currentTenantCode="geelato";
+        dbUser.setMenus(StructUserMenu(dbUser.getUserId()));
+        dbUser.setDataPermissions(StructDataPermission(dbUser.getUserId()));
+        dbUser.setElementPermissions(StructElementPermission(dbUser.getUserId()));
         currentUser=dbUser;
+    }
+
+    private List<DataPermission> StructDataPermission(String userId) {
+        List<DataPermission> dataPermissionList=new ArrayList<>();
+        DataPermission dp1=new DataPermission();
+        dp1.setEntity("");
+        dp1.setDataPermission(DataPermissionEnum.All);
+        dataPermissionList.add(dp1);
+
+        DataPermission dp2=new DataPermission();
+        dp2.setEntity("");
+        dp2.setDataPermission(DataPermissionEnum.Myself);
+        dataPermissionList.add(dp2);
+
+        DataPermission dp3=new DataPermission();
+        dp3.setEntity("");
+        dp3.setDataPermission(DataPermissionEnum.MyDept);
+        dataPermissionList.add(dp3);
+
+        return dataPermissionList;
+    }
+
+    private List<ElementPermission> StructElementPermission(String userId) {
+        List<ElementPermission> elementPermissionList=new ArrayList<>();
+
+        ElementPermission ep1=new ElementPermission();
+        ep1.setElementKey("");
+        ep1.setElementPermission(ElementPermissionEnum.Visable);
+        elementPermissionList.add(ep1);
+
+        return elementPermissionList;
+    }
+
+
+    private List<UserMenu> StructUserMenu(String userId) {
+        List<UserMenu> userMenuList=new ArrayList<>();
+
+        UserMenu um1=new UserMenu();
+        um1.setMenuUrl("");
+        userMenuList.add(um1);
+
+        return userMenuList;
     }
 
     public User  getCurrentUser() {
