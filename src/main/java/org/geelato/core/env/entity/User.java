@@ -8,6 +8,9 @@ public class User {
     private String loginName;
     private String defaultOrgId;
     private String defaultOrgName;
+    
+    private String buId;
+    private String deptId;
 
     private List<UserOrg> orgs;
     private List<UserRole> roles;
@@ -68,5 +71,21 @@ public class User {
 
     public void setLoginName(String loginName) {
         this.loginName = loginName;
+    }
+
+    public String getBuId() {
+        return buId;
+    }
+
+    public void setBuId(String buId) {
+        this.buId = buId;
+    }
+
+    public String getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 }

@@ -39,7 +39,7 @@ public class EnvManager {
     public void InitCurrentUser(String loginName) {
         //TODO 根据用户ID产生当前用户信息
 //        User user=new User();
-        String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName,name as userName from platform_user  where login_name =?";
+        String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName,name as userName,bu_id as buId,dept_id as deptId from platform_user  where login_name =?";
         User dbUser = EnvDao.getJdbcTemplate().queryForObject(sql,new BeanPropertyRowMapper<User>(User.class),new Object[]{loginName});
         this.currentTenantCode="geelato";
         currentUser=dbUser;
