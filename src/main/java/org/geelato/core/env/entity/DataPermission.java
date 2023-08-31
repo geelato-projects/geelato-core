@@ -2,12 +2,15 @@ package org.geelato.core.env.entity;
 
 
 import org.geelato.core.enums.permission.DataPermissionEnum;
+import org.geelato.core.env.EnvManager;
+import org.geelato.core.gql.parser.FilterGroup;
 
 public class DataPermission {
 
     private String entity;
 
     private DataPermissionEnum dataPermission;
+
 
     public String getEntity() {
         return entity;
@@ -24,4 +27,5 @@ public class DataPermission {
     public void setDataPermission(DataPermissionEnum dataPermission) {
         this.dataPermission = dataPermission;
     }
+
 }

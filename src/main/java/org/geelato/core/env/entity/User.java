@@ -105,7 +105,9 @@ public class User {
     public List<DataPermission> getDataPermissions() {
         return dataPermissions;
     }
-
+    public DataPermission getDataPermissionByEntity(String entity){
+        return this.dataPermissions.stream().filter(x->x.getEntity().equals(entity)).findFirst().orElse(null);
+    }
     public void setDataPermissions(List<DataPermission> dataPermissions) {
         this.dataPermissions = dataPermissions;
     }

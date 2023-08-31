@@ -102,7 +102,6 @@ public class FilterGroup {
         private String value;
 
         private Object[] arrayValue;
-        //        private String columnName;
         private boolean isRefField;
         private String refEntityName;
 

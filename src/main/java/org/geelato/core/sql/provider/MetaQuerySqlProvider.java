@@ -112,12 +112,9 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         }
         // 只取第一个字段用于统计总数，默认按主键统计
         if (md.getId() != null) {
-//            sb.append(md.getId().getColumnName());
             tryAppendKeywords(sb, md.getId().getColumnName());
         } else {
             FieldMeta fm = md.getFieldMeta(fields[0]);
-            tryAppendKeywords(sb, fm.getColumnName());
-//            sb.append(fm.getColumnName());
         }
     }
 
@@ -135,21 +132,16 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
             if (alias.containsKey(fieldName)) {
                 // 有指定的重命名要求时
                 tryAppendKeywords(sb, fm.getColumnName());
-//                sb.append(fm.getColumnName());
                 sb.append(" ");
                 tryAppendKeywords(sb, alias.get(fieldName).toString());
-//                sb.append(alias.get(fieldName));
             } else {
                 // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
                 if (fm.isEquals()) {
                     tryAppendKeywords(sb, fm.getColumnName());
-//                    sb.append(fm.getColumnName());
                 } else {
                     tryAppendKeywords(sb, fm.getColumnName());
-//                    sb.append(fm.getColumnName());
                     sb.append(" ");
                     tryAppendKeywords(sb, fm.getFieldName());
-//                    sb.append(fm.getFieldName());
                 }
             }
             sb.append(",");

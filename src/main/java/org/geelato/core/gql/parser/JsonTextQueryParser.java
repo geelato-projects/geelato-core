@@ -3,6 +3,7 @@ package org.geelato.core.gql.parser;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import org.geelato.core.env.entity.DataPermission;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.mvc.Ctx;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +92,21 @@ public class JsonTextQueryParser {
         command.setEntityName(entityName);
         FilterGroup fg = new FilterGroup();
         fg.addFilter("tenantCode",ctx.getCurrentTenantCode());
+
+        if(ctx.getCurrentUser().getDataPermissionByEntity(entityName)!=null){
+            DataPermission dp=ctx.getCurrentUser().getDataPermissionByEntity(entityName);
+            switch (dp.getDataPermission()){
+                case MySelf :
+                    fg.addFilter("creator",ctx.getCurrentUser().getUserId());
+                    break;
+                case MyDept:
+                    fg.addFilter("deptId",ctx.getCurrentUser().getDeptId());
+                    break;
+                default:
+                    break;
+            }
+        }
+
         command.setWhere(fg);
 
         jo.keySet().forEach(key -> {

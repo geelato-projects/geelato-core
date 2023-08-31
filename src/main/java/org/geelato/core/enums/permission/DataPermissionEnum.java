@@ -4,7 +4,7 @@ public enum DataPermissionEnum {
     //看所有
     All,
     //看自己
-    Myself,
+    MySelf,
     //看自己部门
     MyDept,
     //用户自定义

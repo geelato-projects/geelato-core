@@ -61,8 +61,8 @@ public class EnvManager {
         dataPermissionList.add(dp1);
 
         DataPermission dp2=new DataPermission();
-        dp2.setEntity("");
-        dp2.setDataPermission(DataPermissionEnum.Myself);
+        dp2.setEntity("platform_user");
+        dp2.setDataPermission(DataPermissionEnum.MySelf);
         dataPermissionList.add(dp2);
 
         DataPermission dp3=new DataPermission();
