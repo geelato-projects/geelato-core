@@ -224,7 +224,11 @@ public class Dao {
      */
     public String save(BoundSql boundSql) {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
-        int updateNum = jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
+        try{
+            jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
+        }catch (DataAccessException e) {
+            return e.getMessage();
+        }
         return command.getPK();
     }
 
