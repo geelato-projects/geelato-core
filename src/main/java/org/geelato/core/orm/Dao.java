@@ -26,9 +26,13 @@ import org.geelato.core.sql.SqlManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,6 +229,25 @@ public class Dao {
     }
 
 
+    /**
+     * 批量保存
+     *
+     */
+    public List<String> batchSave(List<BoundSql> boundSqlList) {
+        List<Object[]> paramsObjs=new ArrayList<>();
+        List<String> returnPks=new ArrayList<>();
+        for (BoundSql bs:boundSqlList) {
+            paramsObjs.add(bs.getParams());
+            SaveCommand saveCommand=(SaveCommand)bs.getCommand();
+            returnPks.add(saveCommand.getPK());
+        }
+        try{
+            jdbcTemplate.batchUpdate(boundSqlList.get(1).getSql(),paramsObjs);
+        }catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        return returnPks;
+    }
     /**
      * 删除
      *

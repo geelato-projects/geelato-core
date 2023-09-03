@@ -6,7 +6,10 @@ import org.geelato.core.gql.parser.*;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.sql.provider.*;
+import org.w3c.dom.stylesheets.LinkStyle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -66,6 +69,13 @@ public class SqlManager {
         }
     }
 
+    public List<BoundSql> generateBatchSaveSql(List<SaveCommand> commandList) {
+        List<BoundSql> boundSqlList=new ArrayList<>();
+        for (SaveCommand saveCommand: commandList){
+            boundSqlList.add(generateSaveSql(saveCommand));
+        }
+        return boundSqlList;
+    }
     public BoundSql generateDeleteSql(DeleteCommand command) {
         return metaDeleteSqlProvider.generate(command);
     }

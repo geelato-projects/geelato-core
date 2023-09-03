@@ -12,11 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author geelato
@@ -48,6 +47,25 @@ public class JsonTextSaveParser {
         return parse(ctx, entityName, jo.getJSONObject(entityName), validator);
     }
 
+
+    public List<SaveCommand> parseBatch(String jsonText, Ctx ctx) {
+        JSONObject jo = JSON.parseObject(jsonText);
+        CommandValidator validator = new CommandValidator();
+        if (jo.containsKey(KW_BIZ)) {
+            jo.remove(KW_BIZ);
+        }
+        String entityName = jo.keySet().iterator().next();
+        return parseBatch(ctx, entityName, jo.getJSONArray(entityName), validator);
+    }
+
+    private List<SaveCommand> parseBatch(Ctx ctx, String commandName, JSONArray jsonArray, CommandValidator validator){
+        List<SaveCommand> saveCommandList=new ArrayList<>();
+        for (Object o:jsonArray) {
+            SaveCommand saveCommand=parse(ctx,commandName, (JSONObject) o,validator);
+            saveCommandList.add(saveCommand);
+        }
+        return saveCommandList;
+    }
     /**
      * 递归解析保存操作命令，里面变更在执行期再解析，不在此解析
      *
@@ -123,8 +141,6 @@ public class JsonTextSaveParser {
         } else {
             //insert
             command.setCommandType(CommandType.Insert);
-
-            //commandName==entityName
             Map<String, Object> entity = metaManager.newDefaultEntity(commandName);
             entity.putAll(params);
             entity.put(PK, UIDGenerator.generate(1));
