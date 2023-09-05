@@ -246,7 +246,7 @@ public class Dao {
             returnPks.add(saveCommand.getPK());
         }
         try{
-            jdbcTemplate.batchUpdate(boundSqlList.get(1).getSql(),paramsObjs);
+            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(),paramsObjs);
         }catch (DataAccessException e) {
             e.printStackTrace();
         }
