@@ -5,6 +5,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.MetaDaoSql;
 import org.geelato.core.constants.ResourcesFiles;
 import org.geelato.core.enums.DataTypeRadiusEnum;
+import org.geelato.core.enums.DeleteStatusEnum;
+import org.geelato.core.enums.EnableStatusEnum;
 import org.geelato.core.enums.MysqlToJavaEnum;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.model.entity.EntityLiteMeta;
@@ -52,6 +54,7 @@ public class MetaManager {
         lock.unlock();
         return instance;
     }
+
     private MetaManager() {
 
         // 解析内置的类
@@ -210,7 +213,9 @@ public class MetaManager {
         HashMap<String, Object> map = new HashMap(em.getFieldMetas().size());
         for (FieldMeta fm : em.getFieldMetas()) {
             ColumnMeta cm = fm.getColumn();
-            map.put(fm.getFieldName(), cm.getDefaultValue());
+            if (cm.getEnableStatus() == EnableStatusEnum.ENABLED.getCode() && cm.getDelStatus() == DeleteStatusEnum.NO.getCode()) {
+                map.put(fm.getFieldName(), cm.getDefaultValue());
+            }
         }
         return map;
     }
