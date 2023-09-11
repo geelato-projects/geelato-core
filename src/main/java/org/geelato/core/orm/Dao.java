@@ -26,12 +26,9 @@ import org.geelato.core.sql.SqlManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,20 +40,20 @@ import java.util.Map;
 @Component
 public class Dao {
 
+    public final static String SQL_TEMPLATE_MANAGER = "sql";
+    private static final Logger logger = LoggerFactory.getLogger(Dao.class);
+    private static final Map<String, Object> defaultParams = new HashMap<>();
     /**
      * 默认取第一个：primaryJdbcTemplate，可在dao外进行设置更换
      */
     private JdbcTemplate jdbcTemplate;
     private Boolean defaultFilterOption = false;
     private FilterGroup defaultFilterGroup;
-    private static Logger logger = LoggerFactory.getLogger(Dao.class);
-    private static Map<String, Object> defaultParams = new HashMap<>();
-    public final static String SQL_TEMPLATE_MANAGER = "sql";
-    private MetaManager metaManager = MetaManager.singleInstance();
-    private SqlScriptManager sqlScriptManager = SqlScriptManagerFactory.get(SQL_TEMPLATE_MANAGER);
-    private GqlManager gqlManager = GqlManager.singleInstance();
-    private SqlManager sqlManager = SqlManager.singleInstance();
-    private EntityManager entityManager = EntityManager.singleInstance();
+    private final MetaManager metaManager = MetaManager.singleInstance();
+    private final SqlScriptManager sqlScriptManager = SqlScriptManagerFactory.get(SQL_TEMPLATE_MANAGER);
+    private final GqlManager gqlManager = GqlManager.singleInstance();
+    private final SqlManager sqlManager = SqlManager.singleInstance();
+    private final EntityManager entityManager = EntityManager.singleInstance();
 
 
     /**
@@ -91,7 +88,7 @@ public class Dao {
     //                  基于sqlId                           ==
     //========================================================
     public void execute(String sqlId, Map<String, Object> paramMap) {
-        jdbcTemplate.execute((String) sqlScriptManager.generate(sqlId, paramMap));
+        jdbcTemplate.execute(sqlScriptManager.generate(sqlId, paramMap));
     }
 
     public Map<String, Object> queryForMap(String sqlId, Map<String, Object> paramMap) throws DataAccessException {
@@ -119,7 +116,7 @@ public class Dao {
     }
 
     public int save(String sqlId, Map<String, Object> paramMap) {
-        return jdbcTemplate.update((String) sqlScriptManager.generate(sqlId, mixParam(paramMap)));
+        return jdbcTemplate.update(sqlScriptManager.generate(sqlId, mixParam(paramMap)));
     }
 
     /**
@@ -157,7 +154,7 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-        list=Convert(list,metaManager.getByEntityName(command.getEntityName()));
+        list = Convert(list, metaManager.getByEntityName(command.getEntityName()));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
@@ -224,9 +221,9 @@ public class Dao {
      */
     public String save(BoundSql boundSql) {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
-        try{
+        try {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             return e.getMessage();
         }
         return command.getPK();
@@ -235,23 +232,23 @@ public class Dao {
 
     /**
      * 批量保存
-     *
      */
     public List<String> batchSave(List<BoundSql> boundSqlList) {
-        List<Object[]> paramsObjs=new ArrayList<>();
-        List<String> returnPks=new ArrayList<>();
-        for (BoundSql bs:boundSqlList) {
+        List<Object[]> paramsObjs = new ArrayList<>();
+        List<String> returnPks = new ArrayList<>();
+        for (BoundSql bs : boundSqlList) {
             paramsObjs.add(bs.getParams());
-            SaveCommand saveCommand=(SaveCommand)bs.getCommand();
+            SaveCommand saveCommand = (SaveCommand) bs.getCommand();
             returnPks.add(saveCommand.getPK());
         }
-        try{
-            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(),paramsObjs);
-        }catch (DataAccessException e) {
+        try {
+            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(), paramsObjs);
+        } catch (DataAccessException e) {
             e.printStackTrace();
         }
         return returnPks;
     }
+
     /**
      * 删除
      *
@@ -370,17 +367,20 @@ public class Dao {
      */
     protected Ctx getSessionCtx() {
         Ctx ctx = new Ctx();
-        ctx.put("userId",ctx.getCurrentUser().getUserId());
+        ctx.put("userId", ctx.getCurrentUser().getUserId());
         return ctx;
     }
 
-    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, String orderBy) {
-        FilterGroup filterGroup = new FilterGroup();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
-                filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
-            }
-        }
+    /**
+     * 常用全量查询
+     *
+     * @param entityType
+     * @param filterGroup
+     * @param orderBy
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, String orderBy) {
         if (defaultFilterOption && defaultFilterGroup != null) {
             for (FilterGroup.Filter filter : defaultFilterGroup.getFilters()) {
                 filterGroup.addFilter(filter);
@@ -391,13 +391,40 @@ public class Dao {
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
 
-    public <T> List<T> queryList(Class<T> entityType, int pageNum, int pageSize, String orderBy, Map<String, Object> params) {
+    /**
+     * 常用全量查询
+     *
+     * @param entityType
+     * @param params
+     * @param orderBy
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, String orderBy) {
         FilterGroup filterGroup = new FilterGroup();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
-                filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
+        if (params != null && !params.isEmpty()) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                    filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
+                }
             }
         }
+
+        return queryList(entityType, filterGroup, orderBy);
+    }
+
+    /**
+     * 常用分页查询
+     *
+     * @param entityType
+     * @param filterGroup
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, int pageNum, int pageSize, String orderBy) {
         if (defaultFilterOption && defaultFilterGroup != null) {
             for (FilterGroup.Filter filter : defaultFilterGroup.getFilters()) {
                 filterGroup.addFilter(filter);
@@ -411,8 +438,31 @@ public class Dao {
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
+
+    /**
+     * @param entityType
+     * @param params
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, int pageNum, int pageSize, String orderBy) {
+        FilterGroup filterGroup = new FilterGroup();
+        if (params != null && !params.isEmpty()) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                    filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
+                }
+            }
+        }
+
+        return queryList(entityType, filterGroup, pageNum, pageSize, orderBy);
+    }
+
     @MethodLog(type = "queryListByView")
-    public List<Map<String,Object>> queryListByView(String  entityName, String viewName,int pageNum, int pageSize, Map<String, Object> params) {
+    public List<Map<String, Object>> queryListByView(String entityName, String viewName, int pageNum, int pageSize, Map<String, Object> params) {
         FilterGroup filterGroup = new FilterGroup();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
