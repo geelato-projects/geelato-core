@@ -120,10 +120,11 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
             // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
             if (filter.getOperator().equals(FilterGroup.Operator.in)) {
-                // String[] ary = filter.getValue().split(",");
                 Object[] ary = filter.getValueAsArray();
                 list.addAll(Arrays.asList(ary));
-            } else {
+            } else if (filter.getOperator().equals(FilterGroup.Operator.nil)) {
+                //not do anything
+            }else {
                 list.add(filter.getValue());
             }
         }
@@ -211,7 +212,14 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
             sb.append(")");
-        } else {
+        }else if(operator==FilterGroup.Operator.nil){
+            tryAppendKeywords(em, sb, fm);
+            if(filter.getValue().equals("1")){
+                sb.append(" is NULL");
+            }else{
+                sb.append(" is NOT NULL");
+            }
+        }else {
             throw new RuntimeException("未实现Operator：" + operator);
         }
     }

@@ -180,7 +180,17 @@ public class FilterGroup {
 
 
     public enum Operator {
-        eq("eq"), neq("neq"), lt("lt"), lte("lte"), gt("gt"), gte("gte"), startWith("startwith"), endWith("endwith"), contains("contains"), in("in");
+        eq("eq"),
+        neq("neq"),
+        lt("lt"),
+        lte("lte"),
+        gt("gt"),
+        gte("gte"),
+        startWith("startwith"),
+        endWith("endwith"),
+        contains("contains"),
+        in("in"),
+        nil("nil");
 
         private String text;
 
