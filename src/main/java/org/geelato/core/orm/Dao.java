@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -236,13 +237,14 @@ public class Dao {
     public List<String> batchSave(List<BoundSql> boundSqlList) {
         List<Object[]> paramsObjs = new ArrayList<>();
         List<String> returnPks = new ArrayList<>();
-        for (BoundSql bs : boundSqlList) {
-            paramsObjs.add(bs.getParams());
-            SaveCommand saveCommand = (SaveCommand) bs.getCommand();
-            returnPks.add(saveCommand.getPK());
-        }
         try {
-            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(), paramsObjs);
+            for (BoundSql bs : boundSqlList) {
+                paramsObjs.add(bs.getParams());
+                SaveCommand saveCommand = (SaveCommand) bs.getCommand();
+                returnPks.add(saveCommand.getPK());
+                jdbcTemplate.update(bs.getSql(), bs.getParams());
+
+            }
         } catch (DataAccessException e) {
             e.printStackTrace();
         }

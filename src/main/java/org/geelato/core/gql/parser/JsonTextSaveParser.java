@@ -3,6 +3,8 @@ package org.geelato.core.gql.parser;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
@@ -57,7 +59,26 @@ public class JsonTextSaveParser {
         String entityName = jo.keySet().iterator().next();
         return parseBatch(ctx, entityName, jo.getJSONArray(entityName), validator);
     }
-
+    public List<SaveCommand> parseMulti(String jsonText, Ctx ctx) {
+        JSONObject jo = JSON.parseObject(jsonText);
+        CommandValidator validator = new CommandValidator();
+        if (jo.containsKey(KW_BIZ)) {
+            jo.remove(KW_BIZ);
+        }
+        return parseMulti(ctx, jo, validator);
+    }
+    private List<SaveCommand> parseMulti(Ctx ctx, JSONObject jo, CommandValidator validator){
+        List<SaveCommand> saveCommandList=new ArrayList<>();
+        Iterator iterator = jo.keySet().iterator();
+        while(iterator.hasNext()){
+            String entityName = (String) iterator.next();
+            String value = jo.getString(entityName);
+            JSONObject o=JSONObject.parseObject(value);
+            SaveCommand saveCommand=parse(ctx,entityName, o,validator);
+            saveCommandList.add(saveCommand);
+        }
+        return saveCommandList;
+    }
     private List<SaveCommand> parseBatch(Ctx ctx, String commandName, JSONArray jsonArray, CommandValidator validator){
         List<SaveCommand> saveCommandList=new ArrayList<>();
         for (Object o:jsonArray) {

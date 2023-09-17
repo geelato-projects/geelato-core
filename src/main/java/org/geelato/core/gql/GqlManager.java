@@ -48,10 +48,13 @@ public class GqlManager {
     public SaveCommand generateSaveSql(String jsonText, Ctx ctx) {
         return jsonTextSaveParser.parse(jsonText, ctx);
     }
+
     public List<SaveCommand> generateBatchSaveSql(String jsonText, Ctx ctx) {
         return jsonTextSaveParser.parseBatch(jsonText, ctx);
     }
-
+    public List<SaveCommand> generateMultiSaveSql(String jsonText, Ctx ctx) {
+        return jsonTextSaveParser.parseMulti(jsonText, ctx);
+    }
     public DeleteCommand generateDeleteSql(String jsonText, Ctx ctx) {
         return jsonTextDeleteParser.parse(jsonText, ctx);
     }
