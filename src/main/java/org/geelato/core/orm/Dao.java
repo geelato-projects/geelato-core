@@ -19,7 +19,7 @@ import org.geelato.core.meta.model.CommonRowMapper;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.mvc.Ctx;
+import org.geelato.core.Ctx;
 import org.geelato.core.script.sql.SqlScriptManager;
 import org.geelato.core.script.sql.SqlScriptManagerFactory;
 import org.geelato.core.sql.SqlManager;
@@ -30,7 +30,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -377,22 +376,13 @@ public class Dao {
 
 
     public <E extends IdEntity> Map save(E entity) {
-        BoundSql boundSql = entityManager.generateSaveSql(entity, getSessionCtx());
+        BoundSql boundSql = entityManager.generateSaveSql(entity,new Ctx());
         logger.info(boundSql.toString());
         jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         SaveCommand command = (SaveCommand) boundSql.getCommand();
         return command.getValueMap();
     }
 
-
-    /**
-     * @return 当前会话信息
-     */
-    protected Ctx getSessionCtx() {
-        Ctx ctx = new Ctx();
-        ctx.put("userId", ctx.getCurrentUser().getUserId());
-        return ctx;
-    }
 
     /**
      * 常用全量查询

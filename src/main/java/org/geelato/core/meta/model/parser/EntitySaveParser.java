@@ -9,7 +9,7 @@ import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.mvc.Ctx;
+import org.geelato.core.Ctx;
 import org.geelato.utils.UIDGenerator;
 
 import java.lang.reflect.InvocationTargetException;

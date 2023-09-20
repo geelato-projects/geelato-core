@@ -1,4 +1,4 @@
-package org.geelato.core.mvc;
+package org.geelato.core;
 
 import org.geelato.core.env.EnvManager;
 import org.geelato.core.env.entity.User;

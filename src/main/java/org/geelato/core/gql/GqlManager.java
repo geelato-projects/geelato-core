@@ -1,7 +1,7 @@
 package org.geelato.core.gql;
 
 import org.geelato.core.gql.parser.*;
-import org.geelato.core.mvc.Ctx;
+import org.geelato.core.Ctx;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;

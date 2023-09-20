@@ -5,7 +5,7 @@ import org.geelato.core.gql.parser.CommandType;
 import org.geelato.core.gql.parser.SaveCommand;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.parser.EntitySaveParser;
-import org.geelato.core.mvc.Ctx;
+import org.geelato.core.Ctx;
 import org.geelato.core.sql.provider.MetaDeleteSqlProvider;
 import org.geelato.core.sql.provider.MetaInsertSqlProvider;
 import org.geelato.core.sql.provider.MetaQuerySqlProvider;
