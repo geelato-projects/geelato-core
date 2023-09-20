@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -230,11 +232,28 @@ public class Dao {
         return command.getPK();
     }
 
-
     /**
      * 批量保存
+     *
      */
     public List<String> batchSave(List<BoundSql> boundSqlList) {
+        List<Object[]> paramsObjs=new ArrayList<>();
+        List<String> returnPks=new ArrayList<>();
+        for (BoundSql bs:boundSqlList) {
+            paramsObjs.add(bs.getParams());
+            SaveCommand saveCommand=(SaveCommand)bs.getCommand();
+            returnPks.add(saveCommand.getPK());
+        }
+        try{
+            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(),paramsObjs);
+        }catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        return returnPks;
+    }
+    public List<String> multiSave(List<BoundSql> boundSqlList) {
+        DataSourceTransactionManager dataSourceTransactionManager=new DataSourceTransactionManager(this.jdbcTemplate.getDataSource());
+        TransactionStatus transactionStatus=TransactionHelper.beginTransaction(dataSourceTransactionManager);
         List<Object[]> paramsObjs = new ArrayList<>();
         List<String> returnPks = new ArrayList<>();
         try {
@@ -243,10 +262,12 @@ public class Dao {
                 SaveCommand saveCommand = (SaveCommand) bs.getCommand();
                 returnPks.add(saveCommand.getPK());
                 jdbcTemplate.update(bs.getSql(), bs.getParams());
-
             }
+            TransactionHelper.commitTransaction(dataSourceTransactionManager,transactionStatus);
         } catch (DataAccessException e) {
             e.printStackTrace();
+            TransactionHelper.rollbackTransaction(dataSourceTransactionManager,transactionStatus);
+            returnPks.clear();
         }
         return returnPks;
     }
