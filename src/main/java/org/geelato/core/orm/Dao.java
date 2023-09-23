@@ -226,6 +226,7 @@ public class Dao {
         try {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
+            e.printStackTrace();
             return e.getMessage();
         }
         return command.getPK();
