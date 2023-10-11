@@ -20,7 +20,7 @@
     "numericSigned": true,
     "ordinalPosition": 0,
     "seqNo": 0,
-    "title": "序号",
+    "title": "主键",
     "type": "VARCHAR(32)",
     "uniqued": true
   },
