@@ -18,7 +18,9 @@ public class BaseEntity extends IdEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateAt;
     private String creator;
+    private String creatorName;
     private String updater;
+    private String updatorName;
 
     // 逻辑删除的标识
     private int delStatus = ColumnDefault.DEL_STATUS_VALUE;
@@ -66,6 +68,16 @@ public class BaseEntity extends IdEntity {
         this.creator = creator;
     }
 
+    @Col(name = "creator_name", nullable = true)
+    @Title(title = "创建者名称")
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
     @Col(name = "updater", nullable = false)
     @Title(title = "更新者")
     public String getUpdater() {
@@ -74,6 +86,16 @@ public class BaseEntity extends IdEntity {
 
     public void setUpdater(String updater) {
         this.updater = updater;
+    }
+
+    @Col(name = "updator_name", nullable = true)
+    @Title(title = "更新者名称")
+    public String getUpdatorName() {
+        return updatorName;
+    }
+
+    public void setUpdatorName(String updatorName) {
+        this.updatorName = updatorName;
     }
 
     @Col(name = "del_status")
