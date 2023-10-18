@@ -20,6 +20,8 @@ public class BaseCommand<E extends BaseCommand> {
     }
     protected BaseCommand<E> parentCommand;
 
+    private Boolean execution;
+
     protected CommandType commandType;
     // 命令对应实体名称
     protected String entityName;
@@ -116,5 +118,11 @@ public class BaseCommand<E extends BaseCommand> {
     }
 
 
+    public Boolean getExecution() {
+        return execution;
+    }
 
+    public void setExecution(Boolean execution) {
+        this.execution = execution;
+    }
 }
