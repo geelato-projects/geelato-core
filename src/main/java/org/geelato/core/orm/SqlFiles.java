@@ -89,7 +89,7 @@ public class SqlFiles {
     public static String parseLine(String line) {
         Matcher matcher = newIdPattern.matcher(line);
         if (matcher.find()) {
-            return matcher.replaceAll(String.valueOf(UIDGenerator.generate(1)));
+            return matcher.replaceAll(String.valueOf(UIDGenerator.generate()));
         }
         return line;
     }
