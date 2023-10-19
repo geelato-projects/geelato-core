@@ -53,7 +53,6 @@ public class Dao {
     private FilterGroup defaultFilterGroup;
     private final MetaManager metaManager = MetaManager.singleInstance();
     private final SqlScriptManager sqlScriptManager = SqlScriptManagerFactory.get(SQL_TEMPLATE_MANAGER);
-    private final GqlManager gqlManager = GqlManager.singleInstance();
     private final SqlManager sqlManager = SqlManager.singleInstance();
     private final EntityManager entityManager = EntityManager.singleInstance();
 
@@ -70,7 +69,7 @@ public class Dao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void SetDefaultFilter(Boolean defaultFilter, FilterGroup defaultFilterGroup) {
+    public void setDefaultFilter(Boolean defaultFilter, FilterGroup defaultFilterGroup) {
         this.defaultFilterOption = defaultFilter;
         this.defaultFilterGroup = defaultFilterGroup;
     }
@@ -156,7 +155,7 @@ public class Dao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
-        list = Convert(list, metaManager.getByEntityName(command.getEntityName()));
+        list = convert(list, metaManager.getByEntityName(command.getEntityName()));
         result.setData(list);
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
@@ -168,7 +167,7 @@ public class Dao {
         return result;
     }
 
-    private List<Map<String, Object>> Convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
+    private List<Map<String, Object>> convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
         for (Map<String, Object> map : data) {
             for (String key : map.keySet()) {
                 FieldMeta fieldMeta = entityMeta.getFieldMeta(key);
