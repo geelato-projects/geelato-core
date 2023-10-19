@@ -374,9 +374,9 @@ public class MetaRelf {
                     String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
                     String entityName = v_map.get("entity_name") == null ? null : v_map.get("entity_name").toString();
                     if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
-                        ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct,viewColumn,entityName);
+                        ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct, viewColumn, entityName);
                         map.put(viewName, vm);
-                        ViewManager.singleInstance().addViewMeta(viewName,vm);
+                        ViewManager.singleInstance().addViewMeta(viewName, vm);
                     }
                 } catch (RuntimeException e) {
                     throw e;
@@ -394,6 +394,7 @@ public class MetaRelf {
                 String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
                 String title = c_map.get("title") == null ? null : c_map.get("title").toString();
                 String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
+                String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
                 String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
                 String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
                 String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
@@ -416,6 +417,7 @@ public class MetaRelf {
                     cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? false : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
                     cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? false : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                     cfm.getColumn().setDataType(dataType);
+                    cfm.getColumn().setSelectType(selectType);
                     cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
                     cfm.getColumn().setName(columnName);
                     cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
