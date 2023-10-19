@@ -69,7 +69,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private int numericScale = 0;
 
     //MySQL的information_schema.column中没有该字段，该信息体现在type字段中，numericPrecision无符号比有符号长1
-    private boolean numericSigned = true; //是否有符号，默认有，若无符号，则需在type中增加：unsigned
+    private boolean numericSigned = false; //是否有符号，默认有，若无符号，则需在type中增加：unsigned
     //DATETIME_PRECISION
     private int datetimePrecision = 0; //datetime 长度
 

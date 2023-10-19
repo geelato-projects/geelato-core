@@ -413,7 +413,7 @@ public class MetaRelf {
                     cfm.getColumn().setKey(c_map.get("column_key") == null ? false : Boolean.parseBoolean(c_map.get("column_key").toString()));
                     cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
                     cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
-                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? true : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
+                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? false : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
                     cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? false : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                     cfm.getColumn().setDataType(dataType);
                     cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
