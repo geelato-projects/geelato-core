@@ -20,7 +20,7 @@ public class BaseEntity extends IdEntity {
     private String creator;
     private String creatorName;
     private String updater;
-    private String updatorName;
+    private String updaterName;
 
     // 逻辑删除的标识
     private int delStatus = ColumnDefault.DEL_STATUS_VALUE;
@@ -88,14 +88,14 @@ public class BaseEntity extends IdEntity {
         this.updater = updater;
     }
 
-    @Col(name = "updator_name", nullable = true)
+    @Col(name = "updater_name", nullable = true)
     @Title(title = "更新者名称")
-    public String getUpdatorName() {
-        return updatorName;
+    public String getUpdaterName() {
+        return updaterName;
     }
 
-    public void setUpdatorName(String updatorName) {
-        this.updatorName = updatorName;
+    public void setUpdaterName(String updaterName) {
+        this.updaterName = updaterName;
     }
 
     @Col(name = "del_status")
