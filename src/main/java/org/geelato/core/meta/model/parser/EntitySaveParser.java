@@ -56,7 +56,7 @@ public class EntitySaveParser {
                 command.setValueMap(entity);
             } else {
                 command.setCommandType(CommandType.Insert);
-                entity.put(PK, UIDGenerator.generate(1));
+                entity.put(PK, UIDGenerator.generate());
                 if (entity.containsKey("createAt")) {
                     entity.put("createAt", new Date());
                 }
