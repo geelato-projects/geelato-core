@@ -86,7 +86,6 @@ public class JsonTextQueryParser {
 
     private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator,Ctx ctx) {
         Assert.isTrue(validator.validateEntity(entityName), validator.getMessage());
-
         QueryCommand command = new QueryCommand();
         command.setEntityName(entityName);
         FilterGroup fg = new FilterGroup();
