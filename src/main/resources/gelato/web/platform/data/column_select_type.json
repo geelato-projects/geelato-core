@@ -1,7 +1,7 @@
 [
   {
     "group": "字符串",
-    "label": "字符[0~255]",
+    "label": "字符[1~255]",
     "value": "char",
     "mysql": "char",
     "disabled": false,
@@ -9,12 +9,22 @@
   },
   {
     "group": "字符串",
-    "label": "文本[0~21845]",
+    "label": "单行文本[1~21845]",
     "value": "varchar",
     "mysql": "varchar",
     "disabled": false,
     "extent": 64,
     "seqNo": 102
+  },
+  {
+    "group": "字符串",
+    "label": "多行文本[1~21854]",
+    "value": "remark",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": false,
+    "extent": 1024,
+    "seqNo": 103
   },
   {
     "group": "字符串",
@@ -24,55 +34,84 @@
     "disabled": false,
     "fixed": true,
     "extent": 64,
-    "seqNo": 103
-  },
-  {
-    "group": "字符串",
-    "label": "标题[255]",
-    "value": "title",
-    "mysql": "varchar",
-    "disabled": false,
-    "fixed": true,
-    "extent": 255,
     "seqNo": 104
   },
   {
     "group": "字符串",
-    "label": "备注[1024]",
-    "value": "remark",
+    "label": "单选框[64]",
+    "value": "radio",
     "mysql": "varchar",
     "disabled": false,
     "fixed": true,
-    "extent": 1024,
+    "extent": 64,
     "seqNo": 105
   },
   {
     "group": "字符串",
-    "label": "组织[0~21845]",
-    "value": "org",
+    "label": "流水编码[64]",
+    "value": "code",
     "mysql": "varchar",
     "disabled": false,
+    "fixed": true,
     "extent": 64,
     "seqNo": 106
   },
   {
     "group": "字符串",
-    "label": "用户[0~21845]",
-    "value": "user",
+    "label": "颜色[64]",
+    "value": "color",
     "mysql": "varchar",
     "disabled": false,
+    "fixed": true,
     "extent": 64,
     "seqNo": 107
   },
   {
     "group": "字符串",
-    "label": "新闻[65535]",
+    "label": "实体[36]",
+    "value": "entity",
+    "mysql": "varchar",
+    "disabled": false,
+    "fixed": true,
+    "extent": 36,
+    "seqNo": 108
+  },
+  {
+    "group": "字符串",
+    "label": "组织[1~21845]",
+    "value": "org",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 36,
+    "seqNo": 109
+  },
+  {
+    "group": "字符串",
+    "label": "用户[1~21845]",
+    "value": "user",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 36,
+    "seqNo": 110
+  },
+  {
+    "group": "字符串",
+    "label": "上传[1~21845]",
+    "value": "upload",
+    "mysql": "varchar",
+    "disabled": false,
+    "extent": 36,
+    "seqNo": 111
+  },
+  {
+    "group": "字符串",
+    "label": "内容[65535]",
     "value": "text",
     "mysql": "text",
     "disabled": false,
     "fixed": true,
     "extent": 65535,
-    "seqNo": 108
+    "seqNo": 112
   },
   {
     "group": "字符串",
@@ -82,7 +121,7 @@
     "disabled": false,
     "fixed": true,
     "extent": 16777215,
-    "seqNo": 109
+    "seqNo": 113
   },
   {
     "group": "字符串",
@@ -92,15 +131,7 @@
     "disabled": false,
     "fixed": true,
     "extent": 4294967295,
-    "seqNo": 110
-  },
-  {
-    "group": "字符串",
-    "label": "Json",
-    "value": "json",
-    "mysql": "json",
-    "disabled": false,
-    "seqNo": 112
+    "seqNo": 114
   },
   {
     "group": "布尔值",
@@ -109,6 +140,14 @@
     "mysql": "bit",
     "disabled": false,
     "seqNo": 201
+  },
+  {
+    "group": "布尔值",
+    "label": "开关[1/0]",
+    "value": "switch",
+    "mysql": "bit",
+    "disabled": false,
+    "seqNo": 202
   },
   {
     "group": "数值类型",
@@ -152,11 +191,20 @@
   },
   {
     "group": "数值类型",
-    "label": "精准的小数[D(0~60,0~30)]",
+    "label": "精准的小数[D(1~60,1~30)]",
     "value": "decimal",
     "mysql": "decimal",
     "disabled": false,
     "seqNo": 306
+  },
+  {
+    "group": "数值类型",
+    "label": "评分[D(1~5,1~2)]",
+    "value": "score",
+    "mysql": "decimal",
+    "disabled": false,
+    "extent": 100,
+    "seqNo": 307
   },
   {
     "group": "日期时间",
@@ -176,7 +224,7 @@
   },
   {
     "group": "日期时间",
-    "label": "时间[HH:mm:ss]",
+    "label": "时间点[HH:mm:ss]",
     "value": "time",
     "mysql": "time",
     "disabled": false,
@@ -184,11 +232,19 @@
   },
   {
     "group": "日期时间",
+    "label": "时间段[HH:mm:ss~HH:mm:ss]",
+    "value": "times",
+    "mysql": "time",
+    "disabled": false,
+    "seqNo": 404
+  },
+  {
+    "group": "日期时间",
     "label": "日期时间[YYYY-MM-DD HH:mm:ss]",
     "value": "dateTime",
     "mysql": "dateTime",
     "disabled": false,
-    "seqNo": 404
+    "seqNo": 405
   },
   {
     "group": "日期时间",
@@ -196,6 +252,30 @@
     "value": "timeStamp",
     "mysql": "timeStamp",
     "disabled": false,
-    "seqNo": 405
+    "seqNo": 406
+  },
+  {
+    "group": "JSON",
+    "label": "Json",
+    "value": "json",
+    "mysql": "json",
+    "disabled": false,
+    "seqNo": 501
+  },
+  {
+    "group": "JSON",
+    "label": "多选框",
+    "value": "checkbox",
+    "mysql": "json",
+    "disabled": false,
+    "seqNo": 502
+  },
+  {
+    "group": "JSON",
+    "label": "多组件",
+    "value": "multiComponent",
+    "mysql": "json",
+    "disabled": false,
+    "seqNo": 503
   }
 ]

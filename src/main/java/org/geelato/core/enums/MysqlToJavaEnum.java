@@ -7,6 +7,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author diabl
@@ -28,7 +29,11 @@ public enum MysqlToJavaEnum {
     // 时间
     DATE(Date.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.YEAR, MysqlDataTypeEnum.DATE, MysqlDataTypeEnum.DATETIME}),
     TIME(Time.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TIME}),
-    TIMESTAMP(Timestamp.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TIMESTAMP});
+    TIMESTAMP(Timestamp.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TIMESTAMP}),
+
+    SET(Set.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.SET}),
+    ENUM(Enum.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.ENUM});
+
 
     private final Class java;
     private final MysqlDataTypeEnum[] mysql;

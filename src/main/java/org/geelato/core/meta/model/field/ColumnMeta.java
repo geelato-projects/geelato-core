@@ -45,6 +45,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     //ORDINAL_POSITION
     private int ordinalPosition = 0;
     //COLUMN_DEFAULT
+    // 数据字典编码、流水号id、实体id、多组件[{"label":"","code":"","value":""}]
     private String defaultValue = null;
     //COLUMN_TYPE  --varchar(100)
     private String type;
