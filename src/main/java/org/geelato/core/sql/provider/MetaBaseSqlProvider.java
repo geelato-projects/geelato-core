@@ -1,5 +1,6 @@
 package org.geelato.core.sql.provider;
 
+import com.alibaba.fastjson2.JSONArray;
 import org.apache.commons.collections.map.HashedMap;
 import org.geelato.core.gql.TypeConverter;
 import org.geelato.core.gql.execute.BoundSql;
@@ -122,7 +123,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             if (filter.getOperator().equals(FilterGroup.Operator.in)) {
                 Object[] ary = filter.getValueAsArray();
                 list.addAll(Arrays.asList(ary));
-            } else if (filter.getOperator().equals(FilterGroup.Operator.nil)) {
+            } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
                 //not do anything
             }else {
                 list.add(filter.getValue());
@@ -219,7 +220,14 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             }else{
                 sb.append(" is NOT NULL");
             }
-        }else {
+        }else if(operator==FilterGroup.Operator.bt) {
+            tryAppendKeywords(em, sb, fm);
+            JSONArray ja = JSONArray.parse(filter.getValue());
+            String startTime = ja.get(0).toString();
+            String endTime = ja.get(1).toString();
+            sb.append(String.format("  between '%s' and '%s' ", startTime, endTime));
+        }
+        else {
             throw new RuntimeException("未实现Operator：" + operator);
         }
     }

@@ -190,7 +190,8 @@ public class FilterGroup {
         endWith("endwith"),
         contains("contains"),
         in("in"),
-        nil("nil");
+        nil("nil"),
+        bt("bt");
 
         private String text;
 
