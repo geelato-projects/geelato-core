@@ -6,6 +6,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.aop.annotation.MethodLog;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
+import org.geelato.core.exception.TestException;
 import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
@@ -222,11 +223,13 @@ public class Dao {
      */
     public String save(BoundSql boundSql) {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
+//        jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         try {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
-            e.printStackTrace();
-            return "saveFail";
+            throw new TestException(e.getMessage());
+//            e.printStackTrace();
+//            return "saveFail";
         }
         return command.getPK();
     }
