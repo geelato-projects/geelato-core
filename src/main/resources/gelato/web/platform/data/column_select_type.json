@@ -68,12 +68,12 @@
   },
   {
     "group": "字符串",
-    "label": "实体[36]",
+    "label": "实体[19]",
     "value": "entity",
     "mysql": "varchar",
     "disabled": false,
     "fixed": true,
-    "extent": 36,
+    "extent": 19,
     "seqNo": 108
   },
   {
@@ -82,7 +82,7 @@
     "value": "org",
     "mysql": "varchar",
     "disabled": false,
-    "extent": 36,
+    "extent": 19,
     "seqNo": 109
   },
   {
@@ -91,7 +91,7 @@
     "value": "user",
     "mysql": "varchar",
     "disabled": false,
-    "extent": 36,
+    "extent": 19,
     "seqNo": 110
   },
   {
@@ -100,7 +100,7 @@
     "value": "upload",
     "mysql": "varchar",
     "disabled": false,
-    "extent": 36,
+    "extent": 19,
     "seqNo": 111
   },
   {
@@ -234,7 +234,7 @@
     "group": "日期时间",
     "label": "时间段[HH:mm:ss~HH:mm:ss]",
     "value": "times",
-    "mysql": "time",
+    "mysql": "json",
     "disabled": false,
     "seqNo": 404
   },
