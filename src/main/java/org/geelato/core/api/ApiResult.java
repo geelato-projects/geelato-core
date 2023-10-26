@@ -3,6 +3,7 @@ package org.geelato.core.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.geelato.core.constants.ApiResultCode;
 import org.geelato.core.constants.ApiResultStatus;
+import org.geelato.core.exception.TestException;
 
 /**
  * @author geemeta
@@ -73,6 +74,26 @@ public class ApiResult<E> {
     }
 
     /**
+     * 错误，异常处理
+     *
+     * @param exception
+     * @param <T>
+     * @return
+     */
+    public <T extends Exception> ApiResult<E> error(T exception) {
+        this.status = ApiResultStatus.FAIL;
+        if (exception instanceof TestException) {
+            this.code = ((TestException) exception).getCode();
+            this.msg = ((TestException) exception).getMsg();
+        } else {
+            this.code = ApiResultCode.ERROR;
+            this.msg = exception.getMessage();
+        }
+
+        return this;
+    }
+
+    /**
      * 设置编码为ApiResultCode.SUCCESS
      *
      * @return ApiResult
@@ -87,10 +108,12 @@ public class ApiResult<E> {
     public boolean isSuccess() {
         return this.code == ApiResultCode.SUCCESS;
     }
+
     @JsonIgnore
     public boolean isError() {
         return this.code == ApiResultCode.ERROR;
     }
+
     @JsonIgnore
     public boolean isWarning() {
         return this.code == ApiResultCode.WARNING;
