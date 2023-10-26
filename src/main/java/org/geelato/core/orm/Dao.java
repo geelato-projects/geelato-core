@@ -221,15 +221,15 @@ public class Dao {
      * @param boundSql 查询语句
      * @return 主健值
      */
-    public String save(BoundSql boundSql) {
+    public String save(BoundSql boundSql) throws TestException {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
 //        jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         try {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
-            throw new TestException(e.getMessage());
-//            e.printStackTrace();
-//            return "saveFail";
+//            throw new TestException(e.getMessage());
+            e.printStackTrace();
+            return "saveFail";
         }
         return command.getPK();
     }

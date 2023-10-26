@@ -1,7 +1,9 @@
 package org.geelato.core.exception;
 
 
-public class TestException  extends  RuntimeException{
+import org.springframework.core.NestedRuntimeException;
+
+public class TestException extends RuntimeException  {
 
     public TestException(String msg){
         this.msg=msg;
