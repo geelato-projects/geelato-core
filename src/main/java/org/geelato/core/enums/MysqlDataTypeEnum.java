@@ -106,7 +106,7 @@ public enum MysqlDataTypeEnum {
      * @return
      */
     public static List<String> getBooleans() {
-        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.BIT};
+        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.BIT, MysqlDataTypeEnum.TINYINT};
         return MysqlDataTypeEnum.getNames(typeEnums);
     }
 
