@@ -154,6 +154,7 @@ public class Dao {
      */
     public ApiPagedResult queryForMapList(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
+        logger.info(boundPageSql.getBoundSql().getSql());
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiPagedResult result = new ApiPagedResult();
         list = convert(list, metaManager.getByEntityName(command.getEntityName()));
@@ -198,6 +199,7 @@ public class Dao {
      */
     public ApiMultiPagedResult.PageData queryForMapListToPageData(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
+        logger.info(boundPageSql.getBoundSql().getSql());
         List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
         ApiMultiPagedResult.PageData result = new ApiMultiPagedResult.PageData();
         result.setData(list);

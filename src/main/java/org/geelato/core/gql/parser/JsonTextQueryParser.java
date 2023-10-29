@@ -35,6 +35,7 @@ public class JsonTextQueryParser {
     private final static String KW_ORDER_BY = "@order";
     private final static String KW_GROUP_BY = "@group";
     private final static String KW_HAVING = "@having";
+    private final static String KW_BRACKETS= "@b";
     private final static String KW_KEY = "@key";
 
     private static Map<String, String> orderMap = null;
@@ -156,6 +157,56 @@ public class JsonTextQueryParser {
                         break;
                     case KW_HAVING:
                         //@TODO
+                        break;
+                    case KW_BRACKETS:
+                        JSONArray bracketsJa=jo.getJSONArray(key);
+                        List<FilterGroup> childFilterGroup =new ArrayList<>();
+                        bracketsJa.forEach(k->{
+                            JSONObject bracket=(JSONObject) k;
+                            JSONArray ja = null;
+                            String currentLogic="or";
+                            if(bracket.get("or")!=null){
+                                ja= (JSONArray) bracket.get("or");
+                            }else if (bracket.get("and")!=null) {
+                                ja = (JSONArray) bracket.get("and");
+                                currentLogic="and";
+                            }
+
+                            if(ja!=null) {
+                                FilterGroup filterGroup=new FilterGroup(FilterGroup.Logic.fromString(currentLogic));
+                                for (int i = 0; i < ja.size(); i++) {
+                                    JSONObject jsonObject =  (JSONObject)ja.get(i);
+                                    jsonObject.keySet().forEach(x -> {
+                                        String[] ary = x .split(FILTER_FLAG);
+                                        String field = ary[0];
+                                        validator.validateField(field, "where");
+                                        if (ary.length == 1) {
+                                            //等值
+                                            filterGroup.addFilter(field, FilterGroup.Operator.eq, jsonObject.getString(x));
+                                        } else if (ary.length == 2) {
+                                            //大于、小于...
+                                            String fn = ary[1];
+                                            if (!FilterGroup.Operator.contains(fn)) {
+                                                validator.appendMessage("[");
+                                                validator.appendMessage(key);
+                                                validator.appendMessage("]");
+                                                validator.appendMessage("不支持");
+                                                validator.appendMessage(fn);
+                                                validator.appendMessage(";只支持");
+                                                validator.appendMessage(FilterGroup.Operator.getOperatorStrings());
+                                            } else {
+                                                FilterGroup.Operator operator = FilterGroup.Operator.fromString(fn);
+                                                filterGroup.addFilter(field, operator, jsonObject.getString(x));
+                                            }
+                                        } else {
+                                            //TODO 格式不对 throw
+                                        }
+                                    });
+                                }
+                                childFilterGroup.add(filterGroup);
+                            }
+                                });
+                        fg.setChildFilterGroup(childFilterGroup);
                         break;
                     case KW_PAGE:
                         command.setQueryForList(true);

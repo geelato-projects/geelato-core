@@ -129,6 +129,20 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 list.add(filter.getValue());
             }
         }
+
+        for (FilterGroup filterGroup : command.getWhere().getChildFilterGroup()) {
+            for (FilterGroup.Filter filter : filterGroup.getFilters()) {
+                // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
+                if (filter.getOperator().equals(FilterGroup.Operator.in)) {
+                    Object[] ary = filter.getValueAsArray();
+                    list.addAll(Arrays.asList(ary));
+                } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
+                    //not do anything
+                }else {
+                    list.add(filter.getValue());
+                }
+            }
+        }
         return list.toArray();
     }
 
@@ -182,7 +196,35 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         }
     }
 
-
+    protected void buildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup) {
+        List<FilterGroup.Filter> list=filterGroup.getFilters();
+        if (list != null && list.size() > 0) {
+            Iterator<FilterGroup.Filter> iterator = list.iterator();
+            int index = 0;
+            while (iterator.hasNext()) {
+                FilterGroup.Filter filter = iterator.next();
+                if (filter.isRefField()) {
+                    continue;
+                }
+                if (index > 0) {
+                    sb.append(" ");
+                    sb.append(filterGroup.getLogic().getText());
+                    sb.append(" ");
+                }
+                buildConditionSegment(sb, em, filter);
+                index += 1;
+            }
+        }
+        List<FilterGroup> childFilterGroup=filterGroup.getChildFilterGroup();
+        if (childFilterGroup != null && childFilterGroup.size() > 0) {
+            for (FilterGroup fg:filterGroup.getChildFilterGroup()){
+                sb.append( " and ");
+                sb.append(" ( ");
+                buildConditions(sb,em,fg.getFilters(),fg.getLogic());
+                sb.append(" ) ");
+            }
+        }
+    }
     /**
      * 构建单个过滤条件
      *

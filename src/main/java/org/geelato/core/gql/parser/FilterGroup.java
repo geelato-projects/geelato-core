@@ -27,6 +27,12 @@ public class FilterGroup {
     private HashMap<String, Object> params;
     private int renameIndex = 1;
 
+    private List<FilterGroup> childFilterGroup;
+    public FilterGroup(){
+    }
+    public FilterGroup(Logic logic){
+        this.logic=logic;
+    }
     public Logic getLogic() {
         return logic;
     }
@@ -41,10 +47,6 @@ public class FilterGroup {
         }
         return filters;
     }
-
-//    public void setFilters(List<Filter> filters) {
-//        this.filters = filters;
-//    }
 
     /**
      * 如果filter中的field存在同名时，自动重命名
@@ -79,12 +81,15 @@ public class FilterGroup {
         return params;
     }
 
-    public Filter newFilter() {
-        return new Filter();
+    public List<FilterGroup> getChildFilterGroup() {
+        if(childFilterGroup==null){
+            childFilterGroup=new ArrayList<>();
+        }
+        return childFilterGroup;
     }
 
-    public Filter newFilter(String field, Operator operator, String value) {
-        return new Filter(field, operator, value);
+    public void setChildFilterGroup(List<FilterGroup> childFilterGroup) {
+        this.childFilterGroup = childFilterGroup;
     }
 
     public class Filter {
@@ -203,7 +208,6 @@ public class FilterGroup {
             return this.text;
         }
 
-        // Implementing a fromString method on an enum type
         private static final Map<String, Operator> stringToEnum = new HashMap<String, Operator>();
         private static String operatorStrings = null;
 

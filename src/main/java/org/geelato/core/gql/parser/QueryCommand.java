@@ -74,7 +74,6 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
     }
 
     public void setOrderBy(String orderBy) {
-        //orderBy中的列，应该出现在group by子句中
         this.orderBy = orderBy;
     }
 

@@ -48,7 +48,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         FilterGroup fg = command.getWhere();
         if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
             sb.append(" where ");
-            buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+            buildConditions(sb, md, fg);
         }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {
