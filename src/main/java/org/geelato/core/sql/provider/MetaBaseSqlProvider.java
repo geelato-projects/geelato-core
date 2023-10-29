@@ -126,7 +126,10 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
                 //not do anything
             }else {
-                list.add(filter.getValue());
+                if(!getEntityMeta(command).getFieldMeta(filter.getField()).getColumn().getDataType().equals("JSON")) {
+                    list.add(filter.getValue());
+                }
+
             }
         }
 
@@ -139,7 +142,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
                     //not do anything
                 }else {
-                    list.add(filter.getValue());
+                    if(!getEntityMeta(command).getFieldMeta(filter.getField()).getColumn().getDataType().equals("JSON")) {
+                        list.add(filter.getValue());
+                    }
                 }
             }
         }
@@ -236,9 +241,13 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         FieldMeta fm = em.getFieldMeta(filter.getField());
         FilterGroup.Operator operator = filter.getOperator();
         if (operator == FilterGroup.Operator.eq || operator == FilterGroup.Operator.neq || operator == FilterGroup.Operator.lt || operator == FilterGroup.Operator.lte || operator == FilterGroup.Operator.gt || operator == FilterGroup.Operator.gte) {
-            tryAppendKeywords(em, sb, fm);
-            sb.append(enumToSignString.get(operator));
-            sb.append("?");
+            if(fm.getColumn().getDataType().equals("JSON")){
+                sb.append( String.format(" JSON_CONTAINS( %s->'$','%s') >0",fm.getColumnName(),"\""+filter.getValue()+"\""));
+            }else {
+                tryAppendKeywords(em, sb, fm);
+                sb.append(enumToSignString.get(operator));
+                sb.append("?");
+            }
         } else if (operator == FilterGroup.Operator.startWith) {
             tryAppendKeywords(em, sb, fm);
             sb.append(" like CONCAT('',?,'%')");
