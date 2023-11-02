@@ -214,7 +214,12 @@ public class MetaManager {
         for (FieldMeta fm : em.getFieldMetas()) {
             ColumnMeta cm = fm.getColumn();
             if (cm.getEnableStatus() == EnableStatusEnum.ENABLED.getCode() && cm.getDelStatus() == DeleteStatusEnum.NO.getCode()) {
-                map.put(fm.getFieldName(), cm.getDefaultValue());
+                if(boolean.class.equals(fm.getFieldType()) || Boolean.class.equals(fm.getFieldType())){
+                    map.put(fm.getFieldName(), Integer.parseInt(cm.getDefaultValue()));
+                }else{
+                    map.put(fm.getFieldName(), cm.getDefaultValue());
+                }
+
             }
         }
         return map;
