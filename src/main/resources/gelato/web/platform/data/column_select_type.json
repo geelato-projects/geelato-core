@@ -137,7 +137,9 @@
     "group": "布尔值",
     "label": "是否[1/0]",
     "value": "bit",
-    "mysql": "bit",
+    "mysql": "tinyint",
+    "fixed": true,
+    "extent": 1,
     "disabled": false,
     "seqNo": 201
   },
@@ -145,7 +147,9 @@
     "group": "布尔值",
     "label": "开关[1/0]",
     "value": "switch",
-    "mysql": "bit",
+    "mysql": "tinyint",
+    "fixed": true,
+    "extent": 1,
     "disabled": false,
     "seqNo": 202
   },
