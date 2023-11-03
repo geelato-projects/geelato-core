@@ -225,11 +225,10 @@ public class Dao {
      */
     public String save(BoundSql boundSql) throws TestException {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
-//        jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         try {
+            logger.info(boundSql.getSql());
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
-//            throw new TestException(e.getMessage());
             e.printStackTrace();
             return "saveFail";
         }
