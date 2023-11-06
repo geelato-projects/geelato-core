@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -467,6 +468,10 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             if (MysqlDataTypeEnum.getBooleans().contains(dataType)) {
                 setCharMaxLength(1L);
                 columnType = dataType + "(" + charMaxLength + ")";
+            } else if (MysqlDataTypeEnum.getTinyBooleans().contains(dataType) && Arrays.asList(new String[]{"BIT", "SWITCH"}).contains(selectType)) {
+                setCharMaxLength(0);
+                setNumericPrecision(1);
+                columnType = dataType + "(" + numericPrecision + ")" + (isNumericSigned() ? "" : " UNSIGNED");
             } else if (MysqlDataTypeEnum.getChars().contains(dataType)) {
                 columnType = dataType + "(" + charMaxLength + ")";
             } else if (MysqlDataTypeEnum.getTexts().contains(dataType)) {

@@ -110,6 +110,11 @@ public enum MysqlDataTypeEnum {
         return MysqlDataTypeEnum.getNames(typeEnums);
     }
 
+    public static List<String> getTinyBooleans() {
+        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TINYINT};
+        return MysqlDataTypeEnum.getNames(typeEnums);
+    }
+
     /**
      * 获取 时间类型，year、date、time、datetime、timestamp
      *
