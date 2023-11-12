@@ -15,6 +15,11 @@ public enum DataTypeRadiusEnum {
     TEXT(MysqlDataTypeEnum.TEXT, new DataTypeRadius(65535L, 0L, 5, 5, 0)),
     MEDIUMTEXT(MysqlDataTypeEnum.MEDIUMTEXT, new DataTypeRadius(16777215L, 0L, 8, 8, 0)),
     LONGTEXT(MysqlDataTypeEnum.LONGTEXT, new DataTypeRadius(4294967295L, 0L, 10, 10, 0)),
+    // 二进制，
+    TINYBLOB(MysqlDataTypeEnum.TINYBLOB, new DataTypeRadius(255L, 0L, 10, 10, 0)),
+    BLOB(MysqlDataTypeEnum.BLOB, new DataTypeRadius(21845L, 0L, 10, 5, 0)),
+    MEDIUMBLOB(MysqlDataTypeEnum.MEDIUMBLOB, new DataTypeRadius(16777216L, 0L, 8, 10, 0)),
+    LONGBLOB(MysqlDataTypeEnum.LONGBLOB, new DataTypeRadius(4294967296L, 0L, 10, 10, 0)),
     // 数值，最大值、最小值，限定默认值取值范围。有符号整数位、无符号整数位、小数位。
     TINYINT(MysqlDataTypeEnum.TINYINT, new DataTypeRadius(127L, -128L, 3, 3, 0)),
     SMALLINT(MysqlDataTypeEnum.SMALLINT, new DataTypeRadius(32767L, -32768L, 5, 5, 0)),
