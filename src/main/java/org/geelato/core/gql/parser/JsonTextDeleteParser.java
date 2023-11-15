@@ -8,12 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author geelato
  * 解析json字符串，并返回参数map
  */
 public class JsonTextDeleteParser {
-
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static Logger logger = LoggerFactory.getLogger(JsonTextDeleteParser.class);
     private final static String KW_BIZ = "@biz";
     private final static String KEYWORD_FLAG = "@";
@@ -23,31 +28,50 @@ public class JsonTextDeleteParser {
     public DeleteCommand parse(String jsonText, Ctx ctx) {
         JSONObject jo = JSON.parseObject(jsonText);
         CommandValidator validator = new CommandValidator();
-//        if (jo.size() != 2 || !jo.containsKey(KW_BIZ)) {
-//            validator.appendMessage("查询的jsonText格式有误，有且只有两个顶元素，且一个为：" + KW_BIZ + "。");
-//            Assert.isTrue(validator.isSuccess(), validator.getMessage());
-//        }
         // TODO biz怎么用起来
         String biz = jo.getString(KW_BIZ);
         jo.remove(KW_BIZ);
         String key = jo.keySet().iterator().next();
-        return parse(key, jo.getJSONObject(key), validator);
+        return parse(ctx,key, jo.getJSONObject(key), validator);
     }
 
-    private DeleteCommand parse(String commandName, JSONObject jo, CommandValidator validator) {
+    private DeleteCommand parse(Ctx ctx, String commandName, JSONObject jo, CommandValidator validator) {
 
         Assert.isTrue(validator.validateEntity(commandName), validator.getMessage());
 
         DeleteCommand command = new DeleteCommand();
         command.setEntityName(commandName);
+        String newDataString = simpleDateFormat.format(new Date());
         FilterGroup fg = new FilterGroup();
         command.setWhere(fg);
+        command.setCommandType(CommandType.Delete);
+        Map<String,Object> params=new HashMap<>();
+        if (validator.hasKeyField("delStatus")) {
+            params.put("delStatus", 1);
+        }
+        if (validator.hasKeyField("deleteAt")) {
+            params.put("deleteAt", newDataString);
+        }
+        if (validator.hasKeyField("updateAt")) {
+            params.put("updateAt", newDataString);
+        }
+        if (validator.hasKeyField("updater")) {
+            params.put("updater", ctx.get("userId"));
+        }
+        if (validator.hasKeyField("updaterName")) {
+            params.put("updaterName", ctx.get("userName"));
+        }
+
+        String[] updateFields = new String[params.keySet().size()];
+        params.keySet().toArray(updateFields);
+        command.setFields(updateFields);
+        command.setValueMap(params);
         jo.keySet().forEach(key -> {
             if (key.startsWith(KEYWORD_FLAG) && StringUtils.hasText(jo.getString(key))) {
-                //TODO 格式不对 throw
+
             } else if (key.startsWith(SUB_ENTITY_FLAG)) {
                 // 解析子实体
-                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator));
+                command.getCommands().add(parse(ctx,key.substring(1), jo.getJSONObject(key), validator));
             } else {
                 parseWhere(fg, key, jo, validator);
             }
@@ -64,10 +88,8 @@ public class JsonTextDeleteParser {
         String field = ary[0];
         validator.validateField(field, "where");
         if (ary.length == 1) {
-            //等值
             fg.addFilter(field, FilterGroup.Operator.eq, jo.getString(key));
         } else if (ary.length == 2) {
-            //大于、小于...
             String fn = ary[1];
             if (!FilterGroup.Operator.contains(fn)) {
                 validator.appendMessage("[");

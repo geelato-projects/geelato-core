@@ -103,7 +103,6 @@ public class CommandValidator {
      * @return
      */
     public boolean hasKeyField(String field) {
-
-        return true;
+        return entityMeta.containsField(field)&&!"*".equals(field);
     }
 }

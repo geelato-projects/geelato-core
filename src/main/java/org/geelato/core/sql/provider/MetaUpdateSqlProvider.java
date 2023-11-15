@@ -85,9 +85,7 @@ public class MetaUpdateSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
         sb.append("update ");
         sb.append(em.getTableName());
         sb.append(" set ");
-//        ArrayUtils.remove()
         buildFields(sb, em, command.getFields());
-        //where
         FilterGroup fg = command.getWhere();
         if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
             sb.append(" where ");
@@ -99,12 +97,10 @@ public class MetaUpdateSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
     protected void buildFields(StringBuilder sb, EntityMeta em, String[] fields) {
         //重命名查询的结果列表为实体字段名
         for (String fieldName : fields) {
-            // 如忽略掉creator create_at createAt
             if (em.isIgnoreUpdateField(fieldName)) {
                 continue;
             }
             tryAppendKeywords(sb, em.getColumnName(fieldName));
-//            sb.append(em.getColumnName(fieldName));
             sb.append("=?,");
         }
         sb.deleteCharAt(sb.length() - 1);

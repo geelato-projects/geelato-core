@@ -3,7 +3,7 @@ package org.geelato.core.gql.parser;
 import java.util.Map;
 
 /**
- * 用于数据库insert、update操作
+ * 用于数据库delete操作
  * @author geemeta
  *
  */

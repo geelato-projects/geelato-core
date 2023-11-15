@@ -15,6 +15,7 @@ public class Ctx extends HashMap<String, String> {
 
     public Ctx(){
         this.put("userId",getCurrentUser().getUserId());
+        this.put("userName",getCurrentUser().getUserName());
         this.put("tenantCode",getCurrentTenantCode());
     }
 

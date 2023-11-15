@@ -129,7 +129,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 if(!getEntityMeta(command).getFieldMeta(filter.getField()).getColumn().getDataType().equals("JSON")) {
                     list.add(filter.getValue());
                 }
-
             }
         }
 

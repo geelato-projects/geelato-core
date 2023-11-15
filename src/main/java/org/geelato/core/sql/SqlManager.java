@@ -1,15 +1,17 @@
 package org.geelato.core.sql;
 
+import org.geelato.core.Ctx;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.*;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.sql.provider.*;
+import org.springframework.util.Assert;
 import org.w3c.dom.stylesheets.LinkStyle;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author geemeta
  */
 public class SqlManager {
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static Lock lock = new ReentrantLock();
     private static SqlManager instance;
     private MetaManager metaManager = MetaManager.singleInstance();
@@ -168,13 +171,36 @@ public class SqlManager {
     }
 
     public BoundSql generateDeleteSql(String entityName, FilterGroup filterGroup) {
-        return generateDeleteSql(entityName, filterGroup, null);
+        CommandValidator validator = new CommandValidator();
+        Assert.isTrue(validator.validateEntity(entityName), validator.getMessage());
+        return generateDeleteSql(entityName, filterGroup, validator);
     }
-    private BoundSql generateDeleteSql(String entityName, FilterGroup filterGroup, String[] fields) {
+    private BoundSql generateDeleteSql(String entityName, FilterGroup filterGroup,CommandValidator validator) {
         DeleteCommand deleteCommand = new DeleteCommand();
         EntityMeta em = metaManager.getByEntityName(entityName);
         deleteCommand.setEntityName(em.getEntityName());
-        deleteCommand.setFields(fields != null && fields.length > 0 ? fields : em.getFieldNames());
+        Ctx ctx=new Ctx();
+        Map<String,Object> params=new HashMap<>();
+        String newDataString = simpleDateFormat.format(new Date());
+        if (validator.hasKeyField("delStatus")) {
+            params.put("delStatus", 1);
+        }
+        if (validator.hasKeyField("deleteAt")) {
+            params.put("deleteAt", newDataString);
+        }
+        if (validator.hasKeyField("updateAt")) {
+            params.put("updateAt", newDataString);
+        }
+        if (validator.hasKeyField("updater")) {
+            params.put("updater", ctx.get("userId"));
+        }
+        if (validator.hasKeyField("updaterName")) {
+            params.put("updaterName", ctx.get("userName"));
+        }
+        String[] updateFields = new String[params.keySet().size()];
+        params.keySet().toArray(updateFields);
+        deleteCommand.setFields(updateFields);
+        deleteCommand.setValueMap(params);
         deleteCommand.setWhere(filterGroup);
         return metaDeleteSqlProvider.generate(deleteCommand);
     }

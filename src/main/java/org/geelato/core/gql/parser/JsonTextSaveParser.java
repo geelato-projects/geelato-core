@@ -152,6 +152,9 @@ public class JsonTextSaveParser {
             if (validator.hasKeyField("updater")) {
                 params.put("updater", ctx.get("userId"));
             }
+            if (validator.hasKeyField("updaterName")) {
+                params.put("updaterName", ctx.get("userName"));
+            }
             String[] updateFields = new String[params.keySet().size()];
             params.keySet().toArray(updateFields);
             command.setFields(updateFields);
@@ -169,11 +172,17 @@ public class JsonTextSaveParser {
             if (entity.containsKey("creator")) {
                 entity.put("creator", ctx.get("userId"));
             }
+            if (entity.containsKey("creatorName")) {
+                entity.put("creatorName", ctx.get("userName"));
+            }
             if (entity.containsKey("updateAt")) {
                 entity.put("updateAt", newDataString);
             }
             if (entity.containsKey("updater")) {
                 entity.put("updater", ctx.get("userId"));
+            }
+            if (entity.containsKey("updaterName")) {
+                entity.put("updaterName", ctx.get("userName"));
             }
             if (entity.containsKey("tenantCode")) {
                 entity.put("tenantCode", ctx.get("tenantCode"));
