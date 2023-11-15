@@ -28,12 +28,12 @@
   },
   {
     "group": "字符串",
-    "label": "数据字典[64]",
+    "label": "数据字典[1024]",
     "value": "dictionary",
     "mysql": "varchar",
     "disabled": false,
     "fixed": true,
-    "extent": 64,
+    "extent": 1024,
     "seqNo": 104
   },
   {
@@ -105,13 +105,23 @@
   },
   {
     "group": "字符串",
+    "label": "上传[Base64]",
+    "value": "base64",
+    "mysql": "longtext",
+    "disabled": false,
+    "fixed": true,
+    "extent": 4294967295,
+    "seqNo": 112
+  },
+  {
+    "group": "字符串",
     "label": "内容[65535]",
     "value": "text",
     "mysql": "text",
     "disabled": false,
     "fixed": true,
     "extent": 65535,
-    "seqNo": 112
+    "seqNo": 113
   },
   {
     "group": "字符串",
@@ -121,7 +131,7 @@
     "disabled": false,
     "fixed": true,
     "extent": 16777215,
-    "seqNo": 113
+    "seqNo": 114
   },
   {
     "group": "字符串",
@@ -131,13 +141,15 @@
     "disabled": false,
     "fixed": true,
     "extent": 4294967295,
-    "seqNo": 114
+    "seqNo": 115
   },
   {
     "group": "布尔值",
     "label": "是否[1/0]",
     "value": "bit",
-    "mysql": "bit",
+    "mysql": "tinyint",
+    "fixed": true,
+    "extent": 1,
     "disabled": false,
     "seqNo": 201
   },
@@ -145,7 +157,9 @@
     "group": "布尔值",
     "label": "开关[1/0]",
     "value": "switch",
-    "mysql": "bit",
+    "mysql": "tinyint",
+    "fixed": true,
+    "extent": 1,
     "disabled": false,
     "seqNo": 202
   },
@@ -277,5 +291,15 @@
     "mysql": "json",
     "disabled": false,
     "seqNo": 503
+  },
+  {
+    "group": "二进制",
+    "label": "二进制[4294967295]",
+    "value": "longblob",
+    "mysql": "longblob",
+    "disabled": false,
+    "fixed": true,
+    "extent": 4294967296,
+    "seqNo": 601
   }
 ]

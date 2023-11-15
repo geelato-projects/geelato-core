@@ -21,6 +21,11 @@ public enum MysqlDataTypeEnum {
     LONGTEXT,//大型文本字符串，最大长度为 4294967295 个字符。
     // 布尔值，二进制类型
     BIT,//位字段类型，可以存储位图数据。
+    // 二进制数据
+    TINYBLOB, // 存储长度小于255字节的二进制数据。
+    BLOB, // 存储长度大于等于255字节的二进制数据。
+    MEDIUMBLOB, // 存储长度大于等于16777216字节的二进制数据。
+    LONGBLOB, // 存储长度大于等于4294967296字节的二进制数据。
     // 数值类型
     TINYINT,//一个非常小的整数。有符号范围：-128至127；无符号范围：0至255。
     SMALLINT,//一个小的整数。有符号范围：-32768至32767；无符号范围：0至65535。
@@ -100,13 +105,26 @@ public enum MysqlDataTypeEnum {
         return MysqlDataTypeEnum.getNames(typeEnums);
     }
 
+    public static List<String> getBytes() {
+        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TINYBLOB,
+                MysqlDataTypeEnum.BLOB,
+                MysqlDataTypeEnum.MEDIUMBLOB,
+                MysqlDataTypeEnum.LONGBLOB};
+        return MysqlDataTypeEnum.getNames(typeEnums);
+    }
+
     /**
      * 获取 布尔值类型，bit
      *
      * @return
      */
     public static List<String> getBooleans() {
-        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.BIT, MysqlDataTypeEnum.TINYINT};
+        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.BIT};
+        return MysqlDataTypeEnum.getNames(typeEnums);
+    }
+
+    public static List<String> getTinyBooleans() {
+        MysqlDataTypeEnum[] typeEnums = new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TINYINT};
         return MysqlDataTypeEnum.getNames(typeEnums);
     }
 

@@ -32,8 +32,9 @@ public enum MysqlToJavaEnum {
     TIMESTAMP(Timestamp.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TIMESTAMP}),
 
     SET(Set.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.SET}),
-    ENUM(Enum.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.ENUM});
+    ENUM(Enum.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.ENUM}),
 
+    BYTE(Byte.class, new MysqlDataTypeEnum[]{MysqlDataTypeEnum.TINYBLOB, MysqlDataTypeEnum.BLOB, MysqlDataTypeEnum.MEDIUMBLOB, MysqlDataTypeEnum.LONGBLOB});
 
     private final Class java;
     private final MysqlDataTypeEnum[] mysql;
