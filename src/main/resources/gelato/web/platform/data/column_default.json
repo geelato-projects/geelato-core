@@ -273,5 +273,30 @@
     "title": "创建者名称",
     "type": "VARCHAR(64)",
     "uniqued": false
+  },
+  {
+    "autoIncrement": false,
+    "charMaxLength": 0,
+    "comment": "删除时间",
+    "dataType": "DATETIME",
+    "datetimePrecision": 0,
+    "defaultValue": null,
+    "delStatus": 0,
+    "description": null,
+    "enableStatus": 1,
+    "extra": null,
+    "fieldName": "deleteAt",
+    "key": false,
+    "linked": 1,
+    "name": "delete_at",
+    "nullable": true,
+    "numericPrecision": 0,
+    "numericScale": 0,
+    "numericSigned": false,
+    "ordinalPosition": 102,
+    "seqNo": 102,
+    "title": "删除时间",
+    "type": "DATETIME",
+    "uniqued": false
   }
 ]

@@ -14,9 +14,10 @@ public class BaseEntity extends IdEntity {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createAt;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date deleteAt;
     private String creator;
     private String creatorName;
     private String updater;
@@ -56,6 +57,16 @@ public class BaseEntity extends IdEntity {
 
     public void setUpdateAt(Date updateAt) {
         this.updateAt = updateAt;
+    }
+
+    @Col(name = "delete_at", nullable = true)
+    @Title(title = "删除时间")
+    public Date getDeleteAt() {
+        return deleteAt;
+    }
+
+    public void setDeleteAt(Date deleteAt) {
+        this.deleteAt = deleteAt;
     }
 
     @Col(name = "creator", nullable = false)
