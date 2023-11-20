@@ -12,12 +12,22 @@ import org.geelato.core.meta.annotation.Title;
 @Title(title = "资源信息", description = "对应各类资源文件，如mvel规则文件，sql语句等")
 public class Resources extends BaseSortableEntity {
 
+    private String appId;
     private String name;
     private String type;
     private String code;
     private String content;
     private String description;
 
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 
     @Col(name = "name", nullable = false)
     @Title(title = "名称")
