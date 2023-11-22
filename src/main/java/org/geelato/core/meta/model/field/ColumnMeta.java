@@ -27,6 +27,7 @@ import java.util.Locale;
 @Entity(name = "platform_dev_column")
 public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, Serializable {
 
+    private String appId;
     //******--以下为元数据管理专用辅助字段
     // 实体属性中文
     private String title = "";
@@ -107,6 +108,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setAbstractColumnExpressions(String abstractColumnExpressions) {
         this.abstractColumnExpressions = abstractColumnExpressions;
+    }
+
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     @Col(name = "table_id")

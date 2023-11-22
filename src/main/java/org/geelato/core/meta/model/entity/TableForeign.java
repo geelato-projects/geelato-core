@@ -16,6 +16,7 @@ import java.util.Map;
 @Entity(name = "platform_dev_table_foreign")
 public class TableForeign extends BaseSortableEntity implements EntityEnableAble {
 
+    private String appId;
     private String mainTableSchema;
     private String mainTableId;
     private String mainTable;
@@ -30,6 +31,28 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     private String updateAction = ColumnDefault.FOREIGN_ACTION_VALUE;// 更新时
 
     public TableForeign() {
+    }
+
+    public TableForeign(Map map) {
+        this.mainTable = map.get("main_table") == null ? null : map.get("main_table").toString();
+        this.mainTableCol = map.get("main_table_col") == null ? null : map.get("main_table_col").toString();
+        this.foreignTable = map.get("foreign_table") == null ? null : map.get("foreign_table").toString();
+        this.foreignTableCol = map.get("foreign_table_col") == null ? null : map.get("foreign_table_col").toString();
+        Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
+        this.enableStatus = enableStatus ? 1 : 0;
+        this.description = map.get("description") == null ? null : map.get("description").toString();
+        this.deleteAction = map.get("delete_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("delete_action").toString();
+        this.updateAction = map.get("update_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("update_action").toString();
+    }
+
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     @Col(name = "main_table")
@@ -151,17 +174,5 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
 
     public void setForeignTableId(String foreignTableId) {
         this.foreignTableId = foreignTableId;
-    }
-
-    public TableForeign(Map map) {
-        this.mainTable = map.get("main_table") == null ? null : map.get("main_table").toString();
-        this.mainTableCol = map.get("main_table_col") == null ? null : map.get("main_table_col").toString();
-        this.foreignTable = map.get("foreign_table") == null ? null : map.get("foreign_table").toString();
-        this.foreignTableCol = map.get("foreign_table_col") == null ? null : map.get("foreign_table_col").toString();
-        Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
-        this.enableStatus = enableStatus ? 1 : 0;
-        this.description = map.get("description") == null ? null : map.get("description").toString();
-        this.deleteAction = map.get("delete_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("delete_action").toString();
-        this.updateAction = map.get("update_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("update_action").toString();
     }
 }
