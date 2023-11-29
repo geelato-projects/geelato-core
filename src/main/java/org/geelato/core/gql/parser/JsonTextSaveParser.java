@@ -124,7 +124,11 @@ public class JsonTextSaveParser {
                 validator.validateField(key, "字段");
                 // 对于boolean类型的值，转为数值，以值存到数据库
                 FieldMeta fieldMeta = entityMeta.getFieldMeta(key);
-                if (fieldMeta != null && (boolean.class.equals(fieldMeta.getFieldType()) || Boolean.class.equals(fieldMeta.getFieldType()))) {
+                if (fieldMeta != null && (boolean.class.equals(fieldMeta.getFieldType())
+                        ||Boolean.class.equals(fieldMeta.getFieldType())
+                        ||"delStatus".equals(fieldMeta.getFieldName())
+                        ||"enableStatus".equals(fieldMeta.getFieldName())
+                )) {
                     String v = jo.getString(key).toLowerCase();
                     params.put(key, "true".equals(v) ? 1 : ("false".equals(v) ? 0 : v));
                 } else {
@@ -154,6 +158,9 @@ public class JsonTextSaveParser {
             }
             if (validator.hasKeyField("updaterName")) {
                 params.put("updaterName", ctx.get("userName"));
+            }
+            if (validator.hasKeyField("deleteAt")) {
+                params.put("deleteAt", newDataString);
             }
             String[] updateFields = new String[params.keySet().size()];
             params.keySet().toArray(updateFields);
