@@ -4,8 +4,6 @@ import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
-import org.geelato.core.meta.model.entity.BaseSortableEntity;
-import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.geelato.core.util.StringUtils;
 
 import java.util.Map;
@@ -16,6 +14,8 @@ import java.util.Map;
 @Title(title = "实体信息")
 @Entity(name = "platform_dev_table")
 public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
+
+    private String appId;
     private String title;
     private String connectId;
     private String tableName;
@@ -39,6 +39,30 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
         this.description = description;
     }
 
+    public TableMeta(Map map) {
+        this.title = map.get("title") == null ? null : map.get("title").toString();
+        this.connectId = map.get("connect_id") == null ? null : map.get("connect_id").toString();
+        this.tableName = map.get("table_name") == null ? null : map.get("table_name").toString();
+        this.entityName = map.get("entity_name") == null ? null : map.get("entity_name").toString();
+        this.tableType = map.get("table_type") == null ? null : map.get("table_type").toString();
+        this.tableComment = map.get("table_comment") == null ? null : map.get("table_comment").toString();
+        Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
+        this.enableStatus = enableStatus ? 1 : 0;
+        this.linked = map.get("linked") == null ? null : Integer.parseInt(map.get("linked").toString());
+        this.description = map.get("description") == null ? null : map.get("description").toString();
+        this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
+    }
+
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
     @Col(name = "table_name")
     @Title(title = "表名", description = "与数据库中的表名一致")
     public String getTableName() {
@@ -48,7 +72,6 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
-
 
     @Col(name = "entity_name")
     @Title(title = "实体名称", description = "实体名称")
@@ -89,7 +112,6 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     public void setTableComment(String tableComment) {
         this.tableComment = tableComment;
     }
-
 
     @Col(name = "title")
     @Title(title = "名称(中文)")
@@ -141,20 +163,5 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     public void setViewSql(String viewSql) {
         this.viewSql = viewSql;
-    }
-
-
-    public TableMeta(Map map) {
-        this.title = map.get("title") == null ? null : map.get("title").toString();
-        this.connectId = map.get("connect_id") == null ? null : map.get("connect_id").toString();
-        this.tableName = map.get("table_name") == null ? null : map.get("table_name").toString();
-        this.entityName = map.get("entity_name") == null ? null : map.get("entity_name").toString();
-        this.tableType = map.get("table_type") == null ? null : map.get("table_type").toString();
-        this.tableComment = map.get("table_comment") == null ? null : map.get("table_comment").toString();
-        Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
-        this.enableStatus = enableStatus ? 1 : 0;
-        this.linked = map.get("linked") == null ? null : Integer.parseInt(map.get("linked").toString());
-        this.description = map.get("description") == null ? null : map.get("description").toString();
-        this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
     }
 }

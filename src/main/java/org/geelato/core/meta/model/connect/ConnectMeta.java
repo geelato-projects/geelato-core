@@ -14,6 +14,7 @@ import org.geelato.core.meta.model.entity.EntityEnableAble;
 @Entity(name = "platform_dev_db_connect")
 public class ConnectMeta extends BaseEntity implements EntityEnableAble {
 
+    private String appId;
     private String dbConnectName;
     private String dbName;
     private String dbSchema;
@@ -23,6 +24,16 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble {
     private int dbPort;
     private String dbHostnameIp;
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 
     @Col(name = "db_connect_name", nullable = false, charMaxlength = 255)
     @Title(title = "连接名称", description = "连接名称")

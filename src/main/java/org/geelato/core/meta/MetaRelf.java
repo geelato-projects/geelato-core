@@ -432,6 +432,8 @@ public class MetaRelf {
                     cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);
                     cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                     cfm.getColumn().setAutoAdd(c_map.get("auto_add") == null ? false : Boolean.parseBoolean(c_map.get("auto_add").toString()));
+                    cfm.getColumn().setType(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
+                    cfm.getColumn().setType(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
 
                     if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
                         cfm.getColumn().setDefaultValue(null);

@@ -13,6 +13,8 @@ import org.geelato.core.meta.model.entity.EntityEnableAble;
 @Title(title = "实体视图关系")
 @Entity(name = "platform_dev_view")
 public class TableView extends BaseSortableEntity implements EntityEnableAble {
+
+    private String appId;
     private String connectId;
     private String entityName;
     private String title;
@@ -23,6 +25,16 @@ public class TableView extends BaseSortableEntity implements EntityEnableAble {
     private String description;
     private int linked;
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 
     @Col(name = "connect_id")
     @Title(title = "数据库连接id")
