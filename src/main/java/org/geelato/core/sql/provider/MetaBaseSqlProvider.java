@@ -258,7 +258,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             sb.append(" like CONCAT('%',?,'%')");
         } else if (operator == FilterGroup.Operator.in) {
             tryAppendKeywords(em, sb, fm);
-            // String[] ary = filter.getValue().split(",");
             Object[] ary = filter.getValueAsArray();
             sb.append(" in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));

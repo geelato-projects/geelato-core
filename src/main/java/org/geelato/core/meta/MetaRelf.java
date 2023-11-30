@@ -318,7 +318,11 @@ public class MetaRelf {
                                 try {
                                     Object defaultValue = method.invoke(bean);
                                     if (defaultValue != null) {
-                                        cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
+                                        if(defaultValue instanceof  Boolean){
+                                            cfm.getColumn().setDefaultValue(Boolean.parseBoolean(defaultValue.toString())?"1":"0");
+                                        }else {
+                                            cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
+                                        }
                                     }
                                 } catch (IllegalAccessException e) {
                                     logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
