@@ -13,17 +13,28 @@ import java.util.HashMap;
  */
 public class Ctx extends HashMap<String, String> {
 
+    private static final ThreadLocal<User> threadLocalUser = new ThreadLocal<>();
+
+    private static final ThreadLocal<String> threadLocalTenantCode = new ThreadLocal<>();
+
     public Ctx(){
         this.put("userId",getCurrentUser().getUserId());
         this.put("userName",getCurrentUser().getUserName());
         this.put("tenantCode",getCurrentTenantCode());
     }
 
-    public User getCurrentUser(){
-        return EnvManager.singleInstance().getCurrentUser();
+    public static void setCurrentUser(User user){
+        threadLocalUser.set(user);
+    }
+    public static void setCurrentTenant(String tenantCode){
+        threadLocalTenantCode.set(tenantCode);
     }
 
-    public String getCurrentTenantCode() {
-        return EnvManager.singleInstance().getCurrentTenantCode();
+    public static User getCurrentUser(){
+        return threadLocalUser.get();
+    }
+
+    public static String getCurrentTenantCode() {
+        return threadLocalTenantCode.get();
     }
 }

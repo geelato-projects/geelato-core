@@ -1,6 +1,7 @@
 package org.geelato.core.env;
 
 
+import org.geelato.core.Ctx;
 import org.geelato.core.enums.permission.DataPermissionEnum;
 import org.geelato.core.enums.permission.ElementPermissionEnum;
 import org.geelato.core.env.entity.*;
@@ -19,8 +20,6 @@ public class EnvManager {
     private final Map<String ,SysConfig> sysConfigMap;
     private Dao  EnvDao;
 
-    private User currentUser;
-    private String currentTenantCode;
     private static Lock lock = new ReentrantLock();
 
     private static EnvManager instance;
@@ -69,11 +68,11 @@ public class EnvManager {
     public void InitCurrentUser(String loginName) {
         String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName,name as userName,bu_id as buId,dept_id as deptId from platform_user  where login_name =?";
         User dbUser = EnvDao.getJdbcTemplate().queryForObject(sql,new BeanPropertyRowMapper<User>(User.class),new Object[]{loginName});
-        this.currentTenantCode="geelato";
         dbUser.setMenus(StructUserMenu(dbUser.getUserId()));
         dbUser.setDataPermissions(StructDataPermission(dbUser.getUserId()));
         dbUser.setElementPermissions(StructElementPermission(dbUser.getUserId()));
-        currentUser=dbUser;
+        Ctx.setCurrentUser(dbUser);
+        Ctx.setCurrentTenant("geelato");
     }
 
     private List<DataPermission> StructDataPermission(String userId) {
@@ -116,13 +115,5 @@ public class EnvManager {
         userMenuList.add(um1);
 
         return userMenuList;
-    }
-
-    public User  getCurrentUser() {
-        return currentUser;
-    }
-
-    public String  getCurrentTenantCode() {
-        return currentTenantCode;
     }
 }
