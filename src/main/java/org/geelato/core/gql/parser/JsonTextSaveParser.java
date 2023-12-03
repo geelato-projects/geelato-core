@@ -159,9 +159,6 @@ public class JsonTextSaveParser {
             if (validator.hasKeyField("updaterName")) {
                 params.put("updaterName", ctx.get("userName"));
             }
-            if (validator.hasKeyField("deleteAt")) {
-                params.put("deleteAt", newDataString);
-            }
             String[] updateFields = new String[params.keySet().size()];
             params.keySet().toArray(updateFields);
             command.setFields(updateFields);
