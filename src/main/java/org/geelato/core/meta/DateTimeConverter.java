@@ -1,13 +1,10 @@
-package org.geelato.core.orm;
+package org.geelato.core.meta;
 
 /**
  * @author geemeta
  */
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geelato.core.util.DateUtils;
@@ -17,9 +14,7 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 public class DateTimeConverter implements Converter {
 
@@ -80,24 +75,5 @@ public class DateTimeConverter implements Converter {
         return value;
     }
 
-    //调用此方法封装bean map为requeset.getParamteMap，object为空对象
-    public static void transMap2Bean(Map<String, Object> map, Object obj) {
-
-        try {
-            DateTimeConverter dtConverter = new DateTimeConverter();
-            ConvertUtilsBean convertUtilsBean = new ConvertUtilsBean();
-            convertUtilsBean.deregister(Date.class);
-            convertUtilsBean.register(dtConverter, Date.class);
-            BeanUtilsBean beanUtilsBean = new BeanUtilsBean(convertUtilsBean,
-                    new PropertyUtilsBean());
-            beanUtilsBean.populate(obj, map);
-
-        } catch (Exception e) {
-
-        }
-
-        return;
-
-    }
 
 }

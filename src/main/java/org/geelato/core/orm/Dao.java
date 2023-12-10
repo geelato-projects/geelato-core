@@ -223,14 +223,14 @@ public class Dao {
      * @param boundSql 查询语句
      * @return 主健值
      */
-    public String save(BoundSql boundSql) throws TestException {
+    public String save(BoundSql boundSql) throws DaoException {
         SaveCommand command = (SaveCommand) boundSql.getCommand();
         try {
             logger.info(boundSql.getSql());
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
             e.printStackTrace();
-            return "saveFail";
+            throw  new DaoException("shit exception design:"+e.getMessage());
         }
         return command.getPK();
     }

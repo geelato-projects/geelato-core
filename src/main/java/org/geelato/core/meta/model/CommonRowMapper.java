@@ -3,13 +3,12 @@ package org.geelato.core.meta.model;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.orm.DateTimeConverter;
+import org.geelato.core.meta.DateTimeConverter;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.lang.reflect.InvocationTargetException;
