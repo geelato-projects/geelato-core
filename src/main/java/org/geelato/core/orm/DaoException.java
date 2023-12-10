@@ -2,7 +2,7 @@ package org.geelato.core.orm;
 
 import org.geelato.core.constants.ApiResultCode;
 
-public class DaoException extends  Exception{
+public class DaoException extends  RuntimeException{
     private String msg;
     private int code;
 
