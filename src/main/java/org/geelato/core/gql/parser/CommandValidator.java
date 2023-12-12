@@ -27,7 +27,7 @@ public class CommandValidator {
 
     public boolean validateField(String field, String fieldDescription) {
         Assert.notNull(entityMeta, "需先validateEntity，确保已有实体信息，才能进一步验证字段。");
-        if (!entityMeta.containsField(field)&&!"*".equals(field)) {
+        if (!entityMeta.containsField(field)&&!"*".equals(field)&&!"forceId".equals(field)) {
             message.append("[");
             message.append(fieldDescription);
             message.append("]");
