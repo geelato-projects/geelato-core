@@ -168,13 +168,13 @@ public class JsonTextSaveParser {
             //insert
             command.setCommandType(CommandType.Insert);
             Map<String, Object> entity = metaManager.newDefaultEntity(commandName);
-            entity.putAll(params);
             if(params.containsKey("forceId")){
-                params.put("id",params.get("forceId"));
+                entity.put(PK,params.get("forceId"));
                 params.remove("forceId");
             }else{
                 entity.put(PK, UIDGenerator.generate());
             }
+            entity.putAll(params);
             if (entity.containsKey("createAt")) {
                 entity.put("createAt", newDataString);
             }
