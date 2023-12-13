@@ -143,7 +143,7 @@ public class JsonTextSaveParser {
         String PK = validator.getPK();
 
         String newDataString = simpleDateFormat.format(new Date());
-        if (validator.hasPK(fields) && StringUtils.hasText(jo.getString(PK))) {
+        if (validator.hasPK(fields) && StringUtils.hasText(jo.getString(PK)) && StringUtils.hasText(jo.getString("forceId"))) {
             //update
             FilterGroup fg = new FilterGroup();
             fg.addFilter(PK, jo.getString(PK));
