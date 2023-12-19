@@ -173,6 +173,7 @@ public class JsonTextSaveParser {
                 params.remove("forceId");
             }else{
                 entity.put(PK, UIDGenerator.generate());
+                params.remove(PK);
             }
             entity.putAll(params);
             if (entity.containsKey("createAt")) {
