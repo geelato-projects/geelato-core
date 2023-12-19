@@ -219,6 +219,9 @@ public class EntityMeta {
         meta.setCharMaxLength(fm.getColumn().getCharMaxLength());
         meta.setPrecision(fm.getColumn().getNumericPrecision());
         meta.setScale(fm.getColumn().getNumericScale());
+        meta.setDefaultValue(fm.getColumn().getDefaultValue());
+        meta.setSelectType(fm.getColumn().getSelectType());
+        meta.setTypeExtra(fm.getColumn().getTypeExtra());
         return meta;
     }
 
@@ -321,6 +324,7 @@ public class EntityMeta {
     public Collection<ViewMeta> getViewMetas() {
         return viewMetas;
     }
+
     public ViewMeta getViewMeta(String viewName) {
         if (this.viewMetas == null || this.viewMetas.size() == 0) {
             return null;
@@ -332,6 +336,7 @@ public class EntityMeta {
         }
         return null;
     }
+
     public void setViewMetas(Collection<ViewMeta> viewMetas) {
         this.viewMetas = viewMetas;
     }

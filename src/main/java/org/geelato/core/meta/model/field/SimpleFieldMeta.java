@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 /**
  * 用于对外发布元数据服务信息，去掉数据库的部分元数据信息，如表名等，详细的字段元数据参见@see FieldMeta
- * @author geemeta
  *
+ * @author geemeta
  */
 public class SimpleFieldMeta implements Serializable {
     private String name;
@@ -16,6 +16,9 @@ public class SimpleFieldMeta implements Serializable {
     private long charMaxLength;
     private int precision;
     private int scale;
+    private String selectType;
+    private String typeExtra;
+    private String defaultValue;
 
     public String getName() {
         return name;
@@ -79,5 +82,29 @@ public class SimpleFieldMeta implements Serializable {
 
     public void setScale(int scale) {
         this.scale = scale;
+    }
+
+    public String getSelectType() {
+        return selectType;
+    }
+
+    public void setSelectType(String selectType) {
+        this.selectType = selectType;
+    }
+
+    public String getTypeExtra() {
+        return typeExtra;
+    }
+
+    public void setTypeExtra(String typeExtra) {
+        this.typeExtra = typeExtra;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }
