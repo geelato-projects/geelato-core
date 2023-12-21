@@ -100,6 +100,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String typeExtra;
     private boolean autoAdd = false;
     private String autoName;
+    private boolean synced = false;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -471,6 +472,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setAutoName(String autoName) {
         this.autoName = autoName;
+    }
+
+    @Col(name = "synced")
+    @Title(title = "是否已同步")
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
     }
 
     /**
