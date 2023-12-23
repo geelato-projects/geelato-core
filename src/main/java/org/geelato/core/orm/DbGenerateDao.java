@@ -42,7 +42,6 @@ public class DbGenerateDao {
     }
 
 
-
     /**
      * @param dao
      */
@@ -195,7 +194,7 @@ public class DbGenerateDao {
                     primaryList.add(fm.getColumn().getName());
                 }
                 // unique index
-                if (fm.getColumn().isUniqued()) {
+                if (fm.getColumn().isUniqued() && !fm.getColumn().isKey()) {
                     uniqueList.add(jsonColumn);
                 }
             } catch (Exception e) {
@@ -373,6 +372,9 @@ public class DbGenerateDao {
     private ArrayList<JSONObject> getUniqueColumn(List<JSONObject> jsonObjectList) {
         ArrayList<JSONObject> defaultColumnList = new ArrayList<>();
         for (JSONObject jsonObject : jsonObjectList) {
+            if (jsonObject.getBoolean("key")) {
+                continue;
+            }
             if (jsonObject.getBoolean("uniqued")) {
                 defaultColumnList.add(jsonObject);
             }
