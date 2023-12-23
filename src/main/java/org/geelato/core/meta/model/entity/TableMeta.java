@@ -25,6 +25,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
     private int linked;
     private String description;
+    private Boolean synced = false;
 
     private String viewSql;
 
@@ -50,6 +51,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
         this.enableStatus = enableStatus ? 1 : 0;
         this.linked = map.get("linked") == null ? null : Integer.parseInt(map.get("linked").toString());
         this.description = map.get("description") == null ? null : map.get("description").toString();
+        this.synced = map.get("synced") == null ? false : Boolean.parseBoolean(map.get("synced").toString());
         this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
     }
 
@@ -163,5 +165,15 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     public void setViewSql(String viewSql) {
         this.viewSql = viewSql;
+    }
+
+    @Col(name = "synced")
+    @Title(title = "同步状态")
+    public Boolean getSynced() {
+        return synced;
+    }
+
+    public void setSynced(Boolean synced) {
+        this.synced = synced;
     }
 }

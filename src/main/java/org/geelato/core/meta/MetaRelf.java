@@ -62,7 +62,8 @@ public class MetaRelf {
             try {
                 // return clazz.newInstance();
                 return clazz.getDeclaredConstructor().newInstance();
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
+                     InstantiationException e) {
                 logger.error("创建对象失败！", e);
             }
             return null;
@@ -318,9 +319,9 @@ public class MetaRelf {
                                 try {
                                     Object defaultValue = method.invoke(bean);
                                     if (defaultValue != null) {
-                                        if(defaultValue instanceof  Boolean){
-                                            cfm.getColumn().setDefaultValue(Boolean.parseBoolean(defaultValue.toString())?"1":"0");
-                                        }else {
+                                        if (defaultValue instanceof Boolean) {
+                                            cfm.getColumn().setDefaultValue(Boolean.parseBoolean(defaultValue.toString()) ? "1" : "0");
+                                        } else {
                                             cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
                                         }
                                     }
@@ -399,6 +400,7 @@ public class MetaRelf {
                 String title = c_map.get("title") == null ? null : c_map.get("title").toString();
                 String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
                 String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
+                String typeExtra = c_map.get("type_extra") == null ? null : c_map.get("type_extra").toString();
                 String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
                 String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
                 String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
@@ -422,6 +424,7 @@ public class MetaRelf {
                     cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? false : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                     cfm.getColumn().setDataType(dataType);
                     cfm.getColumn().setSelectType(selectType);
+                    cfm.getColumn().setTypeExtra(typeExtra);
                     cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
                     cfm.getColumn().setName(columnName);
                     cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
@@ -432,6 +435,7 @@ public class MetaRelf {
                     cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);
                     cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                     cfm.getColumn().setAutoAdd(c_map.get("auto_add") == null ? false : Boolean.parseBoolean(c_map.get("auto_add").toString()));
+                    cfm.getColumn().setSynced(c_map.get("synced") == null ? false : Boolean.parseBoolean(c_map.get("synced").toString()));
                     cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
                     cfm.getColumn().setAppId(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
 

@@ -96,8 +96,11 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private boolean abstractColumn;
     // 数据选择类型
     private String selectType;
+    // 数据类型选择 额外字段。
+    private String typeExtra;
     private boolean autoAdd = false;
     private String autoName;
+    private boolean synced = false;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -441,6 +444,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.selectType = selectType;
     }
 
+    @Col(name = "type_extra")
+    @Title(title = "选择类型额外数据")
+    public String getTypeExtra() {
+        return typeExtra;
+    }
+
+    public void setTypeExtra(String typeExtra) {
+        this.typeExtra = typeExtra;
+    }
+
     @Col(name = "auto_add")
     @Title(title = "选择类型")
     public boolean isAutoAdd() {
@@ -459,6 +472,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setAutoName(String autoName) {
         this.autoName = autoName;
+    }
+
+    @Col(name = "synced")
+    @Title(title = "是否已同步")
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
     }
 
     /**
