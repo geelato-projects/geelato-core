@@ -230,7 +230,7 @@ public class Dao {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
             e.printStackTrace();
-            throw  new DaoException("shit exception design:"+e.getMessage());
+            throw  new DaoException("dao exception:"+e.getMessage());
         }
         return command.getPK();
     }
