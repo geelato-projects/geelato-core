@@ -68,7 +68,7 @@
   },
   {
     "group": "字符串",
-    "label": "实体[19]",
+    "label": "实体字段[19]",
     "value": "entity",
     "mysql": "varchar",
     "disabled": false,

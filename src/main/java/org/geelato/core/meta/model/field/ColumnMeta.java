@@ -101,6 +101,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private boolean autoAdd = false;
     private String autoName;
     private boolean synced = false;
+    private boolean encrypted = false;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -482,6 +483,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setSynced(boolean synced) {
         this.synced = synced;
+    }
+
+    @Col(name = "encrypted")
+    @Title(title = "是否加密")
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(boolean encrypted) {
+        this.encrypted = encrypted;
     }
 
     /**

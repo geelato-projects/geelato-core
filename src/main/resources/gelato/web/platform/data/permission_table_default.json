@@ -26,5 +26,26 @@
     "name": "看自己",
     "description": "查看创建人为自己的数据",
     "code": "&myself"
+  },
+  {
+    "type": "dp",
+    "rule": "Insert",
+    "name": "创建",
+    "description": "可以新增数据",
+    "code": "&insert"
+  },
+  {
+    "type": "dp",
+    "rule": "Update",
+    "name": "修改",
+    "description": "可以修改数据",
+    "code": "&update"
+  },
+  {
+    "type": "dp",
+    "rule": "Delete",
+    "name": "删除",
+    "description": "可以删除数据",
+    "code": "&delete"
   }
 ]
