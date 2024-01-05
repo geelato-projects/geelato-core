@@ -228,18 +228,18 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             }
         }
 
-        buildChildConditions(sb,em,filterGroup);
+        buildChildConditions(sb,em,filterGroup, FilterGroup.Logic.and);
     }
 
-    protected void buildChildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup) {
+    protected void buildChildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup, FilterGroup.Logic logic) {
         List<FilterGroup> childFilterGroup=filterGroup.getChildFilterGroup();
         if (childFilterGroup != null && childFilterGroup.size() > 0) {
             for (FilterGroup fg:filterGroup.getChildFilterGroup()){
-                sb.append( " and ");
+                sb.append(String.format(" %s ", logic==null?"and":logic.getText()));
                 sb.append(" ( ");
                 buildConditions(sb,em,fg.getFilters(),fg.getLogic());
                 if(fg.getChildFilterGroup()!=null){
-                    buildChildConditions(sb,em,fg);
+                    buildChildConditions(sb,em,fg,fg.getLogic());
                 }
                 sb.append(" ) ");
             }
