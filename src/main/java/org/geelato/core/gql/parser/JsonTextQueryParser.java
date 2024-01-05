@@ -35,7 +35,8 @@ public class JsonTextQueryParser {
     private final static String KW_ORDER_BY = "@order";
     private final static String KW_GROUP_BY = "@group";
     private final static String KW_HAVING = "@having";
-    private final static String KW_BRACKETS= "@b";
+    private final static String KW_BRACKETS = "@b";
+    private final static String KW_SUB_BRACKETS = "@sub_b";
     private final static String KW_KEY = "@key";
 
     private static Map<String, String> orderMap = null;
@@ -52,7 +53,7 @@ public class JsonTextQueryParser {
      * @param queryJsonText
      * @return
      */
-    public List<QueryCommand> parseMulti(String queryJsonText,Ctx ctx) {
+    public List<QueryCommand> parseMulti(String queryJsonText, Ctx ctx) {
         JSONArray ja = JSON.parseArray(queryJsonText);
         CommandValidator validator = new CommandValidator();
         List list = new ArrayList<QueryCommand>(ja.size());
@@ -63,7 +64,7 @@ public class JsonTextQueryParser {
                 Assert.isTrue(validator.isSuccess(), validator.getMessage());
             }
             String key = jo.keySet().iterator().next();
-            list.add(parse(key, jo.getJSONObject(key), validator,ctx));
+            list.add(parse(key, jo.getJSONObject(key), validator, ctx));
         }
         return list;
     }
@@ -74,7 +75,7 @@ public class JsonTextQueryParser {
      * @param queryJsonText
      * @return
      */
-    public QueryCommand parse(String queryJsonText,Ctx ctx) {
+    public QueryCommand parse(String queryJsonText, Ctx ctx) {
         JSONObject jo = JSON.parseObject(queryJsonText);
         CommandValidator validator = new CommandValidator();
         if (jo.size() != 1) {
@@ -82,24 +83,24 @@ public class JsonTextQueryParser {
             Assert.isTrue(validator.isSuccess(), validator.getMessage());
         }
         String key = jo.keySet().iterator().next();
-        return parse(key, jo.getJSONObject(key), validator,ctx);
+        return parse(key, jo.getJSONObject(key), validator, ctx);
     }
 
-    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator,Ctx ctx) {
+    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator, Ctx ctx) {
         Assert.isTrue(validator.validateEntity(entityName), validator.getMessage());
         QueryCommand command = new QueryCommand();
         command.setEntityName(entityName);
         FilterGroup fg = new FilterGroup();
-        fg.addFilter("tenantCode",ctx.getCurrentTenantCode());
+        fg.addFilter("tenantCode", ctx.getCurrentTenantCode());
 
-        if(ctx.getCurrentUser().getDataPermissionByEntity(entityName)!=null){
-            DataPermission dp=ctx.getCurrentUser().getDataPermissionByEntity(entityName);
-            switch (dp.getDataPermission()){
-                case MySelf :
-                    fg.addFilter("creator",ctx.getCurrentUser().getUserId());
+        if (ctx.getCurrentUser().getDataPermissionByEntity(entityName) != null) {
+            DataPermission dp = ctx.getCurrentUser().getDataPermissionByEntity(entityName);
+            switch (dp.getDataPermission()) {
+                case MySelf:
+                    fg.addFilter("creator", ctx.getCurrentUser().getUserId());
                     break;
                 case MyDept:
-                    fg.addFilter("deptId",ctx.getCurrentUser().getDeptId());
+                    fg.addFilter("deptId", ctx.getCurrentUser().getDeptId());
                     break;
                 default:
                     break;
@@ -159,53 +160,7 @@ public class JsonTextQueryParser {
                         //@TODO
                         break;
                     case KW_BRACKETS:
-                        JSONArray bracketsJa=jo.getJSONArray(key);
-                        List<FilterGroup> childFilterGroup =new ArrayList<>();
-                        bracketsJa.forEach(k->{
-                            JSONObject bracket=(JSONObject) k;
-                            JSONArray ja = null;
-                            String currentLogic="or";
-                            if(bracket.get("or")!=null){
-                                ja= (JSONArray) bracket.get("or");
-                            }else if (bracket.get("and")!=null) {
-                                ja = (JSONArray) bracket.get("and");
-                                currentLogic="and";
-                            }
-
-                            if(ja!=null) {
-                                FilterGroup filterGroup=new FilterGroup(FilterGroup.Logic.fromString(currentLogic));
-                                for (int i = 0; i < ja.size(); i++) {
-                                    JSONObject jsonObject =  (JSONObject)ja.get(i);
-                                    jsonObject.keySet().forEach(x -> {
-                                        String[] ary = x .split(FILTER_FLAG);
-                                        String field = ary[0];
-                                        validator.validateField(field, "where");
-                                        if (ary.length == 1) {
-                                            //等值
-                                            filterGroup.addFilter(field, FilterGroup.Operator.eq, jsonObject.getString(x));
-                                        } else if (ary.length == 2) {
-                                            //大于、小于...
-                                            String fn = ary[1];
-                                            if (!FilterGroup.Operator.contains(fn)) {
-                                                validator.appendMessage("[");
-                                                validator.appendMessage(key);
-                                                validator.appendMessage("]");
-                                                validator.appendMessage("不支持");
-                                                validator.appendMessage(fn);
-                                                validator.appendMessage(";只支持");
-                                                validator.appendMessage(FilterGroup.Operator.getOperatorStrings());
-                                            } else {
-                                                FilterGroup.Operator operator = FilterGroup.Operator.fromString(fn);
-                                                filterGroup.addFilter(field, operator, jsonObject.getString(x));
-                                            }
-                                        } else {
-                                            //TODO 格式不对 throw
-                                        }
-                                    });
-                                }
-                                childFilterGroup.add(filterGroup);
-                            }
-                                });
+                        List<FilterGroup> childFilterGroup = parseKWBrackets(validator, jo);
                         fg.setChildFilterGroup(childFilterGroup);
                         break;
                     case KW_PAGE:
@@ -235,7 +190,7 @@ public class JsonTextQueryParser {
                 }
             } else if (key.startsWith(SUB_ENTITY_FLAG)) {
                 //解析子实体
-                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator,ctx));
+                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator, ctx));
             } else {
                 //where子句过滤条件
                 String[] ary = key.split(FILTER_FLAG);
@@ -269,5 +224,67 @@ public class JsonTextQueryParser {
         return command;
     }
 
+    private List<FilterGroup> parseKWBrackets(CommandValidator validator, JSONObject jo) {
+        JSONArray bracketsJa = jo.getJSONArray(KW_BRACKETS);
+        List<FilterGroup> childFilterGroup = new ArrayList<>();
+        bracketsJa.forEach(k -> {
+            JSONObject bracket = (JSONObject) k;
+            FilterGroup filterGroup = parseKWBracket(validator, bracket);
+            childFilterGroup.add(filterGroup);
+        });
+        return childFilterGroup;
+    }
+
+    private FilterGroup parseKWBracket(CommandValidator validator, JSONObject bracket) {
+        JSONArray ja = null;
+        String currentLogic = "or";
+        if (bracket.get("or") != null) {
+            ja = (JSONArray) bracket.get("or");
+        } else if (bracket.get("and") != null) {
+            ja = (JSONArray) bracket.get("and");
+            currentLogic = "and";
+        }
+        FilterGroup filterGroup = new FilterGroup(FilterGroup.Logic.fromString(currentLogic));
+        List<FilterGroup> childFilterGroup = new ArrayList<>();
+        if (ja != null) {
+            for (int i = 0; i < ja.size(); i++) {
+                JSONObject jsonObject = (JSONObject) ja.get(i);
+                jsonObject.keySet().forEach(x -> {
+                    if (x.equals("and") || x.equals("or")) {
+                        FilterGroup andChildGroup = parseKWBracket(validator, jsonObject);
+                        childFilterGroup.add(andChildGroup);
+                    } else {
+                        String[] ary = x.split(FILTER_FLAG);
+                        String field = ary[0];
+                        validator.validateField(field, "where");
+                        if (ary.length == 1) {
+                            //等值
+                            filterGroup.addFilter(field, FilterGroup.Operator.eq, jsonObject.getString(x));
+                        } else if (ary.length == 2) {
+                            //大于、小于...
+                            String fn = ary[1];
+                            if (!FilterGroup.Operator.contains(fn)) {
+                                validator.appendMessage("[");
+                                validator.appendMessage(KW_BRACKETS);
+                                validator.appendMessage("]");
+                                validator.appendMessage("不支持");
+                                validator.appendMessage(fn);
+                                validator.appendMessage(";只支持");
+                                validator.appendMessage(FilterGroup.Operator.getOperatorStrings());
+                            } else {
+                                FilterGroup.Operator operator = FilterGroup.Operator.fromString(fn);
+                                filterGroup.addFilter(field, operator, jsonObject.getString(x));
+                            }
+                        } else {
+                            //TODO 格式不对 throw
+                        }
+                    }
+
+                });
+            }
+        }
+        filterGroup.setChildFilterGroup(childFilterGroup);
+        return filterGroup;
+    }
 
 }

@@ -132,7 +132,13 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             }
         }
 
-        for (FilterGroup filterGroup : command.getWhere().getChildFilterGroup()) {
+        List<Object> newList =recursionFilterGroup(command.getWhere().getChildFilterGroup() ,command,list);
+
+        return newList.toArray();
+    }
+
+    private List<Object> recursionFilterGroup(List<FilterGroup> childFilterGroup, E command, List<Object> list) {
+        for (FilterGroup filterGroup :childFilterGroup) {
             for (FilterGroup.Filter filter : filterGroup.getFilters()) {
                 // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
                 if (filter.getOperator().equals(FilterGroup.Operator.in)) {
@@ -146,8 +152,10 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                     }
                 }
             }
+            if(filterGroup.getChildFilterGroup().size()>0)
+                recursionFilterGroup(filterGroup.getChildFilterGroup(),command,list);
         }
-        return list.toArray();
+        return list;
     }
 
     /**
@@ -219,12 +227,20 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                 index += 1;
             }
         }
+
+        buildChildConditions(sb,em,filterGroup);
+    }
+
+    protected void buildChildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup) {
         List<FilterGroup> childFilterGroup=filterGroup.getChildFilterGroup();
         if (childFilterGroup != null && childFilterGroup.size() > 0) {
             for (FilterGroup fg:filterGroup.getChildFilterGroup()){
                 sb.append( " and ");
                 sb.append(" ( ");
                 buildConditions(sb,em,fg.getFilters(),fg.getLogic());
+                if(fg.getChildFilterGroup()!=null){
+                    buildChildConditions(sb,em,fg);
+                }
                 sb.append(" ) ");
             }
         }
