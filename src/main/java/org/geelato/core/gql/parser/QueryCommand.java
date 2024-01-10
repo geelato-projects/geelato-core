@@ -28,10 +28,10 @@ public class QueryCommand extends BaseCommand<QueryCommand> {
      * 查询语句
      */
     private String selectSql;
-
     private String groupBy;
     private String orderBy;
     private FilterGroup having;
+    private String ACL;  //access control  list
 
     public QueryCommand() {
         setCommandType(CommandType.Query);

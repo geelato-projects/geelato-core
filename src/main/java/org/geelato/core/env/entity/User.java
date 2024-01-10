@@ -1,6 +1,5 @@
 package org.geelato.core.env.entity;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 
 public class User {
@@ -11,16 +10,15 @@ public class User {
     private String defaultOrgName;
     
     private String buId;
-    private String deptId;
 
     private List<UserOrg> orgs;
     private List<UserRole> roles;
 
     private List<UserMenu> menus;
 
-    private List<DataPermission> dataPermissions;
+    private List<Permission> dataPermissions;
 
-    private List<ElementPermission> elementPermissions;
+    private List<Permission> elementPermissions;
 
     public String getUserId() {
         return userId;
@@ -86,14 +84,6 @@ public class User {
         this.buId = buId;
     }
 
-    public String getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(String deptId) {
-        this.deptId = deptId;
-    }
-
     public List<UserMenu> getMenus() {
         return menus;
     }
@@ -102,21 +92,21 @@ public class User {
         this.menus = menus;
     }
 
-    public List<DataPermission> getDataPermissions() {
+    public List<Permission> getDataPermissions() {
         return dataPermissions;
     }
-    public DataPermission getDataPermissionByEntity(String entity){
+    public Permission getDataPermissionByEntity(String entity){
         return this.dataPermissions.stream().filter(x->x.getEntity().equals(entity)).findFirst().orElse(null);
     }
-    public void setDataPermissions(List<DataPermission> dataPermissions) {
+    public void setDataPermissions(List<Permission> dataPermissions) {
         this.dataPermissions = dataPermissions;
     }
 
-    public List<ElementPermission> getElementPermissions() {
+    public List<Permission> getElementPermissions() {
         return elementPermissions;
     }
 
-    public void setElementPermissions(List<ElementPermission> elementPermissions) {
+    public void setElementPermissions(List<Permission> elementPermissions) {
         this.elementPermissions = elementPermissions;
     }
 }

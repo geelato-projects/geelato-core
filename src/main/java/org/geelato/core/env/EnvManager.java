@@ -2,8 +2,6 @@ package org.geelato.core.env;
 
 
 import org.geelato.core.Ctx;
-import org.geelato.core.enums.permission.DataPermissionEnum;
-import org.geelato.core.enums.permission.ElementPermissionEnum;
 import org.geelato.core.env.entity.*;
 import org.geelato.core.orm.Dao;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -75,33 +73,20 @@ public class EnvManager {
         Ctx.setCurrentTenant("geelato");
     }
 
-    private List<DataPermission> StructDataPermission(String userId) {
-        List<DataPermission> dataPermissionList=new ArrayList<>();
-        DataPermission dp1=new DataPermission();
-        dp1.setEntity("");
-        dp1.setDataPermission(DataPermissionEnum.All);
-        dataPermissionList.add(dp1);
-
-//        DataPermission dp2=new DataPermission();
-//        dp2.setEntity("platform_user");
-//        dp2.setDataPermission(DataPermissionEnum.MySelf);
-//        dataPermissionList.add(dp2);
-
-        DataPermission dp3=new DataPermission();
-        dp3.setEntity("");
-        dp3.setDataPermission(DataPermissionEnum.MyDept);
-        dataPermissionList.add(dp3);
-
+    private List<Permission> StructDataPermission(String userId) {
+        String sql = "select t2.`object`  as entity,t2.rule as rule  from platform_role_r_permission t1 \n" +
+                "left join platform_permission t2 on t1.permission_id =t2.id \n" +
+                "left join platform_role t3 on t1.role_id =t3.id \n" +
+                "left join platform_role_r_user t4 on t4.role_id =t3.id \n" +
+                "left join platform_user t5 on t5.id =t4.user_id \n" +
+                "where  t2.type='dp' and t5.id =?";
+        List<Permission> dataPermissionList=EnvDao.getJdbcTemplate().query(sql,
+                new BeanPropertyRowMapper<Permission>(Permission.class),new Object[]{userId});
         return dataPermissionList;
     }
 
-    private List<ElementPermission> StructElementPermission(String userId) {
-        List<ElementPermission> elementPermissionList=new ArrayList<>();
-
-        ElementPermission ep1=new ElementPermission();
-        ep1.setElementKey("");
-        ep1.setElementPermission(ElementPermissionEnum.Visable);
-        elementPermissionList.add(ep1);
+    private List<Permission> StructElementPermission(String userId) {
+        List<Permission> elementPermissionList=new ArrayList<>();
 
         return elementPermissionList;
     }

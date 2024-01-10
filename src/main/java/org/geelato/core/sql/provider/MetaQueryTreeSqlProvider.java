@@ -43,6 +43,10 @@ public class MetaQueryTreeSqlProvider extends MetaBaseSqlProvider<QueryTreeComma
             sb.append(" where ");
             buildConditions(sb, md, fg.getFilters(), fg.getLogic());
         }
+        if(command.getOriginalWhere()!=null){
+            sb.append( "  and  ");
+            sb.append(command.getOriginalWhere());
+        }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {
             sb.append(" group by ");

@@ -3,7 +3,7 @@ package org.geelato.core.gql.parser;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.geelato.core.env.entity.DataPermission;
+import org.geelato.core.env.entity.Permission;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.Ctx;
 import org.slf4j.Logger;
@@ -94,17 +94,11 @@ public class JsonTextQueryParser {
         fg.addFilter("tenantCode", ctx.getCurrentTenantCode());
 
         if (ctx.getCurrentUser().getDataPermissionByEntity(entityName) != null) {
-            DataPermission dp = ctx.getCurrentUser().getDataPermissionByEntity(entityName);
-            switch (dp.getDataPermission()) {
-                case MySelf:
-                    fg.addFilter("creator", ctx.getCurrentUser().getUserId());
-                    break;
-                case MyDept:
-                    fg.addFilter("deptId", ctx.getCurrentUser().getDeptId());
-                    break;
-                default:
-                    break;
-            }
+            Permission dp = ctx.getCurrentUser().getDataPermissionByEntity(entityName);
+            String rule= dp.getRuleReplaceVariable();
+            command.setOriginalWhere(rule);
+        }else{
+            command.setOriginalWhere(String.format("creator='%s'",ctx.getCurrentUser().getUserId()));
         }
 
         command.setWhere(fg);

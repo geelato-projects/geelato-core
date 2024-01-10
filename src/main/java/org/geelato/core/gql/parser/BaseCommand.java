@@ -1,5 +1,7 @@
 package org.geelato.core.gql.parser;
 
+import org.geelato.core.Ctx;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,8 @@ public class BaseCommand<E extends BaseCommand> {
     protected String[] fields;
     // 指定条件
     protected FilterGroup where;
+    //指定原始where语句
+    protected String originalWhere;
     // 指定条件
     protected StringBuilder from = new StringBuilder();
     // 子命令
@@ -53,11 +57,15 @@ public class BaseCommand<E extends BaseCommand> {
     public FilterGroup getWhere() {
         return where;
     }
-
+    public String getOriginalWhere() {
+        return originalWhere;
+    }
     public void setWhere(FilterGroup where) {
         this.where = where;
     }
-
+    public void setOriginalWhere(String originalWhere) {
+        this.originalWhere = originalWhere;
+    }
     /**
      * @return 如果是根命令，则返回null
      */
