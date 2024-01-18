@@ -205,11 +205,27 @@
   },
   {
     "group": "数值类型",
+    "label": "单精度小数[±3.4E+38]",
+    "value": "float",
+    "mysql": "float",
+    "disabled": false,
+    "seqNo": 306
+  },
+  {
+    "group": "数值类型",
+    "label": "双精度小数[±1.79E+308]",
+    "value": "double",
+    "mysql": "double",
+    "disabled": false,
+    "seqNo": 307
+  },
+  {
+    "group": "数值类型",
     "label": "精准的小数[D(1~60,1~30)]",
     "value": "decimal",
     "mysql": "decimal",
     "disabled": false,
-    "seqNo": 306
+    "seqNo": 308
   },
   {
     "group": "数值类型",
@@ -218,7 +234,7 @@
     "mysql": "decimal",
     "disabled": false,
     "extent": 100,
-    "seqNo": 307
+    "seqNo": 309
   },
   {
     "group": "日期时间",
