@@ -79,7 +79,7 @@ public class EnvManager {
                 "left join platform_role t3 on t1.role_id =t3.id \n" +
                 "left join platform_role_r_user t4 on t4.role_id =t3.id \n" +
                 "left join platform_user t5 on t5.id =t4.user_id \n" +
-                "where  t2.type='dp' and t5.id =?";
+                "where  t2.type='dp' and t1.del_status=0 and t5.id =?";
         List<Permission> dataPermissionList=EnvDao.getJdbcTemplate().query(sql,
                 new BeanPropertyRowMapper<Permission>(Permission.class),new Object[]{userId});
         return dataPermissionList;
