@@ -91,14 +91,14 @@ public class JsonTextQueryParser {
         QueryCommand command = new QueryCommand();
         command.setEntityName(entityName);
         FilterGroup fg = new FilterGroup();
-        fg.addFilter("tenantCode", ctx.getCurrentTenantCode());
+        fg.addFilter("tenantCode", Ctx.getCurrentTenantCode());
 
-        if (ctx.getCurrentUser().getDataPermissionByEntity(entityName) != null) {
-            Permission dp = ctx.getCurrentUser().getDataPermissionByEntity(entityName);
+        if (Ctx.getCurrentUser().getDataPermissionByEntity(entityName) != null) {
+            Permission dp = Ctx.getCurrentUser().getDataPermissionByEntity(entityName);
             String rule= dp.getRuleReplaceVariable();
             command.setOriginalWhere(rule);
         }else{
-            command.setOriginalWhere(String.format("creator='%s'",ctx.getCurrentUser().getUserId()));
+            command.setOriginalWhere(String.format("creator='%s'", Ctx.getCurrentUser().getUserId()));
         }
 
         command.setWhere(fg);

@@ -1,5 +1,8 @@
 package org.geelato.core.env.entity;
 
+import org.geelato.core.meta.model.entity.EntitySortable;
+
+import java.util.Comparator;
 import java.util.List;
 
 public class User {
@@ -95,8 +98,10 @@ public class User {
     public List<Permission> getDataPermissions() {
         return dataPermissions;
     }
-    public Permission getDataPermissionByEntity(String entity){
-        return this.dataPermissions.stream().filter(x->x.getEntity().equals(entity)).findFirst().orElse(null);
+    public Permission getDataPermissionByEntity(String entity) {
+        //根据weight权重排序，取第一条
+        return this.dataPermissions.stream().filter(x -> x.getEntity().equals(entity)).
+                max(Comparator.comparing(Permission::getWeight)).orElse(null);
     }
     public void setDataPermissions(List<Permission> dataPermissions) {
         this.dataPermissions = dataPermissions;
