@@ -26,6 +26,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private int linked;
     private String description;
     private Boolean synced = false;
+    private String sourceType;
 
     private String viewSql;
 
@@ -175,5 +176,15 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     public void setSynced(Boolean synced) {
         this.synced = synced;
+    }
+
+    @Col(name = "source_type")
+    @Title(title = "来源类型", description = "system:系统;creation:创建;")
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 }
