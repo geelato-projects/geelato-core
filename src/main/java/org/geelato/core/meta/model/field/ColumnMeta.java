@@ -541,7 +541,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
                 setAutoIncrement(false);
             }
             // 设置额外值
-            List<String> extras = new ArrayList<String>();
+            List<String> extras = new ArrayList<>();
             if (isUniqued()) {
                 extras.add("UNIQUE");
             }

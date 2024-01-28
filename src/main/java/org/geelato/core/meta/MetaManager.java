@@ -174,7 +174,6 @@ public class MetaManager {
 
     /**
      * @param columnName
-     * @return
      */
     public FieldMeta getCommonFieldMeta(String columnName) {
         return commonFieldMetas.get(columnName);
@@ -429,7 +428,6 @@ public class MetaManager {
     /**
      * 从 实体元数据缓存中 移除
      *
-     * @param map
      */
     public void removeOne(Map map, List<HashMap> columnList) {
         removeOne(map, columnList, null);

@@ -52,7 +52,6 @@ public class EntityMeta {
      * 对于基于java类解析的实体，则返回类名（不包括包名）
      * 对于基于页面配置的实体，则返回配置的实体名称
      *
-     * @return
      */
     public String getEntityName() {
         return entityName;
@@ -74,7 +73,6 @@ public class EntityMeta {
      * 对于基于java类解析的实体，则有具体的类类型
      * 对于基于页面配置的实体，则返回值为空
      *
-     * @return
      */
     public EntityType getEntityType() {
         return entityType;
@@ -87,7 +85,6 @@ public class EntityMeta {
     /**
      * 基于@Id获取实体中的主键字段名
      *
-     * @return
      */
     public FieldMeta getId() {
         return id;
@@ -261,7 +258,6 @@ public class EntityMeta {
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
      *
      * @param fieldNames 指定需获取元数据的字段
-     * @return
      */
     public SimpleFieldMeta[] getSimpleFieldMetas(String[] fieldNames) {
         SimpleFieldMeta[] metas = new SimpleFieldMeta[fieldNames.length];
@@ -274,7 +270,6 @@ public class EntityMeta {
     /**
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
      *
-     * @return
      */
     public Collection<SimpleFieldMeta> getAllSimpleFieldMetas() {
         return simpleFieldMetaMap.values();
@@ -285,7 +280,7 @@ public class EntityMeta {
     }
 
     public FieldMeta getFieldMetaByColumn(String columnName) {
-        if (this.fieldMetas == null || this.fieldMetas.size() == 0) {
+        if (this.fieldMetas == null || this.fieldMetas.isEmpty()) {
             return null;
         }
         for (FieldMeta fm : fieldMetas) {

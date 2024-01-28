@@ -33,7 +33,7 @@ import java.util.*;
 public class MetaRelf {
 
     private static ApplicationContext applicationContext;
-    private static Logger logger = LoggerFactory.getLogger(MetaRelf.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaRelf.class);
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     // 一些类型默认的长度
     public static Map<String, Long> dataTypeDefaultMaxLengthMap = new HashedMap();
@@ -52,7 +52,6 @@ public class MetaRelf {
     /**
      * 如果在spring环境下，可以设置该值，以便可直接获取spring中已创建的bean，不需重新创建
      *
-     * @param context
      */
     public static void setApplicationContext(ApplicationContext context) {
         applicationContext = context;
@@ -217,7 +216,6 @@ public class MetaRelf {
      * 基于注解@Entity,按以下顺序获取，有值则返回：
      * model name -> name of class (with package name)
      *
-     * @param clazz
      * @return 实体名
      */
     public static String getEntityName(Class clazz) {
@@ -279,9 +277,7 @@ public class MetaRelf {
     /**
      * 解析get**方法或is**方法的映射，其它的，如set**方法不解析
      *
-     * @param clazz
      * @param tableForeigns 不为null时，解析表外键
-     * @return
      */
     public static HashMap<String, FieldMeta> getColumnFieldMetas(Class clazz, Collection<TableForeign> tableForeigns) {
         Object bean = getBean(clazz);
@@ -545,14 +541,13 @@ public class MetaRelf {
      * @param before 不能为空
      * @param after  不能为空，且与before为相同类型
      * @return 对象的差异值
-     * @Param ignoreFieldMap 不需要检查比较的字段
      */
     public static String compareEntityValue(Object before, Object after, Map<String, String> ignoreFieldMap) {
         Assert.notNull(before, "不能为空");
         Assert.notNull(after, "不能为空");
         Assert.isTrue(before.getClass().equals(after.getClass()), "before与after为相同类型");
         HashMap<String, Field> beforeFieldHashMap = getAccessibleFields(before);
-        if (beforeFieldHashMap.values().size() == 0) {
+        if (beforeFieldHashMap.values().isEmpty()) {
             return "";
         }
         HashMap<String, Field> afterFieldHashMap = getAccessibleFields(after);
@@ -570,7 +565,7 @@ public class MetaRelf {
 
                 afterField = afterFieldHashMap.get(field.getName());
                 afterField.setAccessible(true);
-                Object afterValueObject = afterField == null ? "" : afterField.get(after);
+                Object afterValueObject = afterField.get(after);
                 String afterValue = afterValueObject == null ? "" : (afterValueObject instanceof Date ? DATE_FORMAT.format(afterValueObject) : afterValueObject.toString());
                 if (!beforeValue.equals(afterValue)) {
                     jsonResult.append("{\"field\":\"");
