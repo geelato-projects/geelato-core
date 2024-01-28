@@ -41,7 +41,7 @@ public class CommonRowMapper<T> implements RowMapper<T> {
         Converter d = ConvertUtils.lookup(java.sql.Date.class);
 
         T bean;
-        if (em.getEntityType() != null) {
+        if (em.getClassType() != null) {
             try {
                 bean = (T) em.getClassType().newInstance();
                 for (int _iterator = 0; _iterator < rsmd.getColumnCount(); _iterator++) {

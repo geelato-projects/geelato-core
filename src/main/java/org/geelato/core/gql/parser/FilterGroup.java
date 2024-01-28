@@ -195,6 +195,7 @@ public class FilterGroup {
         endWith("endwith"),
         contains("contains"),
         in("in"),
+        notin("nin"),
         nil("nil"),
         bt("bt");
 

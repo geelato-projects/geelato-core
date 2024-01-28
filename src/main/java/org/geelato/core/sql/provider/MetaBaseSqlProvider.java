@@ -56,7 +56,10 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             return ">=";
         } else if (operator == FilterGroup.Operator.in) {
             return "in";
+        } else if (operator == FilterGroup.Operator.notin) {
+            return "not in";
         }
+
         return "=";
     }
 
@@ -120,7 +123,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         List<Object> list = new ArrayList<>();
         for (FilterGroup.Filter filter : command.getWhere().getFilters()) {
             // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
-            if (filter.getOperator().equals(FilterGroup.Operator.in)) {
+            if (filter.getOperator().equals(FilterGroup.Operator.in)||filter.getOperator().equals(FilterGroup.Operator.notin)) {
                 Object[] ary = filter.getValueAsArray();
                 list.addAll(Arrays.asList(ary));
             } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
@@ -141,7 +144,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
         for (FilterGroup filterGroup :childFilterGroup) {
             for (FilterGroup.Filter filter : filterGroup.getFilters()) {
                 // 若为in操作，则需将in内的内容拆分成多个，相应地在构建参数占位符的地方也做相应的处理
-                if (filter.getOperator().equals(FilterGroup.Operator.in)) {
+                if (filter.getOperator().equals(FilterGroup.Operator.in)||filter.getOperator().equals(FilterGroup.Operator.notin)) {
                     Object[] ary = filter.getValueAsArray();
                     list.addAll(Arrays.asList(ary));
                 } else if (filter.getOperator().equals(FilterGroup.Operator.nil)||filter.getOperator().equals(FilterGroup.Operator.bt)) {
@@ -152,7 +155,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
                     }
                 }
             }
-            if(filterGroup.getChildFilterGroup().size()>0)
+            if(!filterGroup.getChildFilterGroup().isEmpty())
                 recursionFilterGroup(filterGroup.getChildFilterGroup(),command,list);
         }
         return list;
@@ -276,6 +279,12 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             tryAppendKeywords(em, sb, fm);
             Object[] ary = filter.getValueAsArray();
             sb.append(" in(");
+            sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
+            sb.append(")");
+        }else if (operator == FilterGroup.Operator.notin) {
+            tryAppendKeywords(em, sb, fm);
+            Object[] ary = filter.getValueAsArray();
+            sb.append(" not in(");
             sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
             sb.append(")");
         }else if(operator==FilterGroup.Operator.nil){
