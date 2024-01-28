@@ -144,7 +144,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.abstractColumnExpressions = abstractColumnExpressions;
     }
 
-
+    @Title(title = "应用Id")
+    @Col(name = "app_id")
     public String getAppId() {
         return appId;
     }
