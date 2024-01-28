@@ -36,8 +36,6 @@ public class JsonTextQueryParser {
     private final static String KW_GROUP_BY = "@group";
     private final static String KW_HAVING = "@having";
     private final static String KW_BRACKETS = "@b";
-    private final static String KW_SUB_BRACKETS = "@sub_b";
-    private final static String KW_KEY = "@key";
 
     private static Map<String, String> orderMap = null;
 
@@ -50,13 +48,11 @@ public class JsonTextQueryParser {
     /**
      * 批量查询解析
      *
-     * @param queryJsonText
-     * @return
      */
-    public List<QueryCommand> parseMulti(String queryJsonText, Ctx ctx) {
+    public List<QueryCommand> parseMulti(String queryJsonText) {
         JSONArray ja = JSON.parseArray(queryJsonText);
         CommandValidator validator = new CommandValidator();
-        List list = new ArrayList<QueryCommand>(ja.size());
+        List<QueryCommand> list = new ArrayList<>(ja.size());
         for (Object obj : ja) {
             JSONObject jo = (JSONObject) obj;
             if (jo.size() != 1) {
@@ -64,7 +60,7 @@ public class JsonTextQueryParser {
                 Assert.isTrue(validator.isSuccess(), validator.getMessage());
             }
             String key = jo.keySet().iterator().next();
-            list.add(parse(key, jo.getJSONObject(key), validator, ctx));
+            list.add(parse(key, jo.getJSONObject(key), validator));
         }
         return list;
     }
@@ -73,7 +69,7 @@ public class JsonTextQueryParser {
      * 单查询解析
      *
      */
-    public QueryCommand parse(String queryJsonText, Ctx ctx) {
+    public QueryCommand parse(String queryJsonText) {
         JSONObject jo = JSON.parseObject(queryJsonText);
         CommandValidator validator = new CommandValidator();
         if (jo.size() != 1) {
@@ -81,10 +77,10 @@ public class JsonTextQueryParser {
             Assert.isTrue(validator.isSuccess(), validator.getMessage());
         }
         String key = jo.keySet().iterator().next();
-        return parse(key, jo.getJSONObject(key), validator, ctx);
+        return parse(key, jo.getJSONObject(key), validator);
     }
 
-    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator, Ctx ctx) {
+    private QueryCommand parse(String entityName, JSONObject jo, CommandValidator validator) {
         Assert.isTrue(validator.validateEntity(entityName), validator.getMessage());
         QueryCommand command = new QueryCommand();
         command.setEntityName(entityName);
@@ -131,7 +127,7 @@ public class JsonTextQueryParser {
                             String[] strs = order.split(FILTER_FLAG);
                             if (strs.length == 2 && orderMap.containsKey(strs[1])) {
                                 validator.validateField(strs[0], KW_ORDER_BY);
-                                sb.append(sb.length() == 0 ? " " : ",");
+                                sb.append(sb.isEmpty() ? " " : ",");
                                 sb.append(validator.getColumnName(strs[0]));
                                 sb.append(" ");
                                 sb.append(orderMap.get(strs[1]));
@@ -182,7 +178,7 @@ public class JsonTextQueryParser {
                 }
             } else if (key.startsWith(SUB_ENTITY_FLAG)) {
                 //解析子实体
-                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator, ctx));
+                command.getCommands().add(parse(key.substring(1), jo.getJSONObject(key), validator));
             } else {
                 //where子句过滤条件
                 String[] ary = key.split(FILTER_FLAG);
@@ -239,8 +235,8 @@ public class JsonTextQueryParser {
         FilterGroup filterGroup = new FilterGroup(FilterGroup.Logic.fromString(currentLogic));
         List<FilterGroup> childFilterGroup = new ArrayList<>();
         if (ja != null) {
-            for (int i = 0; i < ja.size(); i++) {
-                JSONObject jsonObject = (JSONObject) ja.get(i);
+            for (Object o : ja) {
+                JSONObject jsonObject = (JSONObject) o;
                 jsonObject.keySet().forEach(x -> {
                     if (x.equals("and") || x.equals("or")) {
                         FilterGroup andChildGroup = parseKWBracket(validator, jsonObject);
