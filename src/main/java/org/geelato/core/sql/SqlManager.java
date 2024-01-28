@@ -22,10 +22,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author geemeta
  */
 public class SqlManager {
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static Lock lock = new ReentrantLock();
     private static SqlManager instance;
-    private MetaManager metaManager = MetaManager.singleInstance();
+    private final MetaManager metaManager = MetaManager.singleInstance();
     private final MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
     private final MetaViewQuerySqlProvider metaViewQuerySqlProvider = new MetaViewQuerySqlProvider();
     private final MetaQuerySqlMultiProvider metaQuerySqlMultiProvider = new MetaQuerySqlMultiProvider();
