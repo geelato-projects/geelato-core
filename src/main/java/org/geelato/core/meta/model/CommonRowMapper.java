@@ -25,8 +25,6 @@ public class CommonRowMapper<T> implements RowMapper<T> {
     private static final MetaManager metaManager = MetaManager.singleInstance();
 
     public CommonRowMapper() {
-        // ConvertUtils.register(new DateLocaleConverter(), Date.class);
-        // ConvertUtils.deregister(Date.class);
         DateTimeConverter dtc = new DateTimeConverter();
         ConvertUtils.register(dtc, java.time.LocalDateTime.class);
         ConvertUtils.register(dtc, Date.class);
@@ -45,15 +43,10 @@ public class CommonRowMapper<T> implements RowMapper<T> {
         T bean = null;
         if (em.getEntityType() != null) {
             try {
-                bean = (T) em.getEntityType().newInstance();
+                bean = (T) em.getClassType().newInstance();
                 for (int _iterator = 0; _iterator < rsmd.getColumnCount(); _iterator++) {
-                    // getting the SQL column name
                     String columnName = rsmd.getColumnName(_iterator + 1);
-                    // reading the value of the SQL column
                     Object columnValue = resultSet.getObject(_iterator + 1);
-                    // iterating over outputClass attributes to check if
-                    // any attribute has 'Column' annotation with
-                    // matching 'name' value
                     for (FieldMeta fm : em.getFieldMetas()) {
                         if (columnName.equals(fm.getColumnName())) {
                             BeanUtils.setProperty(bean, fm.getFieldName(), columnValue);

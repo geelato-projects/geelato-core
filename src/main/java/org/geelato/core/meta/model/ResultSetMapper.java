@@ -17,8 +17,7 @@ import java.util.List;
  *
  */
 public class ResultSetMapper<T> {
-    @SuppressWarnings("unchecked")
-    public List<T> mapRersultSetToObject(ResultSet rs, Class outputClass) {
+    public List<T> mapResultSetToObject(ResultSet rs, Class outputClass) {
         List<T> outputList = null;
         try {
             // make sure resultset is not null

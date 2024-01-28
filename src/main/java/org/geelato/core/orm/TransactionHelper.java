@@ -10,8 +10,7 @@ public class TransactionHelper {
     public static TransactionStatus beginTransaction(DataSourceTransactionManager transactionManager){
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def);
-        return status;
+        return transactionManager.getTransaction(def);
     }
 
     public static void commitTransaction(DataSourceTransactionManager transactionManager,TransactionStatus status){

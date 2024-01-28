@@ -21,6 +21,7 @@ import org.geelato.core.orm.Dao;
 import org.geelato.core.util.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
+import org.graalvm.shadowed.org.jcodings.util.Hash;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -34,14 +35,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MetaManager {
 
 
-    private static Lock lock = new ReentrantLock();
+    private static final Lock lock = new ReentrantLock();
     private static MetaManager instance;
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
-    private HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
-    private List<EntityLiteMeta> entityLiteMetaList = new ArrayList<>();
-    private HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<String, EntityMeta>();
-    private static HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
-    private Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
+    private final HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
+    private final List<EntityLiteMeta> entityLiteMetaList = new ArrayList<>();
+    private final HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<String, EntityMeta>();
+    private static final HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
+    private final Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
 
     private Dao MetaDao;
 
@@ -82,8 +83,8 @@ public class MetaManager {
         for (Map map : tableList) {
             List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             List viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
-            //List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
-            parseOne(map, columnList, viewList);
+            parseTableEntity(map, columnList, viewList);
+//            parseViewEntity(viewList);
         }
     }
 
@@ -98,7 +99,6 @@ public class MetaManager {
         // 重新进行实体缓存
         for (Map map : tableList) {
             List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
-            // List foreignList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_LIST_BY_TABLE + " and main_table='%s'", map.get("entity_name")));
             removeOne(map, columnList);
             parseOne(map, columnList);
         }
@@ -294,17 +294,11 @@ public class MetaManager {
 
     /**
      * 检索批定包名中包含所有的包javax.persistence.Entity的类，并进行解析
-     *
-     * @param parkeName
      */
     private void scanAndParse(String parkeName) {
         //TODO 启动的时候扫描实体类，这里做个开关，如果开启，就默认将实体类更新至数据库。
         logger.debug("开始从包{}中扫描到包含注解{}的实体......", parkeName, Entity.class);
         List<Class<?>> classes = ClassScanner.scan(parkeName, true, Entity.class);
-        if (classes == null) {
-            logger.info("从包{}中未扫描到包含注解{}的实体！！", parkeName, Entity.class);
-            return;
-        }
         for (Class<?> clazz : classes) {
             parseOne(clazz);
         }
@@ -316,7 +310,6 @@ public class MetaManager {
      */
     public void scanAndParse(String packageName, boolean isUpdateMetadataFormDb) {
         scanAndParse(packageName);
-        //@TODO updateMetadataFromDbAfterParse的取值
         if (isUpdateMetadataFormDb) {
             updateMetadataFromDbAfterParse(null);
         }
@@ -400,22 +393,36 @@ public class MetaManager {
 
 
     public void parseOne(Map map, List<HashMap> columnList) {
-        parseOne(map, columnList, null);
+        parseTableEntity(map, columnList, null);
     }
 
-    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> viewList) {
-        parseOne(map, columnList, viewList, null);
+    public void parseTableEntity(Map map, List<HashMap> columnList, List<HashMap> viewList) {
+        parseTableEntity(map, columnList, viewList, null);
     }
 
-    public void parseOne(Map map, List<HashMap> columnList, List<HashMap> viewList, List<HashMap> foreignList) {
+    public void parseTableEntity(Map map, List<HashMap> columnList, List<HashMap> viewList, List<HashMap> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-            EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList, viewList, foreignList);
+            EntityMeta entityMeta = MetaRelf.getEntityMetaByTable(map, columnList, viewList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
 
             removeLiteMeta(entityMeta.getEntityName());
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
+        }
+    }
+
+    public void parseViewEntity(List<HashMap> viewList) {
+        for (Map view: viewList) {
+            String entityName = view.get("view_name").toString();
+            if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+                EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
+                entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+
+                removeLiteMeta(entityMeta.getEntityName());
+                entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+                tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
+            }
         }
     }
 

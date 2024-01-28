@@ -2,6 +2,7 @@ package org.geelato.core.meta.model.entity;
 
 
 import org.geelato.core.meta.DictDataSource;
+import org.geelato.core.meta.EntityType;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.field.SimpleFieldMeta;
 import org.geelato.core.meta.model.view.ViewMeta;
@@ -18,7 +19,8 @@ public class EntityMeta {
     private String entityName;
     // 实体的中文名称，如：用户信息
     private String entityTitle;
-    private Class entityType;
+    private Class classType;
+    private EntityType entityType;
     private FieldMeta id;
     private TableMeta tableMeta;
     private String tableAlias;
@@ -74,11 +76,11 @@ public class EntityMeta {
      *
      * @return
      */
-    public Class getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(Class entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 
@@ -326,7 +328,7 @@ public class EntityMeta {
     }
 
     public ViewMeta getViewMeta(String viewName) {
-        if (this.viewMetas == null || this.viewMetas.size() == 0) {
+        if (this.viewMetas == null || this.viewMetas.isEmpty()) {
             return null;
         }
         for (ViewMeta vm : viewMetas) {
@@ -339,5 +341,13 @@ public class EntityMeta {
 
     public void setViewMetas(Collection<ViewMeta> viewMetas) {
         this.viewMetas = viewMetas;
+    }
+
+    public Class getClassType() {
+        return classType;
+    }
+
+    public void setClassType(Class classType) {
+        this.classType = classType;
     }
 }

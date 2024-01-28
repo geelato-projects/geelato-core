@@ -1,6 +1,7 @@
 package org.geelato.core.meta;
 
 
+import com.alibaba.fastjson2.JSONArray;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.logging.log4j.util.Strings;
@@ -124,7 +125,7 @@ public class MetaRelf {
         em.setTableMeta(getTableMeta(clazz));
         em.setEntityName(em.getTableMeta().getEntityName());
         em.setEntityTitle(em.getTableMeta().getTitle());
-        em.setEntityType(clazz);
+        em.setClassType(clazz);
 
         Collection<TableForeign> tableForeigns = new ArrayList<>();
         HashMap<String, FieldMeta> map = getColumnFieldMetas(clazz, tableForeigns);
@@ -157,24 +158,39 @@ public class MetaRelf {
         return em;
     }
 
-    public static EntityMeta getEntityMeta(Map tmap, List columnList, List viewList, List foreignList) {
+    public static EntityMeta getEntityMetaByTable(Map tmap, List columnList, List viewList, List foreignList) {
         EntityMeta em = new EntityMeta();
         em.setTableMeta(getTableMeta(tmap));
         em.setEntityName(tmap.get("entity_name").toString());
         em.setEntityTitle(em.getTableMeta().getTitle());
-
+        em.setEntityType(EntityType.Table);
         HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(columnList);
-        em.setFieldMetas(columnMap.values());
 
+        em.setFieldMetas(columnMap.values());
         HashMap<String, ViewMeta> viewMap = getViewMetas(viewList);
         em.setViewMetas(viewMap.values());
 
         List<TableForeign> foreigns = getTableForeignMetas(foreignList);
         em.setTableForeigns(foreigns);
         em.setId(getPrimaryKey(columnMap));
-
         return em;
     }
+    public static EntityMeta getEntityMetaByView(Map map) {
+        EntityMeta em = new EntityMeta();
+//        em.setTableMeta(getTableMeta(tmap));
+        em.setEntityName(map.get("view_name").toString());
+        em.setEntityTitle(map.get("title").toString());
+        em.setEntityType(EntityType.View);
+        String columnDataStr=map.get("view_column").toString();
+        if(StringUtils.hasText(columnDataStr)){
+            JSONArray columnData=JSONArray.parse(columnDataStr);
+            HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(columnData);
+            em.setFieldMetas(columnMap.values());
+            em.setId(getPrimaryKey(columnMap));
+        }
+        return em;
+    }
+
 
     /**
      * 基于注解@Entity,按以下顺序获取，有值则返回：
@@ -325,12 +341,9 @@ public class MetaRelf {
                                             cfm.getColumn().setDefaultValue(String.valueOf(method.invoke(bean)));
                                         }
                                     }
-                                } catch (IllegalAccessException e) {
-                                    logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
-                                } catch (InvocationTargetException e) {
+                                } catch (IllegalAccessException | InvocationTargetException e) {
                                     logger.error("获取默认值失败:" + clazz.getName() + ">" + fieldName, e);
                                 }
-//                                logger.debug("column.dataType() >>"+column.name()+">>{}",column.dataType());
 
                                 //解析外键
                                 if (tableForeigns != null) {
@@ -395,59 +408,55 @@ public class MetaRelf {
     public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
         for (Map c_map : columnList) {
-            try {
-                String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
-                String title = c_map.get("title") == null ? null : c_map.get("title").toString();
-                String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
-                String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
-                String typeExtra = c_map.get("type_extra") == null ? null : c_map.get("type_extra").toString();
-                String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
-                String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
-                String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
-                Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
-                if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
-                    FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
-                    cfm.getColumn().setFieldName(fieldName);
-                    cfm.getColumn().setUniqued(c_map.get("is_unique") == null ? false : Boolean.parseBoolean(c_map.get("is_unique").toString()));
-                    cfm.getColumn().setNullable(c_map.get("is_nullable") == null ? true : Boolean.parseBoolean(c_map.get("is_nullable").toString()));
-                    cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
-                    cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
-                    cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
-                    cfm.getColumn().setTitle(title);
-                    cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
-                    cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
-                    cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
-                    cfm.getColumn().setKey(c_map.get("column_key") == null ? false : Boolean.parseBoolean(c_map.get("column_key").toString()));
-                    cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
-                    cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
-                    cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") == null ? false : Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
-                    cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") == null ? false : Boolean.parseBoolean(c_map.get("auto_increment").toString()));
-                    cfm.getColumn().setDataType(dataType);
-                    cfm.getColumn().setSelectType(selectType);
-                    cfm.getColumn().setTypeExtra(typeExtra);
-                    cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
-                    cfm.getColumn().setName(columnName);
-                    cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
-                    cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
-                    cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
-                    cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
-                    cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
-                    cfm.getColumn().setEnableStatus(enableStatus ? 1 : 0);
-                    cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
-                    cfm.getColumn().setAutoAdd(c_map.get("auto_add") == null ? false : Boolean.parseBoolean(c_map.get("auto_add").toString()));
-                    cfm.getColumn().setSynced(c_map.get("synced") == null ? false : Boolean.parseBoolean(c_map.get("synced").toString()));
-                    cfm.getColumn().setEncrypted(c_map.get("encrypted") == null ? false : Boolean.parseBoolean(c_map.get("encrypted").toString()));
-                    cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
-                    cfm.getColumn().setAppId(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
+            String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
+            String title = c_map.get("title") == null ? null : c_map.get("title").toString();
+            String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
+            String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
+            String typeExtra = c_map.get("type_extra") == null ? null : c_map.get("type_extra").toString();
+            String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
+            String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
+            String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
+            Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
+            if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
+                FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
+                cfm.getColumn().setFieldName(fieldName);
+                cfm.getColumn().setUniqued(c_map.get("is_unique") != null && Boolean.parseBoolean(c_map.get("is_unique").toString()));
+                cfm.getColumn().setNullable(c_map.get("is_nullable") == null || Boolean.parseBoolean(c_map.get("is_nullable").toString()));
+                cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
+                cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
+                cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
+                cfm.getColumn().setTitle(title);
+                cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
+                cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
+                cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
+                cfm.getColumn().setKey(c_map.get("column_key") != null && Boolean.parseBoolean(c_map.get("column_key").toString()));
+                cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
+                cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
+                cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") != null && Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
+                cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") != null && Boolean.parseBoolean(c_map.get("auto_increment").toString()));
+                cfm.getColumn().setDataType(dataType);
+                cfm.getColumn().setSelectType(selectType);
+                cfm.getColumn().setTypeExtra(typeExtra);
+                cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
+                cfm.getColumn().setName(columnName);
+                cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
+                cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
+                cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
+                cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
+                cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
+                cfm.getColumn().setEnableStatus(Boolean.TRUE.equals(enableStatus) ? 1 : 0);
+                cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
+                cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));
+                cfm.getColumn().setSynced(c_map.get("synced") != null && Boolean.parseBoolean(c_map.get("synced").toString()));
+                cfm.getColumn().setEncrypted(c_map.get("encrypted") != null && Boolean.parseBoolean(c_map.get("encrypted").toString()));
+                cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
+                cfm.getColumn().setAppId(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
 
-                    if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
-                        cfm.getColumn().setDefaultValue(null);
-                    }
-                    cfm.setFieldType(MysqlToJavaEnum.getJava(dataType));
-                    map.put(fieldName, cfm);
+                if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
+                    cfm.getColumn().setDefaultValue(null);
                 }
-            } catch (RuntimeException e) {
-                throw e;
+                cfm.setFieldType(MysqlToJavaEnum.getJava(dataType));
+                map.put(fieldName, cfm);
             }
         }
 
