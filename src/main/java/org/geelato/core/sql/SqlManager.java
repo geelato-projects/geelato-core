@@ -26,13 +26,13 @@ public class SqlManager {
     private static Lock lock = new ReentrantLock();
     private static SqlManager instance;
     private MetaManager metaManager = MetaManager.singleInstance();
-    private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
-    private MetaViewQuerySqlProvider metaViewQuerySqlProvider = new MetaViewQuerySqlProvider();
-    private MetaQuerySqlMultiProvider metaQuerySqlMultiProvider = new MetaQuerySqlMultiProvider();
-    private MetaQueryTreeSqlProvider metaQueryTreeSqlProvider = new MetaQueryTreeSqlProvider();
-    private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
-    private MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
-    private MetaDeleteSqlProvider metaDeleteSqlProvider = new MetaDeleteSqlProvider();
+    private final MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
+    private final MetaViewQuerySqlProvider metaViewQuerySqlProvider = new MetaViewQuerySqlProvider();
+    private final MetaQuerySqlMultiProvider metaQuerySqlMultiProvider = new MetaQuerySqlMultiProvider();
+    private final MetaQueryTreeSqlProvider metaQueryTreeSqlProvider = new MetaQueryTreeSqlProvider();
+    private final MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
+    private final MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
+    private final MetaDeleteSqlProvider metaDeleteSqlProvider = new MetaDeleteSqlProvider();
 
     public static SqlManager singleInstance() {
         lock.lock();
@@ -99,7 +99,6 @@ public class SqlManager {
      * @param clazz       查询的实体
      * @param filterGroup 过滤条件
      * @param field       指定实体中的查询列，单列
-     * @param <T>
      * @return 单列列表查询语句
      */
     public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String orderBy, String field) {
@@ -110,7 +109,6 @@ public class SqlManager {
      * @param clazz       查询的实体
      * @param filterGroup 过滤条件
      * @param fields      指定实体中的查询列，多列
-     * @param <T>
      * @return 多列列表查询语句
      */
     public <T> BoundSql generateQueryForListSql(Class<T> clazz, FilterGroup filterGroup, String orderBy, String[] fields) {
@@ -123,7 +121,6 @@ public class SqlManager {
      * @param isArray     是否查询多条记录，true：是，false：否
      * @param filterGroup 过滤条件
      * @param fields      指定实体中的查询列，多列
-     * @param <T>
      * @return 多列列表查询语句
      */
     private <T> BoundSql generateQuerySql(Class<T> clazz, boolean isArray, FilterGroup filterGroup, String orderBy, String[] fields) {
@@ -140,8 +137,6 @@ public class SqlManager {
     /**
      * 多表查询
      *
-     * @param command
-     * @return
      */
     public BoundPageSql generatePageQuerySqlMulti(QueryCommand command) {
         BoundPageSql boundPageSql = new BoundPageSql();
@@ -153,9 +148,6 @@ public class SqlManager {
     /**
      * 删除服务
      *
-     * @param clazz
-     * @param filterGroup
-     * @return
      */
     public BoundSql generateDeleteSql(Class clazz, FilterGroup filterGroup) {
         return generateDeleteSql(clazz, filterGroup, null);

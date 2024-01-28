@@ -193,9 +193,7 @@ public class Dao {
     }
 
     /**
-     * @param boundPageSql
      * @param withMeta     是否需同时查询带出元数据
-     * @return
      */
     public ApiMultiPagedResult.PageData queryForMapListToPageData(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();

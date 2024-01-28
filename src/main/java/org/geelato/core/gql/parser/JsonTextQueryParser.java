@@ -72,8 +72,6 @@ public class JsonTextQueryParser {
     /**
      * 单查询解析
      *
-     * @param queryJsonText
-     * @return
      */
     public QueryCommand parse(String queryJsonText, Ctx ctx) {
         JSONObject jo = JSON.parseObject(queryJsonText);
