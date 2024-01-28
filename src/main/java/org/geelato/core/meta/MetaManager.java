@@ -173,7 +173,6 @@ public class MetaManager {
     }
 
     /**
-     * @param columnName
      */
     public FieldMeta getCommonFieldMeta(String columnName) {
         return commonFieldMetas.get(columnName);

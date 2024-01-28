@@ -145,7 +145,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     }
 
     @Title(title = "应用Id")
-    @Col(name = "app_id")
+    @Col(name = "app_xid")
     public String getAppId() {
         return appId;
     }

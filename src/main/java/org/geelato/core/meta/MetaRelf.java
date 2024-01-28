@@ -60,7 +60,6 @@ public class MetaRelf {
     private static Object getBean(Class clazz) {
         if (applicationContext == null) {
             try {
-                // return clazz.newInstance();
                 return clazz.getDeclaredConstructor().newInstance();
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
                      InstantiationException e) {
@@ -462,8 +461,6 @@ public class MetaRelf {
     /**
      * 筛选出主键
      *
-     * @param columnMap
-     * @return
      */
     public static FieldMeta getPrimaryKey(HashMap<String, FieldMeta> columnMap) {
         FieldMeta fieldMeta = null;
