@@ -1,5 +1,6 @@
 package org.geelato.core.meta.model.field;
 
+import com.alibaba.fastjson2.JSONObject;
 import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.enums.DataTypeRadiusEnum;
@@ -13,10 +14,8 @@ import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author geemeta
@@ -26,53 +25,72 @@ import java.util.Locale;
 @Title(title = "字段信息")
 @Entity(name = "platform_dev_column")
 public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, Serializable {
+    @Col(name = "app_id")
     private String appId;
     //******--以下为元数据管理专用辅助字段
     // 实体属性中文
+    @Col(name = "title")
     private String title = "";
     private String abstractColumnExpressions;
     // 实体属性名称
+    @Col(name = "field_name")
     private String fieldName = "";
     //******--以上为元数据管理专用辅助字段
-
+    @Col(name = "table_id")
     private String tableId;
+    @Col(name = "table_schema")
     private String tableSchema;
+    @Col(name = "table_name")
     private String tableName;
+    @Col(name = "table_catalog")
     private String tableCatalog;
     //COLUMN_NAME
+    @Col(name = "column_name")
     private String name = "";
     //COLUMN_COMMENT
+    @Col(name = "column_comment")
     private String comment = "";
     //ORDINAL_POSITION
+    @Col(name = "ordinal_position")
     private int ordinalPosition = 0;
     //COLUMN_DEFAULT
     // 数据字典编码、流水号id、实体id、多组件[{"label":"","code":"","value":""}]
+    @Col(name = "default_value")
     private String defaultValue = null;
     //COLUMN_TYPE  --varchar(100)
+    @Col(name = "column_type")
     private String type;
     //COLUMN_KEY,-- PRI
+    @Col(name = "column_key")
     private boolean key = false;
 
     //isNullable
+    @Col(name = "is_nullable")
     private boolean nullable = true;
-
+    @Col(name = "data_type")
     private String dataType = "";
-
+    @Col(name = "extra")
     private String extra;
-
+    @Col(name = "auto_increment")
     private boolean autoIncrement = false;
+    @Col(name = "is_unique")
     private boolean uniqued = false;
 
     //CHARACTER_MAXIMUM_LENGTH
+    @Col(name = "character_maxinum_length")
     private long charMaxLength = 64;//默认长度
     //NUMERIC_PRECISION
+    @Col(name = "numeric_precision")
     private int numericPrecision = 19; //默认长度
     //NUMERIC_SCALE
+    @Col(name = "numeric_scale")
     private int numericScale = 0;
 
     //MySQL的information_schema.column中没有该字段，该信息体现在type字段中，numericPrecision无符号比有符号长1
+    @Col(name = "numeric_signed")
     private boolean numericSigned = false; //是否有符号，默认有，若无符号，则需在type中增加：unsigned
     //DATETIME_PRECISION
+    @Col(name = "datetime_precision")
     private int datetimePrecision = 0; //datetime 长度
 
 
@@ -80,26 +98,39 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     // private int datetime_precision;,
     //`CHARACTER_OCTET_LENGTH` bigint(21) unsigned DEFAULT NULL,
     //----------------
+    @Col(name = "enable_status")
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+    @Col(name = "linked")
     private int linked = 1;
+    @Col(name = "description")
     private String description;
 
     //1-外表字段，默认0
+    @Col(name = "is_foreign_column")
     private boolean isRefColumn;
     //isRefColumn为true时，需要通过本表引用字段
+    @Col(name = "ref_local_col")
     private String refLocalCol;
     //外表字段名称
+    @Col(name = "foreign_col_name")
     private String refColName;
     //外表表名
+    @Col(name = "foreign_table")
     private String refTables;
     private boolean abstractColumn;
     // 数据选择类型
+    @Col(name = "select_type")
     private String selectType;
     // 数据类型选择 额外字段。
+    @Col(name = "type_extra")
     private String typeExtra;
+    @Col(name = "auto_add")
     private boolean autoAdd = false;
+    @Col(name = "auto_name")
     private String autoName;
+    @Col(name = "synced")
     private boolean synced = false;
+    @Col(name = "encrypted")
     private boolean encrypted = false;
 
     /**
@@ -113,8 +144,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.abstractColumnExpressions = abstractColumnExpressions;
     }
 
-    @Title(title = "应用Id")
-    @Col(name = "app_id")
+
     public String getAppId() {
         return appId;
     }
@@ -494,13 +524,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.encrypted = encrypted;
     }
 
-    /**
-     * TODO 改由TypeConvert提从转换
-     * 应在所有属性都设置完成之后，依据当前的属性值生成,例如：
-     * bigint(21) unsigned
-     * varchar(64)
-     * datetime(2)
-     */
+
     @Override
     public void afterSet() {
         // 更加数据类型dataType 设置 type
@@ -558,5 +582,25 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             // 设置默认值
             setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
         }
+    }
+
+    public Object ToMapperDBObject() {
+        Field[] fields=this.getClass().getDeclaredFields();
+        HashMap<String,Object> newObject=new HashMap<>();
+        for (Field f:fields){
+            Col col=f.getAnnotation(Col.class);
+            String colName=f.getName();
+            if(col!=null){
+                colName=col.name();
+            }
+            Object fieldValue= null;
+            try {
+                fieldValue = f.get(this);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            newObject.put(colName,fieldValue);
+        }
+        return newObject;
     }
 }
