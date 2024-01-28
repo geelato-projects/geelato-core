@@ -22,8 +22,8 @@ import java.util.Map;
  */
 public class JsonTextQueryParser {
 
-    private static Logger logger = LoggerFactory.getLogger(JsonTextQueryParser.class);
-    private static MetaManager metaManager = MetaManager.singleInstance();
+    private static final Logger logger = LoggerFactory.getLogger(JsonTextQueryParser.class);
+    private static final MetaManager metaManager = MetaManager.singleInstance();
     //page_num即offset，记录位置
     private final static String KEYWORD_FLAG = "@";
     private final static String FILTER_FLAG = "\\|";
