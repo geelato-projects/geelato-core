@@ -21,7 +21,6 @@ import org.geelato.core.orm.Dao;
 import org.geelato.core.util.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
-import org.graalvm.shadowed.org.jcodings.util.Hash;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -38,10 +37,10 @@ public class MetaManager {
     private static final Lock lock = new ReentrantLock();
     private static MetaManager instance;
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
-    private final HashMap<String, EntityMeta> entityMetadataMap = new HashMap<String, EntityMeta>();
+    private final HashMap<String, EntityMeta> entityMetadataMap = new HashMap<>();
     private final List<EntityLiteMeta> entityLiteMetaList = new ArrayList<>();
-    private final HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<String, EntityMeta>();
-    private static final HashMap<String, String> entityFieldNameTitleMap = new HashMap<String, String>();
+    private final HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<>();
+    private static final HashMap<String, String> entityFieldNameTitleMap = new HashMap<>();
     private final Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
 
     private Dao MetaDao;
@@ -80,9 +79,9 @@ public class MetaManager {
         this.MetaDao = dao;
         logger.info("解析数据库保存得实体元数据");
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
-        for (Map map : tableList) {
-            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
-            List viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
+        for (Map<String,Object> map : tableList) {
+            List<Map<String, Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            List<Map<String, Object>> viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
             parseTableEntity(map, columnList, viewList);
 //            parseViewEntity(viewList);
         }
@@ -94,11 +93,10 @@ public class MetaManager {
         if (Strings.isNotEmpty(entityName)) {
             tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
         }
-        // 实体表数据
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
         // 重新进行实体缓存
-        for (Map map : tableList) {
-            List columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+        for (Map<String,Object> map : tableList) {
+            List<Map<String,Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             removeOne(map, columnList);
             parseOne(map, columnList);
         }
@@ -117,21 +115,10 @@ public class MetaManager {
 
     public List<SchemaIndex> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
         List<SchemaIndex> indexList = new ArrayList<>();
-        if (Strings.isEmpty(tableName)) {
-            return indexList;
+        if (!Strings.isEmpty(tableName)) {
+            List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
+            indexList = SchemaIndex.buildData(mapList);
         }
-        String metaSql = String.format(MetaDaoSql.SQL_INDEXES, tableName);
-        List<String> whereSqls = new ArrayList<>();
-        if (Strings.isNotEmpty(columnName)) {
-            whereSqls.add("COLUMN_NAME=" + columnName);
-        }
-        if (isUnique != null) {
-            whereSqls.add("NON_UNIQUE=");
-        }
-
-        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
-        indexList = SchemaIndex.buildData(mapList);
-
         return indexList;
     }
 
@@ -319,8 +306,8 @@ public class MetaManager {
      *
      * @param columns 待更新的列
      */
-    public void updateMetadataFromDbAfterParse(List<HashMap> columns) {
-        for (HashMap map : columns) {
+    public void updateMetadataFromDbAfterParse(List<HashMap<?,?>> columns) {
+        for (HashMap<?,?> map : columns) {
             String TABLE_NAME = map.get("TABLE_NAME").toString();
             EntityMeta entityMapping = null;
             for (EntityMeta obj : entityMetadataMap.values()) {
@@ -350,7 +337,7 @@ public class MetaManager {
             FieldMeta fm = entityMapping.getFieldMetaByColumn(COLUMN_NAME);
             if (fm != null) {
                 fm.getColumn().setCharMaxLength(Integer.parseInt(CHARACTER_MAXIMUM_LENGTH));
-                fm.getColumn().setNullable("NO".equalsIgnoreCase(IS_NULLABLE) ? false : true);
+                fm.getColumn().setNullable(!"NO".equalsIgnoreCase(IS_NULLABLE));
                 fm.getColumn().setExtra(EXTRA);
                 fm.getColumn().setNumericPrecision(Integer.parseInt(NUMERIC_PRECISION));
                 fm.getColumn().setNumericScale(Integer.parseInt(NUMERIC_SCALE));
@@ -390,15 +377,15 @@ public class MetaManager {
     }
 
 
-    public void parseOne(Map map, List<HashMap> columnList) {
+    public void parseOne(Map<String,Object> map, List<Map<String,Object>> columnList) {
         parseTableEntity(map, columnList, null);
     }
 
-    public void parseTableEntity(Map map, List<HashMap> columnList, List<HashMap> viewList) {
+    public void parseTableEntity(Map<String,Object> map, List<Map<String,Object>> columnList, List<Map<String,Object>> viewList) {
         parseTableEntity(map, columnList, viewList, null);
     }
 
-    public void parseTableEntity(Map map, List<HashMap> columnList, List<HashMap> viewList, List<HashMap> foreignList) {
+    public void parseTableEntity(Map<String,Object> map, List<Map<String,Object>> columnList, List<Map<String,Object>> viewList, List<Map<String,Object>> foreignList) {
         String entityName = map.get("entity_name").toString();
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMetaByTable(map, columnList, viewList, foreignList);
@@ -410,8 +397,8 @@ public class MetaManager {
         }
     }
 
-    public void parseViewEntity(List<HashMap> viewList) {
-        for (Map view: viewList) {
+    public void parseViewEntity(List<Map<String,Object>> viewList) {
+        for (Map<String,Object> view: viewList) {
             String entityName = view.get("view_name").toString();
             if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
                 EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
@@ -428,11 +415,11 @@ public class MetaManager {
      * 从 实体元数据缓存中 移除
      *
      */
-    public void removeOne(Map map, List<HashMap> columnList) {
+    public void removeOne(Map<String,Object> map, List<Map<String,Object>> columnList) {
         removeOne(map, columnList, null);
     }
 
-    public void removeOne(Map map, List<HashMap> columnList, List<HashMap> foreignList) {
+    public void removeOne(Map<String,Object> map, List<Map<String,Object>> columnList, List<Map<String,Object>> foreignList) {
         if (entityMetadataMap.containsKey(map.get("entity_name").toString())) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(map, columnList);
             entityMetadataMap.remove(entityMeta.getEntityName());

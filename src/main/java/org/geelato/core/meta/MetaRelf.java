@@ -1,7 +1,9 @@
 package org.geelato.core.meta;
 
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.logging.log4j.util.Strings;
@@ -12,8 +14,10 @@ import org.geelato.core.meta.annotation.*;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
+import org.geelato.core.meta.model.field.ColumnMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.view.ViewMeta;
+import org.graalvm.shadowed.org.jcodings.util.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -181,8 +185,14 @@ public class MetaRelf {
         em.setEntityType(EntityType.View);
         String columnDataStr=map.get("view_column").toString();
         if(StringUtils.hasText(columnDataStr)){
+            List<Map> list=new ArrayList<>();
             JSONArray columnData=JSONArray.parse(columnDataStr);
-            HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(columnData);
+            columnData.forEach(x->{
+                Map m= JSON.parseObject(x.toString(),Map.class);
+
+                list.add(m);
+            });
+            HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(list);
             em.setFieldMetas(columnMap.values());
             em.setId(getPrimaryKey(columnMap));
         }
@@ -280,7 +290,7 @@ public class MetaRelf {
      */
     public static HashMap<String, FieldMeta> getColumnFieldMetas(Class clazz, Collection<TableForeign> tableForeigns) {
         Object bean = getBean(clazz);
-        HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
+        HashMap<String, FieldMeta> map = new HashMap<>();
         for (Class<?> searchType = clazz; searchType != Object.class; searchType = searchType.getSuperclass()) {
             Method[] methods = searchType.getDeclaredMethods();
             for (Method method : methods) {
@@ -348,7 +358,7 @@ public class MetaRelf {
                                         tableForeign.setMainTable(getEntityName(clazz));
                                         tableForeign.setMainTableCol(column.name());
                                         tableForeign.setForeignTable(getEntityName(foreignKey.fTable()));
-                                        if (foreignKey.fCol().length() == 0) {
+                                        if (foreignKey.fCol().isEmpty()) {
                                             tableForeign.setForeignTableCol(getId(clazz).getColumnName());
                                         } else {
                                             tableForeign.setForeignTableCol(foreignKey.fCol());
@@ -359,7 +369,6 @@ public class MetaRelf {
                             }
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());
-//                            logger.debug("cfm.getColumn().getDataType())>>{}",cfm.getColumn().getDataType());
                             if (Strings.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             }
@@ -400,7 +409,7 @@ public class MetaRelf {
         return map;
     }
 
-    public static HashMap<String, FieldMeta> getColumnFieldMetas(List<HashMap> columnList) {
+    public static HashMap<String, FieldMeta> getColumnFieldMetas(List<Map> columnList) {
         HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
         for (Map c_map : columnList) {
             String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
