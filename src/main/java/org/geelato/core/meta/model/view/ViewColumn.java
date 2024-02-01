@@ -8,24 +8,24 @@ import org.geelato.core.meta.model.field.ColumnMeta;
  * @date 2023/6/30 9:29
  */
 public class ViewColumn {
-    private String tableName;
+    private String table_name;
     private String title;
-    private String name;
-    private String fieldName;
-    private String type;
-    private String comment;
-    private Boolean key = false;
-    private Boolean nullable = false;
-    private Long charMaxLength;
-    private Integer precision;
-    private Integer scale;
+    private String column_name;
+    private String field_name;
+    private String select_type;
+    private String column_comment;
+    private Boolean column_key = false;
+    private Boolean is_nullable = false;
+    private Long character_maxinum_length;
+    private Integer numeric_precision;
+    private Integer numeric_scale;
 
-    public String getTableName() {
-        return tableName;
+    public String getTable_name() {
+        return table_name;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setTable_name(String table_name) {
+        this.table_name = table_name;
     }
 
     public String getTitle() {
@@ -36,76 +36,76 @@ public class ViewColumn {
         this.title = title;
     }
 
-    public String getName() {
-        return name;
+    public String getColumn_name() {
+        return column_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setColumn_name(String column_name) {
+        this.column_name = column_name;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getField_name() {
+        return field_name;
     }
 
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public void setField_name(String field_name) {
+        this.field_name = field_name;
     }
 
-    public String getType() {
-        return type;
+    public String getSelect_type() {
+        return select_type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSelect_type(String select_type) {
+        this.select_type = select_type;
     }
 
-    public String getComment() {
-        return comment;
+    public String getColumn_comment() {
+        return column_comment;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setColumn_comment(String column_comment) {
+        this.column_comment = column_comment;
     }
 
-    public Boolean getKey() {
-        return key;
+    public Boolean getColumn_key() {
+        return column_key;
     }
 
-    public void setKey(Boolean key) {
-        this.key = key;
+    public void setColumn_key(Boolean column_key) {
+        this.column_key = column_key;
     }
 
-    public Boolean getNullable() {
-        return nullable;
+    public Boolean getIs_nullable() {
+        return is_nullable;
     }
 
-    public void setNullable(Boolean nullable) {
-        this.nullable = nullable;
+    public void setIs_nullable(Boolean is_nullable) {
+        this.is_nullable = is_nullable;
     }
 
-    public Long getCharMaxLength() {
-        return charMaxLength;
+    public Long getCharacter_maxinum_length() {
+        return character_maxinum_length;
     }
 
-    public void setCharMaxLength(Long charMaxLength) {
-        this.charMaxLength = charMaxLength;
+    public void setCharacter_maxinum_length(Long character_maxinum_length) {
+        this.character_maxinum_length = character_maxinum_length;
     }
 
-    public Integer getPrecision() {
-        return precision;
+    public Integer getNumeric_precision() {
+        return numeric_precision;
     }
 
-    public void setPrecision(Integer precision) {
-        this.precision = precision;
+    public void setNumeric_precision(Integer numeric_precision) {
+        this.numeric_precision = numeric_precision;
     }
 
-    public Integer getScale() {
-        return scale;
+    public Integer getNumeric_scale() {
+        return numeric_scale;
     }
 
-    public void setScale(Integer scale) {
-        this.scale = scale;
+    public void setNumeric_scale(Integer numeric_scale) {
+        this.numeric_scale = numeric_scale;
     }
 
     /**
@@ -117,17 +117,17 @@ public class ViewColumn {
     public static ViewColumn fromColumnMeta(ColumnMeta meta) {
         ViewColumn column = new ViewColumn();
         if (meta != null) {
-            column.setTableName(meta.getTableName());
+            column.setTable_name(meta.getTableName());
             column.setTitle(meta.getTitle());
-            column.setName(meta.getName());
-            column.setFieldName(meta.getFieldName());
-            column.setType(meta.getDataType());
-            column.setComment(meta.getComment());
-            column.setKey(meta.isKey());
-            column.setNullable(meta.isNullable());
-            column.setCharMaxLength(meta.getCharMaxLength());
-            column.setPrecision(meta.getNumericPrecision());
-            column.setScale(meta.getNumericScale());
+            column.setColumn_name(meta.getName());
+            column.setField_name(meta.getFieldName());
+            column.setSelect_type(meta.getSelectType());
+            column.setColumn_comment(meta.getComment());
+            column.setColumn_key(meta.isKey());
+            column.setIs_nullable(meta.isNullable());
+            column.setCharacter_maxinum_length(meta.getCharMaxLength());
+            column.setNumeric_precision(meta.getNumericPrecision());
+            column.setNumeric_scale(meta.getNumericScale());
         }
 
         return column;
