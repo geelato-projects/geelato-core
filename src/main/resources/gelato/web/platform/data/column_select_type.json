@@ -32,7 +32,7 @@
     "value": "dictionary",
     "mysql": "varchar",
     "disabled": false,
-    "fixed": true,
+    "fixed": false,
     "extent": 1024,
     "seqNo": 104
   },
