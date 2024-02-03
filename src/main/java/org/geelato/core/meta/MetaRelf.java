@@ -101,8 +101,6 @@ public class MetaRelf {
     /**
      * 基于类的title注解，解析出表元数据
      *
-     * @param clazz
-     * @return
      */
     public static TableMeta getTableMeta(Class clazz) {
         Title title = (Title) clazz.getAnnotation(Title.class);
@@ -177,19 +175,18 @@ public class MetaRelf {
         em.setId(getPrimaryKey(columnMap));
         return em;
     }
-    public static EntityMeta getEntityMetaByView(Map map) {
+    public static EntityMeta getEntityMetaByView(Map<String,Object> map) {
         EntityMeta em = new EntityMeta();
-//        em.setTableMeta(getTableMeta(tmap));
+        em.setTableMeta(getTableMeta(map));
         em.setEntityName(map.get("view_name").toString());
         em.setEntityTitle(map.get("title").toString());
         em.setEntityType(EntityType.View);
         String columnDataStr=map.get("view_column").toString();
         if(StringUtils.hasText(columnDataStr)){
-            List<Map> list=new ArrayList<>();
+            List<Map<String,Object>> list=new ArrayList<>();
             JSONArray columnData=JSONArray.parse(columnDataStr);
             columnData.forEach(x->{
-                Map m= JSON.parseObject(x.toString(),Map.class);
-
+                Map<String,Object> m= JSON.parseObject(x.toString(),Map.class);
                 list.add(m);
             });
             HashMap<String, FieldMeta> columnMap = getColumnFieldMetas(list);
@@ -204,7 +201,6 @@ public class MetaRelf {
      * 基于注解@Entity,按以下顺序获取，有值则返回：
      * table name 到 entity name 到 simple name of class
      *
-     * @param clazz
      * @return 表名
      */
     public static String getTableName(Class clazz) {
@@ -409,9 +405,9 @@ public class MetaRelf {
         return map;
     }
 
-    public static HashMap<String, FieldMeta> getColumnFieldMetas(List<Map> columnList) {
-        HashMap<String, FieldMeta> map = new HashMap<String, FieldMeta>();
-        for (Map c_map : columnList) {
+    public static HashMap<String, FieldMeta> getColumnFieldMetas(List<Map<String,Object>> columnList) {
+        HashMap<String, FieldMeta> map = new HashMap<>();
+        for (Map<String,Object> c_map : columnList) {
             String fieldName = c_map.get("field_name") == null ? null : c_map.get("field_name").toString();
             String title = c_map.get("title") == null ? null : c_map.get("title").toString();
             String columnName = c_map.get("column_name") == null ? null : c_map.get("column_name").toString();
@@ -430,24 +426,38 @@ public class MetaRelf {
                 cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
                 cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
                 cfm.getColumn().setTitle(title);
-                cfm.getColumn().setCharMaxLength(c_map.get("character_maxinum_length") == null ? null : Long.parseLong(c_map.get("character_maxinum_length").toString()));
-                cfm.getColumn().setDatetimePrecision(c_map.get("datetime_precision") == null ? null : Integer.parseInt(c_map.get("datetime_precision").toString()));
+
+                if(c_map.get("character_maxinum_length") != null)
+                    cfm.getColumn().setCharMaxLength(Long.parseLong(c_map.get("character_maxinum_length").toString()));
+                if(c_map.get("datetime_precision") != null)
+                    cfm.getColumn().setDatetimePrecision(Integer.parseInt(c_map.get("datetime_precision").toString()));
+
                 cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
                 cfm.getColumn().setKey(c_map.get("column_key") != null && Boolean.parseBoolean(c_map.get("column_key").toString()));
-                cfm.getColumn().setLinked(c_map.get("linked") == null ? null : Integer.parseInt(c_map.get("linked").toString()));
-                cfm.getColumn().setNumericPrecision(c_map.get("numeric_precision") == null ? null : Integer.parseInt(c_map.get("numeric_precision").toString()));
+                if(c_map.get("linked") != null )
+                    cfm.getColumn().setLinked(Integer.parseInt(c_map.get("linked").toString()));
+
+                if(c_map.get("numeric_precision") != null )
+                    cfm.getColumn().setNumericPrecision(Integer.parseInt(c_map.get("numeric_precision").toString()));
+
                 cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") != null && Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
                 cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") != null && Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                 cfm.getColumn().setDataType(dataType);
                 cfm.getColumn().setSelectType(selectType);
                 cfm.getColumn().setTypeExtra(typeExtra);
-                cfm.getColumn().setOrdinalPosition(c_map.get("ordinal_position") == null ? null : Integer.parseInt(c_map.get("ordinal_position").toString()));
+                if(c_map.get("ordinal_position") != null)
+                    cfm.getColumn().setOrdinalPosition(Integer.parseInt(c_map.get("ordinal_position").toString()));
+
                 cfm.getColumn().setName(columnName);
                 cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
                 cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
                 cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
-                cfm.getColumn().setNumericScale(c_map.get("numeric_scale") == null ? null : Integer.parseInt(c_map.get("numeric_scale").toString()));
-                cfm.getColumn().setDelStatus(c_map.get("del_status") == null ? null : Integer.parseInt(c_map.get("del_status").toString()));
+                if(c_map.get("numeric_scale") != null)
+                    cfm.getColumn().setNumericScale(Integer.parseInt(c_map.get("numeric_scale").toString()));
+
+                if(c_map.get("del_status") != null )
+                    cfm.getColumn().setDelStatus(Integer.parseInt(c_map.get("del_status").toString()));
+
                 cfm.getColumn().setEnableStatus(Boolean.TRUE.equals(enableStatus) ? 1 : 0);
                 cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                 cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));
