@@ -357,7 +357,7 @@ public class MetaManager {
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.Class));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
             if (logger.isDebugEnabled()) {
                 logger.debug("success in parsing class:{}", clazz.getName());
@@ -389,7 +389,7 @@ public class MetaManager {
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
 
             removeLiteMeta(entityMeta.getEntityName());
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.Table));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
         }
     }
@@ -403,7 +403,7 @@ public class MetaManager {
                     EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
                     entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
                     removeLiteMeta(entityMeta.getEntityName());
-                    entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+                    entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.View));
                     tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
                 }
             }
