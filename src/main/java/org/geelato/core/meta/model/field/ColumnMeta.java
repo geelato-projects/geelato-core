@@ -13,8 +13,10 @@ import org.geelato.core.meta.model.entity.EntityEnableAble;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author geemeta
@@ -583,40 +585,4 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
         }
     }
-
-    public Object toMapperDBObject() {
-        Field[] fields = this.getClass().getDeclaredFields();
-        HashMap<String, Object> newObject = new HashMap<>();
-        for (Field f : fields) {
-            Col col = f.getAnnotation(Col.class);
-            String colName = f.getName();
-            if (col != null) {
-                colName = col.name();
-            }
-            Object fieldValue;
-            try {
-                fieldValue = f.get(this);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            newObject.put(colName,fieldValue);
-        }
-        return newObject;
-    }
-
-    public static Object toMeta(Map<String, Object> map) {
-        HashMap<String, Object> newObject = new HashMap<>();
-        Field[] fields = ColumnMeta.class.getDeclaredFields();
-        for (Field f : fields) {
-            Col col = f.getAnnotation(Col.class);
-            String colName = f.getName();
-            if (col != null) {
-                colName = col.name();
-            }
-            newObject.put(f.getName(), map.get(colName));
-        }
-
-        return newObject;
-    }
-
 }
