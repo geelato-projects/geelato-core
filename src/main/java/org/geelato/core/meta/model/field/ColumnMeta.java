@@ -593,13 +593,13 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             if (col != null) {
                 colName = col.name();
             }
-            Object fieldValue = null;
+            Object fieldValue;
             try {
                 fieldValue = f.get(this);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            newObject.put(colName, fieldValue);
+            newObject.put(colName,fieldValue);
         }
         return newObject;
     }

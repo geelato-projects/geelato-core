@@ -83,7 +83,7 @@ public class MetaManager {
             List<Map<String, Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             List<Map<String, Object>> viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
             parseTableEntity(map, columnList, viewList);
-//            parseViewEntity(viewList);
+            parseViewEntity(viewList);
         }
     }
 
@@ -94,7 +94,6 @@ public class MetaManager {
             tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
         }
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
-        // 重新进行实体缓存
         for (Map<String,Object> map : tableList) {
             List<Map<String,Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             removeOne(map, columnList);
@@ -109,7 +108,6 @@ public class MetaManager {
         }
         List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
         indexList = SchemaIndex.buildData(mapList);
-
         return indexList;
     }
 
@@ -129,7 +127,6 @@ public class MetaManager {
         }
         List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
         keyList = SchemaForeign.buildTableForeignKeys(mapList);
-
         return keyList;
     }
 
@@ -360,7 +357,7 @@ public class MetaManager {
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.Class));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
             if (logger.isDebugEnabled()) {
                 logger.debug("success in parsing class:{}", clazz.getName());
@@ -392,21 +389,23 @@ public class MetaManager {
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
 
             removeLiteMeta(entityMeta.getEntityName());
-            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
+            entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.Table));
             tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
         }
     }
 
     public void parseViewEntity(List<Map<String,Object>> viewList) {
         for (Map<String,Object> view: viewList) {
-            String entityName = view.get("view_name").toString();
-            if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
-                EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
-                entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
-
-                removeLiteMeta(entityMeta.getEntityName());
-                entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle()));
-                tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
+            String viewType = view.get("view_type").toString();
+            if(viewType.equals("custom")){
+                String entityName = view.get("view_name").toString();
+                if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+                    EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
+                    entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
+                    removeLiteMeta(entityMeta.getEntityName());
+                    entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(),EntityType.View));
+                    tableNameMetadataMap.put(entityMeta.getTableName(), entityMeta);
+                }
             }
         }
     }
