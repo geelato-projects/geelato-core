@@ -172,10 +172,16 @@ public class DbGenerateDao {
         // 数据表中 外键
         ArrayList<JSONObject> foreignList = new ArrayList<>();
         ArrayList<JSONObject> delForeignList = new ArrayList<>();
+        // 是否有删除字段
+        boolean hasDelStatus = false;
         // 排序
         for (FieldMeta fm : em.getFieldMetas()) {
             if (fm.getColumn().getEnableStatus() == EnableStatusEnum.DISABLED.getCode()) {
                 continue;
+            }
+            // 存在删除字段，用于逻辑删除后，唯一约束问题。
+            if ("del_status".equals(fm.getColumn().getName())) {
+                hasDelStatus = true;
             }
             try {
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(fm.getColumn()));
@@ -213,13 +219,17 @@ public class DbGenerateDao {
             foreignList.add(jsonColumn);
         }*/
         if (!isExistsTable) {
-            createTable(em.getTableMeta(), createList, foreignList);
+            createTable(em.getTableMeta(), createList, foreignList, hasDelStatus);
         } else {
             // 唯一约束索引
             List<SchemaIndex> schemaIndexList = metaManager.queryIndexes(em.getTableName());
+            List<String> keyNames = new ArrayList<>();
             for (SchemaIndex meta : schemaIndexList) {
                 JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(meta));
-                indexList.add(jsonColumn);
+                if (!keyNames.contains(meta.getKeyName())) {
+                    indexList.add(jsonColumn);
+                    keyNames.add(meta.getKeyName());
+                }
             }
             // 外键
             /*List<TableForeignKey> foreignKeyList = metaManager.queryForeignKeys(em.getTableName());
@@ -228,7 +238,7 @@ public class DbGenerateDao {
                 delForeignList.add(jsonColumn);
             }*/
 
-            upgradeTable(em.getTableMeta(), addList, modifyList, indexList, uniqueList, String.join(",", primaryList));
+            upgradeTable(em.getTableMeta(), addList, modifyList, indexList, uniqueList, String.join(",", primaryList), hasDelStatus);
         }
     }
 
@@ -309,7 +319,7 @@ public class DbGenerateDao {
      * @param tableMeta
      * @param createColumnList
      */
-    private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList) {
+    private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList, boolean hasDelStatus) {
         Map<String, Object> map = new HashMap<>();
         ArrayList<JSONObject> uniqueColumnList = getUniqueColumn(createColumnList);
         String primaryKey = getPrimaryColumn(createColumnList);
@@ -326,6 +336,7 @@ public class DbGenerateDao {
         });
         // 表索引 - 唯一约束 - 添加
         map.put("uniqueList", uniqueColumnList);
+        map.put("hasDelStatus", hasDelStatus);
         // 表索引 - 主键 - 添加
         map.put("primaryKey", primaryKey);
         // 表外键 - 添加
@@ -343,7 +354,8 @@ public class DbGenerateDao {
      * @param uniqueList
      * @param primaryKey
      */
-    private void upgradeTable(TableMeta tableMeta, List<JSONObject> addList, List<JSONObject> modifyList, List<JSONObject> indexList, List<JSONObject> uniqueList, String primaryKey) {
+    private void upgradeTable(TableMeta tableMeta, List<JSONObject> addList, List<JSONObject> modifyList, List<JSONObject> indexList,
+                              List<JSONObject> uniqueList, String primaryKey, boolean hasDelStatus) {
         Map<String, Object> map = new HashMap<>();
         // 表单信息
         map.put("tableName", tableMeta.getTableName());
@@ -366,6 +378,7 @@ public class DbGenerateDao {
         map.put("primaryKey", primaryKey);
         // 表索引 - 唯一约束 - 添加
         map.put("uniqueList", uniqueList);
+        map.put("hasDelStatus", hasDelStatus);
         dao.execute("upgradeOneTable", map);
     }
 
