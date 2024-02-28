@@ -427,7 +427,7 @@ public class MetaManager {
         }
     }
 
-    private void removeLiteMeta(String entityName) {
+    public void removeLiteMeta(String entityName) {
         List<EntityLiteMeta> removeList = new ArrayList<>();
         if (!entityLiteMetaList.isEmpty()) {
             for (EntityLiteMeta liteMeta : entityLiteMetaList) {
