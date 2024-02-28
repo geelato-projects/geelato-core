@@ -8,7 +8,9 @@ import org.apache.logging.log4j.util.Strings;
  * @date 2024/1/30 16:38
  */
 public enum TableSourceTypeEnum {
-    CREATION("模型创建", "creation"), SYSTEM("系统内置", "system");
+    CREATION("模型创建", "creation"),
+    SYSTEM("系统内置", "system"),
+    PLATFORM("平台内置", "platform");
 
     private final String label;//选项内容
     private final String value;//选项值
