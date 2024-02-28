@@ -17,7 +17,6 @@ public class DeleteCommand extends BaseCommand<DeleteCommand> {
 
     /**
      * 与fields同步，冗余
-     * @return
      */
     public Map<String, Object> getValueMap() {
         return valueMap;

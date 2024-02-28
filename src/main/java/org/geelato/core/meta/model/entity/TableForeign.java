@@ -39,7 +39,7 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
         this.foreignTable = map.get("foreign_table") == null ? null : map.get("foreign_table").toString();
         this.foreignTableCol = map.get("foreign_table_col") == null ? null : map.get("foreign_table_col").toString();
         Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
-        this.enableStatus = enableStatus ? 1 : 0;
+        this.enableStatus = Boolean.TRUE.equals(enableStatus) ? 1 : 0;
         this.description = map.get("description") == null ? null : map.get("description").toString();
         this.deleteAction = map.get("delete_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("delete_action").toString();
         this.updateAction = map.get("update_action") == null ? ColumnDefault.FOREIGN_ACTION_VALUE : map.get("update_action").toString();
@@ -103,7 +103,6 @@ public class TableForeign extends BaseSortableEntity implements EntityEnableAble
     }
 
     /**
-     * @param enableStatus
      */
     @Override
     public void setEnableStatus(int enableStatus) {
