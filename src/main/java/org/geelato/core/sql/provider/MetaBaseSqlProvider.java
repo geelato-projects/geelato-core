@@ -74,7 +74,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * 对command进行递归解析，创建BoundSql对象及其BoundSql子对象
      *
      * @param command QueryCommand、UpdateCommand等
-     * @return
      */
     public BoundSql generate(E command) {
         BoundSql boundSql = new BoundSql();
@@ -113,11 +112,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
      * 基于条件部分，构建参数值对像数组
      * 对于update、insert、delete的sql provider，即结合字段设值部分的需要，组合调整
      *
-     * @param command
-     * @return
      */
     protected Object[] buildWhereParams(E command) {
-        if (command.getWhere() == null || command.getWhere().getFilters() == null || command.getWhere().getFilters().size() == 0) {
+        if (command.getWhere() == null || command.getWhere().getFilters() == null || command.getWhere().getFilters().isEmpty()) {
             return new Object[0];
         }
         List<Object> list = new ArrayList<>();
@@ -185,13 +182,9 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     /**
      * 只构建当前实体的查询条件!isRefField
      *
-     * @param sb
-     * @param em
-     * @param list
-     * @param logic
      */
     protected void buildConditions(StringBuilder sb, EntityMeta em, List<FilterGroup.Filter> list, FilterGroup.Logic logic) {
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             Iterator<FilterGroup.Filter> iterator = list.iterator();
             int index = 0;
             while (iterator.hasNext()) {
@@ -213,7 +206,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
 
     protected void buildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup) {
         List<FilterGroup.Filter> list=filterGroup.getFilters();
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             Iterator<FilterGroup.Filter> iterator = list.iterator();
             int index = 0;
             while (iterator.hasNext()) {
@@ -236,7 +229,7 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
 
     protected void buildChildConditions(StringBuilder sb, EntityMeta em, FilterGroup filterGroup, FilterGroup.Logic logic) {
         List<FilterGroup> childFilterGroup=filterGroup.getChildFilterGroup();
-        if (childFilterGroup != null && childFilterGroup.size() > 0) {
+        if (childFilterGroup != null && !childFilterGroup.isEmpty()) {
             for (FilterGroup fg:filterGroup.getChildFilterGroup()){
                 sb.append(String.format(" %s ", logic==null?"and":logic.getText()));
                 sb.append(" ( ");
@@ -251,9 +244,6 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     /**
      * 构建单个过滤条件
      *
-     * @param sb
-     * @param em
-     * @param filter
      */
     protected void buildConditionSegment(StringBuilder sb, EntityMeta em, FilterGroup.Filter filter) {
         FieldMeta fm = em.getFieldMeta(filter.getField());

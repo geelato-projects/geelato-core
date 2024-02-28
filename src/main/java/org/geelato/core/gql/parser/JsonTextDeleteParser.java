@@ -3,6 +3,7 @@ package org.geelato.core.gql.parser;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import org.geelato.core.Ctx;
+import org.geelato.core.meta.MetaManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class JsonTextDeleteParser {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static Logger logger = LoggerFactory.getLogger(JsonTextDeleteParser.class);
+    private static final MetaManager metaManager = MetaManager.singleInstance();
     private final static String KW_BIZ = "@biz";
     private final static String KEYWORD_FLAG = "@";
     private final static String FILTER_FLAG = "\\|";
@@ -41,6 +43,7 @@ public class JsonTextDeleteParser {
 
         DeleteCommand command = new DeleteCommand();
         command.setEntityName(commandName);
+
         String newDataString = simpleDateFormat.format(new Date());
         FilterGroup fg = new FilterGroup();
         command.setWhere(fg);
@@ -61,7 +64,6 @@ public class JsonTextDeleteParser {
         if (validator.hasKeyField("updaterName")) {
             params.put("updaterName", ctx.get("userName"));
         }
-
         String[] updateFields = new String[params.keySet().size()];
         params.keySet().toArray(updateFields);
         command.setFields(updateFields);
