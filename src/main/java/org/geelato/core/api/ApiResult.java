@@ -76,9 +76,6 @@ public class ApiResult<E> {
     /**
      * 错误，异常处理
      *
-     * @param exception
-     * @param <T>
-     * @return
      */
     public <T extends Exception> ApiResult<E> error(T exception) {
         this.status = ApiResultStatus.FAIL;
