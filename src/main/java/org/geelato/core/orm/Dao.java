@@ -162,7 +162,7 @@ public class Dao {
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
-        result.setDataSize(list != null ? list.size() : 0);
+        result.setDataSize(list.size());
         if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         }
@@ -204,7 +204,7 @@ public class Dao {
         result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
         result.setPage(command.getPageNum());
         result.setSize(command.getPageSize());
-        result.setDataSize(list != null ? list.size() : 0);
+        result.setDataSize(list.size());
         if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         }

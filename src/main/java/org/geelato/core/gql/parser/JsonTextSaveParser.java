@@ -22,13 +22,13 @@ import java.util.*;
  */
 public class JsonTextSaveParser {
 
-    private static Logger logger = LoggerFactory.getLogger(JsonTextSaveParser.class);
-    private MetaManager metaManager = MetaManager.singleInstance();
+    private static final Logger logger = LoggerFactory.getLogger(JsonTextSaveParser.class);
+    private final MetaManager metaManager = MetaManager.singleInstance();
 
     private final static String SUB_ENTITY_FLAG = "#";
     private final static String KW_BIZ = "@biz";
 
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
     /**
@@ -63,12 +63,10 @@ public class JsonTextSaveParser {
     }
     private List<SaveCommand> parseMulti(Ctx ctx, JSONObject jo, CommandValidator validator){
         List<SaveCommand> saveCommandList=new ArrayList<>();
-        Iterator iterator = jo.keySet().iterator();
-        while(iterator.hasNext()){
-            String entityName = (String) iterator.next();
+        for (String entityName : jo.keySet()) {
             String value = jo.getString(entityName);
-            JSONObject o=JSONObject.parseObject(value);
-            SaveCommand saveCommand=parse(ctx,entityName, o,validator);
+            JSONObject o = JSONObject.parseObject(value);
+            SaveCommand saveCommand = parse(ctx, entityName, o, validator);
             saveCommandList.add(saveCommand);
         }
         return saveCommandList;

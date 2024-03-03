@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Component
 public class MetaInsertSqlProvider extends MetaBaseSqlProvider<SaveCommand> {
-    private static Logger logger = LoggerFactory.getLogger(MetaInsertSqlProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaInsertSqlProvider.class);
 
     @Override
     protected Object[] buildParams(SaveCommand command) {
