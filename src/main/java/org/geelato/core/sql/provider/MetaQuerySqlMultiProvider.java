@@ -46,7 +46,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         sb.append(command.getFrom());
         // where
         FilterGroup fg = command.getWhere();
-        if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
+        if (fg != null && fg.getFilters() != null && !fg.getFilters().isEmpty()) {
             sb.append(" where ");
             buildConditions(sb, md, fg);
         }
@@ -225,9 +225,6 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
 
     /**
      * 替换SQL中表明为别名
-     * @param command
-     * @param sql
-     * @return
      */
     private String replaceTableAlias(QueryCommand command, String sql) {
         StringBuilder newSql = new StringBuilder();
@@ -239,7 +236,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
                     if (seq == -1) {
                         seq = 0;
                     } else {
-                        newSql.append(item.substring(0, seq)).append(" ");
+                        newSql.append(item, 0, seq).append(" ");
                     }
                     String tableAlias = super.buildTableAlias(item.substring(seq));
                     newSql.append(tableAlias).append(".");
@@ -261,7 +258,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         if (orderBySql != null && !orderBySql.isEmpty()) {
             String[] items = orderBySql.split(",");
             for (int i = 0, len = items.length; i < len; i++) {
-                if (items[i].indexOf(".") == -1) {
+                if (!items[i].contains(".")) {
                     newSql.append(md.getTableAlias()).append(".");
                 }
                 newSql.append(items[i]);
