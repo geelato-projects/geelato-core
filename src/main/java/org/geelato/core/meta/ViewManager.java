@@ -13,10 +13,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ViewManager {
-    private static Lock lock = new ReentrantLock();
+    private static final Lock lock = new ReentrantLock();
     private static ViewManager instance;
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(ViewManager.class);
-    private HashMap<String, ViewMeta> viewMetadataMap = new HashMap<String, ViewMeta>();
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(ViewManager.class);
+    private final HashMap<String, ViewMeta> viewMetadataMap = new HashMap<String, ViewMeta>();
 
     public static ViewManager singleInstance() {
         lock.lock();
