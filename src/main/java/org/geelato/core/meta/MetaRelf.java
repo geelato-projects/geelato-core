@@ -177,8 +177,11 @@ public class MetaRelf {
     }
     public static EntityMeta getEntityMetaByView(Map<String,Object> map) {
         EntityMeta em = new EntityMeta();
-        em.setTableMeta(getTableMeta(map));
-        em.setEntityName(map.get("view_name").toString());
+        TableMeta tableMeta=getTableMeta(map);
+        String viewName=map.get("view_name").toString();
+        tableMeta.setTableName(viewName);
+        em.setTableMeta(tableMeta);
+        em.setEntityName(viewName);
         em.setEntityTitle(map.get("title").toString());
         em.setEntityType(EntityType.View);
         String columnDataStr=map.get("view_column").toString();
