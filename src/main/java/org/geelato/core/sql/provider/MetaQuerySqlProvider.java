@@ -44,7 +44,11 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         }
         if(command.getOriginalWhere()!=null){
             sb.append( "  and  ");
-            sb.append(md.getTableAlias()).append(".").append(command.getOriginalWhere());
+            if(!command.getOriginalWhere().equals("1=1")){
+                sb.append(md.getTableAlias()).append(".").append(command.getOriginalWhere());
+            }else {
+                sb.append(command.getOriginalWhere());
+            }
         }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {
