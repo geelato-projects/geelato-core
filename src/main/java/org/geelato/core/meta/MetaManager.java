@@ -89,7 +89,6 @@ public class MetaManager {
 
     public void refreshDBMeta(String entityName) {
         logger.info("刷新实体元数据");
-
         refreshTableMeta(entityName);
         refreshViewMeta(entityName);
 
@@ -100,9 +99,9 @@ public class MetaManager {
         if (Strings.isNotEmpty(entityName)) {
             viewListSql = String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and view_name='%s'", entityName);
         }
-        List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(viewListSql);
-        for (Map<String,Object> map : tableList) {
-            removeOne(map);
+        List<Map<String, Object>> viewList = MetaDao.getJdbcTemplate().queryForList(viewListSql);
+        for (Map<String,Object> map : viewList) {
+            removeOne(entityName);
             parseViewEntity(map);
         }
     }
@@ -115,7 +114,7 @@ public class MetaManager {
         List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
         for (Map<String,Object> map : tableList) {
             List<Map<String,Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
-            removeOne(map);
+            removeOne(entityName);
             parseOne(map, columnList);
         }
     }
@@ -430,13 +429,8 @@ public class MetaManager {
                 }
             }
     }
-    /**
-     * 从 实体元数据缓存中 移除
-     *
-     */
 
-    public void removeOne(Map<String,Object> map) {
-        String entityName=map.get("entity_name").toString();
+    public void removeOne(String  entityName) {
         if (entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta= entityMetadataMap.get(entityName);
             tableNameMetadataMap.remove(entityMeta.getTableName());

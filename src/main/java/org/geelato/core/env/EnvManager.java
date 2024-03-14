@@ -42,7 +42,7 @@ public class EnvManager {
     }
 
     private void LoadSysConfig() {
-        String sql = "select config_key as configKey,config_value as configValue,app_Id as appId,tenant_code as tenantCode from platform_sys_config where enable_status =1 and del_status =0";
+        String sql = "select config_key as configKey,config_value as configValue,app_Id as appId,tenant_code as tenantCode,purpose as purpose from platform_sys_config where enable_status =1 and del_status =0";
         List<SysConfig> sysConfigList = EnvDao.getJdbcTemplate().query(sql,new BeanPropertyRowMapper<>(SysConfig.class));
         for (SysConfig config:sysConfigList) {
             if(!sysConfigMap.containsKey(config.getConfigKey())){

@@ -189,11 +189,9 @@ public class Dao extends SqlIdDao {
     public List<String> multiSave(List<BoundSql> boundSqlList) {
         DataSourceTransactionManager dataSourceTransactionManager=new DataSourceTransactionManager(this.jdbcTemplate.getDataSource());
         TransactionStatus transactionStatus=TransactionHelper.beginTransaction(dataSourceTransactionManager);
-        List<Object[]> paramsObjs = new ArrayList<>();
         List<String> returnPks = new ArrayList<>();
         try {
             for (BoundSql bs : boundSqlList) {
-                paramsObjs.add(bs.getParams());
                 SaveCommand saveCommand = (SaveCommand) bs.getCommand();
                 returnPks.add(saveCommand.getPK());
                 jdbcTemplate.update(bs.getSql(), bs.getParams());
@@ -365,13 +363,6 @@ public class Dao extends SqlIdDao {
     /**
      * 常用分页查询
      *
-     * @param entityType
-     * @param filterGroup
-     * @param pageNum
-     * @param pageSize
-     * @param orderBy
-     * @param <T>
-     * @return
      */
     public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, int pageNum, int pageSize, String orderBy) {
         if (defaultFilterOption && defaultFilterGroup != null) {
@@ -387,16 +378,7 @@ public class Dao extends SqlIdDao {
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
-
-    /**
-     * @param entityType
-     * @param params
-     * @param pageNum
-     * @param pageSize
-     * @param orderBy
-     * @param <T>
-     * @return
-     */
+    
     public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, int pageNum, int pageSize, String orderBy) {
         FilterGroup filterGroup = new FilterGroup();
         if (params != null && !params.isEmpty()) {
