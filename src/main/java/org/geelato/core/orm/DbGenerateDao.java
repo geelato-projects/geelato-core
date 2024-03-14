@@ -32,11 +32,11 @@ import java.util.*;
 @Component
 public class DbGenerateDao {
 
-    private static Logger logger = LoggerFactory.getLogger(DbGenerateDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbGenerateDao.class);
     private static HashMap<String, Integer> defaultColumnLengthMap;
     private Dao dao;
 
-    private MetaManager metaManager = MetaManager.singleInstance();
+    private final MetaManager metaManager = MetaManager.singleInstance();
 
     public DbGenerateDao() {
     }
@@ -64,7 +64,6 @@ public class DbGenerateDao {
      * 创建完表之后，将元数据信息保存到数据库中
      *
      * @param dropBeforeCreate     存在表时，是否删除
-     * @param ignoreEntityNameList
      */
     public void createAllTables(boolean dropBeforeCreate, List<String> ignoreEntityNameList) {
         Collection<EntityMeta> entityMetas = metaManager.getAll();
@@ -76,7 +75,7 @@ public class DbGenerateDao {
             boolean isIgnore = false;
             if (ignoreEntityNameList != null) {
                 for (String ignoreEntityName : ignoreEntityNameList) {
-                    if (em.getEntityName().indexOf(ignoreEntityName) != -1) {
+                    if (em.getEntityName().contains(ignoreEntityName)) {
                         isIgnore = true;
                         break;
                     }
@@ -107,7 +106,6 @@ public class DbGenerateDao {
     /**
      * 将元数据信息保存到服务端，一般用于开发环境初始化，创建完表之后执行
      *
-     * @param entityMetas
      */
     private void saveJavaMetaToDb(String id, Collection<EntityMeta> entityMetas) {
         for (EntityMeta em : entityMetas) {
@@ -152,7 +150,7 @@ public class DbGenerateDao {
         Map existscolumnMap = new HashMap();
         String tableName = Strings.isEmpty(em.getTableName()) ? em.getEntityName() : em.getTableName();
         List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", tableName));
-        if (columns == null || columns.size() == 0) {
+        if (columns == null || columns.isEmpty()) {
             isExistsTable = false;
         } else {
             for (Map<String, Object> columnMap : columns) existscolumnMap.put(columnMap.get("COLUMN_NAME"), columnMap);
@@ -204,20 +202,13 @@ public class DbGenerateDao {
                     uniqueList.add(jsonColumn);
                 }
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1) {
+                if (e.getMessage().contains("Duplicate column name")) {
                     logger.info("column " + fm.getColumnName() + " is exists，ignore.");
                 } else {
                     throw e;
                 }
             }
         }
-        /*for (TableForeign tf : em.getTableForeigns()) {
-            if (tf.getEnableStatus() == EnableStatusEnum.DISABLED.getCode()) {
-                continue;
-            }
-            JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(tf));
-            foreignList.add(jsonColumn);
-        }*/
         if (!isExistsTable) {
             createTable(em.getTableMeta(), createList, foreignList, hasDelStatus);
         } else {
@@ -231,13 +222,6 @@ public class DbGenerateDao {
                     keyNames.add(meta.getKeyName());
                 }
             }
-            // 外键
-            /*List<TableForeignKey> foreignKeyList = metaManager.queryForeignKeys(em.getTableName());
-            for (TableForeignKey meta : foreignKeyList) {
-                JSONObject jsonColumn = JSONObject.parseObject(JSONObject.toJSONString(meta));
-                delForeignList.add(jsonColumn);
-            }*/
-
             upgradeTable(em.getTableMeta(), addList, modifyList, indexList, uniqueList, String.join(",", primaryList), hasDelStatus);
         }
     }
@@ -254,7 +238,7 @@ public class DbGenerateDao {
         boolean isExistsTable = true;
         Map existsColumnMap = new HashMap();
         List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", em.getTableName()));
-        if (columns == null || columns.size() == 0) {
+        if (columns == null || columns.isEmpty()) {
             isExistsTable = false;
         } else {
             for (Map<String, Object> columnMap : columns) {
@@ -274,7 +258,7 @@ public class DbGenerateDao {
         for (FieldMeta fm : em.getFieldMetas()) {
             try {
                 if (defaultColumnLengthMap.containsKey(fm.getColumnName())) {
-                    int len = defaultColumnLengthMap.get(fm.getColumnName()).intValue();
+                    int len = defaultColumnLengthMap.get(fm.getColumnName());
 
                     fm.getColumn().setCharMaxLength(len);
                     fm.getColumn().setNumericPrecision(len);
@@ -293,7 +277,7 @@ public class DbGenerateDao {
                     uniqueList.add(jsonColumn);
                 }
             } catch (Exception e) {
-                if (e.getMessage().indexOf("Duplicate column name") != -1) {
+                if (e.getMessage().contains("Duplicate column name")) {
                     logger.info("column " + fm.getColumnName() + " is exists，ignore.");
                 } else {
                     throw e;
@@ -316,8 +300,6 @@ public class DbGenerateDao {
     /**
      * 创建数据库表
      *
-     * @param tableMeta
-     * @param createColumnList
      */
     private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList, boolean hasDelStatus) {
         Map<String, Object> map = new HashMap<>();
@@ -347,12 +329,6 @@ public class DbGenerateDao {
     /**
      * 更新数据库表
      *
-     * @param tableMeta
-     * @param addList
-     * @param modifyList
-     * @param indexList
-     * @param uniqueList
-     * @param primaryKey
      */
     private void upgradeTable(TableMeta tableMeta, List<JSONObject> addList, List<JSONObject> modifyList, List<JSONObject> indexList,
                               List<JSONObject> uniqueList, String primaryKey, boolean hasDelStatus) {
@@ -425,14 +401,26 @@ public class DbGenerateDao {
         // 创建一个数据库连接对象，但不要打开连接。
         Connection conn = ConnectUtils.getConnection(connectMeta);
         // 创建一个 Statement 对象，但不要执行它。
-        Statement stmt = conn.createStatement();
+        Statement stmt = null;
+        if (conn != null) {
+            stmt = conn.createStatement();
+        }
         // 使用 Statement 对象的 setQueryTimeout() 方法设置查询超时时间，以确保 SQL 语句在一定时间内执行完毕。
         // 设置查询超时时间为 1 秒
-        stmt.setQueryTimeout(1);
+        if (stmt != null) {
+            stmt.setQueryTimeout(1);
+        }
         // 使用 Statement 对象的 execute() 方法执行 SQL 语句。如果 SQL 语句正确，execute() 方法将返回 true，否则返回 false。
-        boolean isValid = stmt.execute(sql);
-        stmt.close();
-        conn.close();
+        boolean isValid = false;
+        if (stmt != null) {
+            isValid = stmt.execute(sql);
+        }
+        if (stmt != null) {
+            stmt.close();
+        }
+        if (conn != null) {
+            conn.close();
+        }
 
         return isValid;
     }
