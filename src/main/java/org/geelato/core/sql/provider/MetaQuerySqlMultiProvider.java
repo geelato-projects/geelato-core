@@ -22,7 +22,7 @@ import java.util.*;
  */
 @Component
 public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand> {
-    private static Logger logger = LoggerFactory.getLogger(MetaQuerySqlMultiProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaQuerySqlMultiProvider.class);
 
     @Override
     protected Object[] buildParams(QueryCommand command) {
@@ -52,7 +52,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         }
         if(command.getOriginalWhere()!=null){
             sb.append( "  and  ");
-            sb.append(command.getOriginalWhere());
+            sb.append(md.getTableAlias()).append(".").append(command.getOriginalWhere());
         }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {
@@ -188,9 +188,6 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
 
     /**
      * 构建多表关联查询
-     * @param command
-     * @param md
-     * @param fm
      */
     private void buildForeignJoinSql(QueryCommand command, EntityMeta md, FieldMeta fm) {
         String[] fTables = fm.getColumn().getRefTables().split(",");
@@ -250,8 +247,6 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
 
     /**
      * 替换SQL中表明为别名
-     * @param orderBySql
-     * @return
      */
     private String replaceTableAliasOrderBy(EntityMeta md, String orderBySql) {
         StringBuilder newSql = new StringBuilder();

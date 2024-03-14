@@ -127,7 +127,7 @@ public class JsonTextQueryParser {
                             String[] strs = order.split(FILTER_FLAG);
                             if (strs.length == 2 && orderMap.containsKey(strs[1])) {
                                 validator.validateField(strs[0], KW_ORDER_BY);
-                                sb.append(sb.isEmpty() ? " " : ",");
+                                sb.append(sb.isEmpty() ? "" : ",");
                                 sb.append(validator.getColumnName(strs[0]));
                                 sb.append(" ");
                                 sb.append(orderMap.get(strs[1]));
@@ -136,7 +136,7 @@ public class JsonTextQueryParser {
                                 validator.appendMessage("的值格式有误，正确如：age|+,name|-。");
                             }
                         }
-                        if (sb.length() > 0) {
+                        if (!sb.isEmpty()) {
                             command.setOrderBy(sb.toString());
                         }
                         break;

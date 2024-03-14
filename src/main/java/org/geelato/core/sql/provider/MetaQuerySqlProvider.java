@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Component
 public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
-    private static Logger logger = LoggerFactory.getLogger(MetaQuerySqlProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaQuerySqlProvider.class);
 
     @Override
     protected Object[] buildParams(QueryCommand command) {
@@ -44,7 +44,7 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         }
         if(command.getOriginalWhere()!=null){
             sb.append( "  and  ");
-            sb.append(command.getOriginalWhere());
+            sb.append(md.getTableAlias()).append(".").append(command.getOriginalWhere());
         }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {

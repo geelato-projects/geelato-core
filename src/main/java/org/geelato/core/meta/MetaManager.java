@@ -210,7 +210,7 @@ public class MetaManager {
      * @return 返回填充后的map
      */
     public Map<String, Object> newDefaultEntity(EntityMeta em) {
-        HashMap<String, Object> map = new HashMap(em.getFieldMetas().size());
+        HashMap<String, Object> map = new HashMap<>(em.getFieldMetas().size());
         for (FieldMeta fm : em.getFieldMetas()) {
             ColumnMeta cm = fm.getColumn();
             if (cm.getEnableStatus() == EnableStatusEnum.ENABLED.getCode() && cm.getDelStatus() == DeleteStatusEnum.NO.getCode()) {

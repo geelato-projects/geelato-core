@@ -10,13 +10,9 @@ import java.util.Map;
 public class QueryCommand extends BaseCommand<QueryCommand> {
 
     private boolean queryForList = false;
-    /**
-     * @param pageNum，第几页，从1开始。
-     */
+
     private int pageNum = -1;
-    /**
-     * @param pageSize 每页最大展示记录数，pageSize(客户端请求参数中)=limit(in mysql)
-     */
+
     private int pageSize = -1;
 
     /**

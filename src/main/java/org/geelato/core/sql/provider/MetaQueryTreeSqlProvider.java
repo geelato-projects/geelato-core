@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Component
 public class MetaQueryTreeSqlProvider extends MetaBaseSqlProvider<QueryTreeCommand> {
-    private static Logger logger = LoggerFactory.getLogger(MetaQueryTreeSqlProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaQueryTreeSqlProvider.class);
 
     @Override
     protected Object[] buildParams(QueryTreeCommand command) {
@@ -45,7 +45,7 @@ public class MetaQueryTreeSqlProvider extends MetaBaseSqlProvider<QueryTreeComma
         }
         if(command.getOriginalWhere()!=null){
             sb.append( "  and  ");
-            sb.append(command.getOriginalWhere());
+            sb.append(md.getTableAlias()).append(".").append(command.getOriginalWhere());
         }
         // group by
         if (StringUtils.hasText(command.getGroupBy())) {
@@ -76,8 +76,6 @@ public class MetaQueryTreeSqlProvider extends MetaBaseSqlProvider<QueryTreeComma
     /**
      * 构健统计数据
      *
-     * @param command
-     * @return
      */
     public String buildCountSql(QueryTreeCommand command) {
         StringBuilder sb = new StringBuilder();
