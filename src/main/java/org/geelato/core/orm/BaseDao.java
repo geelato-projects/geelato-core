@@ -1,5 +1,6 @@
 package org.geelato.core.orm;
 
+import jakarta.annotation.Resource;
 import org.geelato.core.meta.EntityManager;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.script.sql.SqlScriptManager;
