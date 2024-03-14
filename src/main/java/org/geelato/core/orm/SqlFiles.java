@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  * @author geemeta
  */
 public class SqlFiles {
-    private static Logger logger = LoggerFactory.getLogger(SqlFiles.class);
-    private static Pattern newIdPattern = Pattern.compile("\\$newId[ ]*\\([ ]*\\)");
+    private static final Logger logger = LoggerFactory.getLogger(SqlFiles.class);
+    private static final Pattern newIdPattern = Pattern.compile("\\$newId[ ]*\\([ ]*\\)");
 
 
     public static void loadAndExecute(String[] lines, JdbcTemplate jdbcTemplate, boolean isWinOS) {

@@ -6,8 +6,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.aop.annotation.MethodLog;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
-import org.geelato.core.exception.TestException;
-import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.FilterGroup;
@@ -41,23 +39,12 @@ import java.util.Map;
  * @author geemeta
  */
 @Component
-public class Dao {
+public class Dao extends SqlIdDao {
 
-    public final static String SQL_TEMPLATE_MANAGER = "sql";
     private static final Logger logger = LoggerFactory.getLogger(Dao.class);
-    private static final Map<String, Object> defaultParams = new HashMap<>();
-    /**
-     * 默认取第一个：primaryJdbcTemplate，可在dao外进行设置更换
-     */
-    private JdbcTemplate jdbcTemplate;
+
     private Boolean defaultFilterOption = false;
     private FilterGroup defaultFilterGroup;
-    private final MetaManager metaManager = MetaManager.singleInstance();
-    private final SqlScriptManager sqlScriptManager = SqlScriptManagerFactory.get(SQL_TEMPLATE_MANAGER);
-    private final SqlManager sqlManager = SqlManager.singleInstance();
-    private final EntityManager entityManager = EntityManager.singleInstance();
-
-
     /**
      * <p>注意: 在使用之前，需先设置JdbcTemplate
      *
@@ -65,19 +52,9 @@ public class Dao {
      */
     public Dao() {
     }
-
     public Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    public void setDefaultFilter(Boolean defaultFilter, FilterGroup defaultFilterGroup) {
-        this.defaultFilterOption = defaultFilter;
-        this.defaultFilterGroup = defaultFilterGroup;
-    }
-
-    /**
-     * @return 若需执行自己构建的语句，可以获取jdbcTemplate
-     */
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
@@ -86,55 +63,14 @@ public class Dao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    //========================================================
-    //                  基于sqlId                           ==
-    //========================================================
-    public void execute(String sqlId, Map<String, Object> paramMap) {
-        jdbcTemplate.execute(sqlScriptManager.generate(sqlId, paramMap));
+
+    public void setDefaultFilter(Boolean defaultFilter, FilterGroup defaultFilterGroup) {
+        this.defaultFilterOption = defaultFilter;
+        this.defaultFilterGroup = defaultFilterGroup;
     }
 
-    public Map<String, Object> queryForMap(String sqlId, Map<String, Object> paramMap) throws DataAccessException {
-        return jdbcTemplate.queryForMap(sqlScriptManager.generate(sqlId, mixParam(paramMap)));
-    }
 
-    public <T> T queryForObject(String sqlId, Map<String, Object> paramMap, Class<T> requiredType) throws DataAccessException {
-        return jdbcTemplate.queryForObject(sqlScriptManager.generate(sqlId, mixParam(paramMap)), requiredType);
-    }
 
-    public List<Map<String, Object>> queryForMapList(String sqlId, Map<String, Object> paramMap) {
-        return jdbcTemplate.queryForList(sqlScriptManager.generate(sqlId, mixParam(paramMap)));
-    }
-
-    /**
-     * @param sqlId       注意：该sqlId对应语句的查询结果是单列的
-     * @param paramMap    参数用于sqlId对应语句的构建
-     * @param elementType 查询单列结果的列类型如：Integer.class、String.class
-     * @param <T>
-     * @return 单列数据列表
-     * @throws DataAccessException 查询出错
-     */
-    public <T> List<T> queryForOneColumnList(String sqlId, Map<String, Object> paramMap, Class<T> elementType) throws DataAccessException {
-        return jdbcTemplate.queryForList(sqlScriptManager.generate(sqlId, mixParam(paramMap)), elementType);
-    }
-
-    public int save(String sqlId, Map<String, Object> paramMap) {
-        return jdbcTemplate.update(sqlScriptManager.generate(sqlId, mixParam(paramMap)));
-    }
-
-    /**
-     * 加入默认上下文参数：
-     * 1、userId：当前用户id
-     *
-     * @param paramMap 需混合添加的参数
-     * @return 混合添加后的参数
-     */
-    private Map<String, Object> mixParam(Map<String, Object> paramMap) {
-        if (paramMap == null || paramMap.size() == 0) {
-            paramMap = new HashMap<>();
-        }
-        paramMap.put("$ctx", defaultParams.get("$ctx"));
-        return paramMap;
-    }
 
     //========================================================
     //                  基于元数据  gql                      ==
@@ -148,9 +84,7 @@ public class Dao {
     }
 
     /**
-     * @param boundPageSql
      * @param withMeta     是否需同时查询带出元数据
-     * @return
      */
     public ApiPagedResult queryForMapList(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();

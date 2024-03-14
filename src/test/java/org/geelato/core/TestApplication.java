@@ -83,7 +83,7 @@ public class TestApplication implements CommandLineRunner, InitializingBean {
         //由测试类启动时，修改资源目录为源码下的资源目录
         path = path.replace("test-classes", "classes");
         //--1、sql
-        SqlScriptManagerFactory.get(Dao.SQL_TEMPLATE_MANAGER).loadFiles(path + "/geelato/core/sql/");
+        SqlScriptManagerFactory.get("sql").loadFiles(path + "/geelato/core/sql/");
         //--2、业务规则
         BizManagerFactory.getBizRuleScriptManager("rule").setDao(dao);
         BizManagerFactory.getBizRuleScriptManager("rule").loadFiles(path + "/geelato/core/rule/");
@@ -101,7 +101,7 @@ public class TestApplication implements CommandLineRunner, InitializingBean {
      */
     protected void initFromFatJar() throws IOException {
         //--1、sql
-        SqlScriptManagerFactory.get(Dao.SQL_TEMPLATE_MANAGER).loadResource("/geelato/core/sql/**/*.sql");
+        SqlScriptManagerFactory.get("sql").loadResource("/geelato/core/sql/**/*.sql");
         //--2、业务规则
         BizManagerFactory.getBizRuleScriptManager("rule").setDao(dao);
         BizManagerFactory.getBizRuleScriptManager("rule").loadResource("/geelato/core/rule/**/*.js");
