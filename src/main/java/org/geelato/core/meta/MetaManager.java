@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MetaManager {
 
-
+    private Dao MetaDao;
     private static final Lock lock = new ReentrantLock();
     private static MetaManager instance;
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
@@ -43,7 +43,7 @@ public class MetaManager {
     private static final HashMap<String, String> entityFieldNameTitleMap = new HashMap<>();
     private final Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
 
-    private Dao MetaDao;
+
 
 
     public static MetaManager singleInstance() {

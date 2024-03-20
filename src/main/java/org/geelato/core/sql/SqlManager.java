@@ -52,8 +52,8 @@ public class SqlManager {
 
     public BoundPageSql generatePageQuerySql(QueryCommand command) {
         BoundPageSql boundPageSql = new BoundPageSql();
-        boundPageSql.setBoundSql(metaQuerySqlProvider.generate(command));
-        boundPageSql.setCountSql(metaQuerySqlProvider.buildCountSql(command));
+        boundPageSql.setBoundSql(metaQuerySqlMultiProvider.generate(command));
+        boundPageSql.setCountSql(metaQuerySqlMultiProvider.buildCountSql(command));
         return boundPageSql;
     }
 

@@ -16,9 +16,9 @@ public enum ColumnEncryptedEnum {
         this.value = value;
     }
 
-    public String getLabel() {
-        return label;
-    }
+        public String getLabel() {
+            return label;
+        }
 
     public Boolean getValue() {
         return value;

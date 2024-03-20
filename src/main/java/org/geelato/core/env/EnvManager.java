@@ -18,7 +18,7 @@ public class EnvManager {
     private final Map<String ,SysConfig> sysConfigMap;
     private Dao  EnvDao;
 
-    private static Lock lock = new ReentrantLock();
+    private static final Lock lock = new ReentrantLock();
 
     private static EnvManager instance;
 
