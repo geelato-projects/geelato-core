@@ -10,10 +10,10 @@ import java.util.Arrays;
  * @author geemeta
  */
 public class CommandValidator {
-    private MetaManager metaManager = MetaManager.singleInstance();
+    private final MetaManager metaManager = MetaManager.singleInstance();
     private EntityMeta entityMeta = null;
     private String validateEntityName = null;
-    private StringBuilder message = new StringBuilder();
+    private final StringBuilder message = new StringBuilder();
 
     public boolean validateEntity(String entityName) {
         this.validateEntityName = entityName;
@@ -85,8 +85,6 @@ public class CommandValidator {
     /**
      * 从fields中查询主健
      *
-     * @param fields
-     * @return
      */
     public boolean hasPK(String[] fields) {
         String name = entityMeta.getId().getFieldName();
@@ -99,8 +97,6 @@ public class CommandValidator {
     /**
      * 实体是否有公共字段，如update_at
      *
-     * @param field
-     * @return
      */
     public boolean hasKeyField(String field) {
         return entityMeta.containsField(field)&&!"*".equals(field);

@@ -20,11 +20,9 @@ import java.util.*;
  * @author geelato
  * 解析json字符串，并返回参数map
  */
-public class JsonTextSaveParser {
+public class JsonTextSaveParser extends JsonTextParser {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonTextSaveParser.class);
-    private final MetaManager metaManager = MetaManager.singleInstance();
-
     private final static String SUB_ENTITY_FLAG = "#";
     private final static String KW_BIZ = "@biz";
 
@@ -83,11 +81,6 @@ public class JsonTextSaveParser {
     /**
      * 递归解析保存操作命令，里面变更在执行期再解析，不在此解析
      *
-     * @param ctx
-     * @param commandName
-     * @param jo
-     * @param validator
-     * @return
      */
     private SaveCommand parse(Ctx ctx, String commandName, JSONObject jo, CommandValidator validator) {
         Assert.isTrue(validator.validateEntity(commandName), validator.getMessage());

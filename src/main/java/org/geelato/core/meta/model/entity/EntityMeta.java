@@ -37,9 +37,9 @@ public class EntityMeta {
     //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
     private LinkedHashMap<String, SimpleFieldMeta> simpleFieldMetaMap;
     //冗余，用于快速获取外键关系
-    private Map<String, TableForeign> tableForeignsMap = new HashMap<>();
+    private final Map<String, TableForeign> tableForeignsMap = new HashMap<>();
     //不更新的字段
-    private Map<String, Boolean> ignoreUpdateFieldMap;
+    private final Map<String, Boolean> ignoreUpdateFieldMap;
 
     public EntityMeta() {
         ignoreUpdateFieldMap = new HashMap<>();

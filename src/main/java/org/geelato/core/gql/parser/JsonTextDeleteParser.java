@@ -18,10 +18,9 @@ import java.util.Map;
  * @author geelato
  * 解析json字符串，并返回参数map
  */
-public class JsonTextDeleteParser {
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+public class JsonTextDeleteParser extends JsonTextParser {
     private static Logger logger = LoggerFactory.getLogger(JsonTextDeleteParser.class);
-    private static final MetaManager metaManager = MetaManager.singleInstance();
+
     private final static String KW_BIZ = "@biz";
     private final static String KEYWORD_FLAG = "@";
     private final static String FILTER_FLAG = "\\|";
@@ -43,7 +42,7 @@ public class JsonTextDeleteParser {
 
         DeleteCommand command = new DeleteCommand();
         command.setEntityName(commandName);
-
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String newDataString = simpleDateFormat.format(new Date());
         FilterGroup fg = new FilterGroup();
         command.setWhere(fg);

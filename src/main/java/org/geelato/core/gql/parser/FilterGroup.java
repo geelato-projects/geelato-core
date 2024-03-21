@@ -51,7 +51,6 @@ public class FilterGroup {
     /**
      * 如果filter中的field存在同名时，自动重命名
      *
-     * @param filter
      */
     public FilterGroup addFilter(Filter filter) {
         if (this.filters == null) {
@@ -115,12 +114,10 @@ public class FilterGroup {
         }
 
         /**
-         * @param field tableName.fieldName or fieldName
-         * @return
          */
         public Filter setField(String field) {
-            if (StringUtils.hasText(field) && field.indexOf(".") != -1) {
-                String[] arrays = field.split(".");
+            if (StringUtils.hasText(field) && field.contains(".")) {
+                String[] arrays = field.split("\\.");
                 this.isRefField = true;
                 this.field = arrays[1];
                 this.refEntityName = arrays[0];
@@ -193,13 +190,14 @@ public class FilterGroup {
         gte("gte"),
         startWith("startwith"),
         endWith("endwith"),
+
         contains("contains"),
         in("in"),
         notin("nin"),
         nil("nil"),
         bt("bt");
 
-        private String text;
+        private final String text;
 
         Operator(String text) {
             this.text = text;
@@ -219,7 +217,7 @@ public class FilterGroup {
                 sb.append(operator.toString());
                 sb.append(",");
             }
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.setLength(sb.length() - 1);
             }
             operatorStrings = sb.toString();
@@ -245,33 +243,21 @@ public class FilterGroup {
 
     public enum Logic {
         or("or"), and("and");
-        private String text;
-
+        private final String text;
         Logic(String text) {
             this.text = text;
         }
-
         public String getText() {
             return this.text;
         }
-
-        // Implementing a fromString method on an enum type
         private static final Map<String, Logic> stringToEnum = new HashMap<String, Logic>();
-
         static {
-            // Initialize map from constant name to enum constant
             for (Logic logic : values()) {
                 stringToEnum.put(logic.toString(), logic);
             }
         }
-
         public static Logic fromString(String symbol) {
             return stringToEnum.get(symbol.toLowerCase());
-        }
-
-        @Override
-        public String toString() {
-            return text;
         }
     }
 

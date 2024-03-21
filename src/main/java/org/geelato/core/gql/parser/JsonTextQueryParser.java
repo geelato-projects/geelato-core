@@ -20,10 +20,9 @@ import java.util.Map;
  * @author geelato
  * 解析json字符串，并返回参数map
  */
-public class JsonTextQueryParser {
+public class JsonTextQueryParser extends JsonTextParser {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonTextQueryParser.class);
-    private static final MetaManager metaManager = MetaManager.singleInstance();
     //page_num即offset，记录位置
     private final static String KEYWORD_FLAG = "@";
     private final static String FILTER_FLAG = "\\|";
