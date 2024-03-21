@@ -12,16 +12,11 @@ import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.gql.parser.QueryCommand;
 import org.geelato.core.gql.parser.QueryViewCommand;
 import org.geelato.core.gql.parser.SaveCommand;
-import org.geelato.core.meta.EntityManager;
-import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.CommonRowMapper;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.Ctx;
-import org.geelato.core.script.sql.SqlScriptManager;
-import org.geelato.core.script.sql.SqlScriptManagerFactory;
-import org.geelato.core.sql.SqlManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -31,7 +26,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +42,6 @@ public class Dao extends SqlIdDao {
     /**
      * <p>注意: 在使用之前，需先设置JdbcTemplate
      *
-     * @see #setJdbcTemplate
      */
     public Dao() {
     }
@@ -321,11 +314,6 @@ public class Dao extends SqlIdDao {
     /**
      * 常用全量查询
      *
-     * @param entityType
-     * @param filterGroup
-     * @param orderBy
-     * @param <T>
-     * @return
      */
     public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, String orderBy) {
         if (defaultFilterOption && defaultFilterGroup != null) {
