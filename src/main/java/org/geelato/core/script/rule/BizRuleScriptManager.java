@@ -1,6 +1,6 @@
 package org.geelato.core.script.rule;
 
-import org.geelato.core.AbstractManager;
+import org.geelato.core.script.AbstractScriptManager;
 import org.geelato.core.script.js.JsProvider;
 import org.geelato.core.script.js.JsTemplateParser;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author geemeta
  */
-public class BizRuleScriptManager extends AbstractManager {
+public class BizRuleScriptManager extends AbstractScriptManager {
 
     private static Logger logger = LoggerFactory.getLogger(BizRuleScriptManager.class);
     private JsTemplateParser jsTemplateParser = new JsTemplateParser();

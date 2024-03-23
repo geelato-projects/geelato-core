@@ -1,6 +1,6 @@
 package org.geelato.core.script.js;
 
-import org.geelato.core.AbstractManager;
+import org.geelato.core.script.AbstractScriptManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author geemeta
  */
-public class JsScriptManager extends AbstractManager {
+public class JsScriptManager extends AbstractScriptManager {
     private Logger logger = LoggerFactory.getLogger(JsScriptManager.class);
     private JsTemplateParser jsTemplateParser = new JsTemplateParser();
     private JsProvider jsProvider = new JsProvider();

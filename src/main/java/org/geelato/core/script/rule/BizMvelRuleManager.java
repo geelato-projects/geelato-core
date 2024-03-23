@@ -1,23 +1,20 @@
 package org.geelato.core.script.rule;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.geelato.core.AbstractManager;
-import org.geelato.core.meta.model.entity.Resources;
-import org.geelato.core.util.StringUtils;
+import org.geelato.core.script.AbstractScriptManager;
 import org.jeasy.rules.api.Rule;
 import org.jeasy.rules.api.Rules;
 import org.jeasy.rules.mvel.MVELRule;
 import org.jeasy.rules.mvel.MVELRuleFactory;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author geemeta
  */
-public class BizMvelRuleManager extends AbstractManager {
-    private Map<String, Rule> ruleMap = new HashedMap();
+public class BizMvelRuleManager extends AbstractScriptManager {
+    private final Map<String, Rule> ruleMap = new HashedMap();
 
 
     public MVELRule getRule(String ruleCode) {

@@ -1,7 +1,10 @@
 package org.geelato.core.gql;
 
+import org.geelato.core.AbstractManager;
+import org.geelato.core.ds.DataSourceManager;
 import org.geelato.core.gql.parser.*;
 import org.geelato.core.Ctx;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -13,12 +16,12 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author geemeta
  */
-public class GqlManager {
-    private static Lock lock = new ReentrantLock();
+public class GqlManager extends AbstractManager {
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(GqlManager.class);
     private static GqlManager instance;
-    private JsonTextQueryParser jsonTextQueryParser = new JsonTextQueryParser();
-    private JsonTextSaveParser jsonTextSaveParser = new JsonTextSaveParser();
-    private JsonTextDeleteParser jsonTextDeleteParser = new JsonTextDeleteParser();
+    private final JsonTextQueryParser jsonTextQueryParser = new JsonTextQueryParser();
+    private final JsonTextSaveParser jsonTextSaveParser = new JsonTextSaveParser();
+    private final JsonTextDeleteParser jsonTextDeleteParser = new JsonTextDeleteParser();
 
     public static GqlManager singleInstance() {
         lock.lock();
@@ -29,7 +32,9 @@ public class GqlManager {
         return instance;
     }
 
-
+    private  GqlManager() {
+        logger.info("DataSourceManager Instancing...");
+    }
     //========================================================
     //                  基于元数据  gql                      ==
     //========================================================

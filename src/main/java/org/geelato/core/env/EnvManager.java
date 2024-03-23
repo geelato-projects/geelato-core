@@ -1,9 +1,12 @@
 package org.geelato.core.env;
 
 
+import org.geelato.core.AbstractManager;
 import org.geelato.core.Ctx;
 import org.geelato.core.env.entity.*;
+import org.geelato.core.meta.MetaManager;
 import org.geelato.core.orm.Dao;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.ArrayList;
@@ -13,16 +16,14 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class EnvManager {
-
+public class EnvManager  extends AbstractManager {
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(EnvManager.class);
     private final Map<String ,SysConfig> sysConfigMap;
     private Dao  EnvDao;
-
-    private static final Lock lock = new ReentrantLock();
-
     private static EnvManager instance;
 
     private EnvManager(){
+        logger.info("EnvManager Instancing...");
         sysConfigMap=new HashMap<>();
     }
 

@@ -19,7 +19,6 @@ public class EntityValidateRule extends BasicRule {
         SaveCommand saveCommand = (SaveCommand) facts.get("saveCommand");
         if (saveCommand != null) {
             saveCommand.getEntityName();
-
         } else {
             DeleteCommand deleteCommand = (DeleteCommand) facts.get("deleteCommand");
             if (deleteCommand != null) {

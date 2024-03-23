@@ -2,6 +2,7 @@ package org.geelato.core.meta;
 
 import com.alibaba.fastjson2.JSON;
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.AbstractManager;
 import org.geelato.core.constants.MetaDaoSql;
 import org.geelato.core.constants.ResourcesFiles;
 import org.geelato.core.enums.DataTypeRadiusEnum;
@@ -31,10 +32,9 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author geemeta
  */
-public class MetaManager {
+public class MetaManager  extends AbstractManager {
 
     private Dao MetaDao;
-    private static final Lock lock = new ReentrantLock();
     private static MetaManager instance;
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
     private final HashMap<String, EntityMeta> entityMetadataMap = new HashMap<>();
@@ -42,9 +42,6 @@ public class MetaManager {
     private final HashMap<String, EntityMeta> tableNameMetadataMap = new HashMap<>();
     private static final HashMap<String, String> entityFieldNameTitleMap = new HashMap<>();
     private final Map<String, FieldMeta> commonFieldMetas = new HashMap<>();
-
-
-
 
     public static MetaManager singleInstance() {
         lock.lock();
@@ -56,9 +53,9 @@ public class MetaManager {
     }
 
     private MetaManager() {
-
+        logger.info("MetaManager Instancing...");
         // 解析内置的类
-        logger.info("解析内置的类包含注解{}的实体！！", Entity.class);
+
         parseOne(ColumnMeta.class);
         parseOne(TableMeta.class);
         // 内置默认的公共字段

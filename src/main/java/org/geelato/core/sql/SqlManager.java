@@ -1,5 +1,6 @@
 package org.geelato.core.sql;
 
+import org.geelato.core.AbstractManager;
 import org.geelato.core.Ctx;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
@@ -7,6 +8,7 @@ import org.geelato.core.gql.parser.*;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.sql.provider.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.w3c.dom.stylesheets.LinkStyle;
 
@@ -21,9 +23,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author geemeta
  */
-public class SqlManager {
+public class SqlManager extends AbstractManager {
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(SqlManager.class);
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static Lock lock = new ReentrantLock();
     private static SqlManager instance;
     private final MetaManager metaManager = MetaManager.singleInstance();
     private final MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
@@ -41,6 +43,10 @@ public class SqlManager {
         }
         lock.unlock();
         return instance;
+    }
+
+    private SqlManager(){
+        logger.info("SqlManager Instancing...");
     }
 
     //========================================================

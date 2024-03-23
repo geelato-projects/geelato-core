@@ -1,6 +1,6 @@
 package org.geelato.core.script.sql;
 
-import org.geelato.core.AbstractManager;
+import org.geelato.core.script.AbstractScriptManager;
 import org.geelato.core.script.js.JsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author geemeta
  */
-public class SqlScriptManager extends AbstractManager {
+public class SqlScriptManager extends AbstractScriptManager {
     private Logger logger = LoggerFactory.getLogger(SqlScriptManager.class);
 
     private SqlScriptParser sqlScriptParser = new SqlScriptParser();
