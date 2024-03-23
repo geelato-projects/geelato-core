@@ -11,6 +11,8 @@ public class Permission {
 
     private Integer weight;
 
+    private Integer roleWeight;
+
     public String getEntity() {
         return entity;
     }
@@ -51,5 +53,13 @@ public class Permission {
 
     public Integer getWeight() {
         return weight;
+    }
+
+    public Integer getRoleWeight() {
+        return roleWeight;
+    }
+
+    public void setRoleWeight(Integer roleWeight) {
+        this.roleWeight = roleWeight;
     }
 }

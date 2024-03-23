@@ -39,7 +39,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
         //计算主表别名
-        md.setTableAlias(super.buildTableAlias(md.getTableName()));
+//        md.setTableAlias(super.buildTableAlias(md.getTableName()));
         sb.append("select ");
         buildSelectFields(sb, md, command);
         sb.append(" from ");
@@ -89,8 +89,6 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
     /**
      * 构健统计数据
      *
-     * @param command
-     * @return
      */
     public String buildCountSql(QueryCommand command) {
         StringBuilder sb = new StringBuilder();
@@ -164,24 +162,16 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
                 }
             } else {
                 if (alias.containsKey(fieldName)) {
-                    // 有指定的重命名要求时
                     tryAppendKeywords(md, sb, fm);
-//                sb.append(fm.getColumnName());
                     sb.append(" ");
                     tryAppendKeywords(sb, alias.get(fieldName).toString());
-//                sb.append(alias.get(fieldName));
                 } else {
-                    // 无指定的重命名要求，将数据库的字段格式转成实体字段格式，如role_id to roleId
-                    //isEquals做什么用？
                     if (!fm.getColumn().getIsRefColumn() && fm.isEquals()) {
                         tryAppendKeywords(md, sb, fm);
-//                    sb.append(fm.getColumnName());
                     } else {
                         tryAppendKeywords(md, sb, fm);
-//                    sb.append(fm.getColumnName());
                         sb.append(" ");
                         tryAppendKeywords(sb, fm.getFieldName());
-//                    sb.append(fm.getFieldName());
                     }
                 }
             }
@@ -240,7 +230,10 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
                         newSql.append(item, 0, seq).append(" ");
                     }
                     String tableAlias = super.buildTableAlias(item.substring(seq));
-                    newSql.append(tableAlias).append(".");
+                    if(tableAlias!=null){
+                        newSql.append(tableAlias).append(".");
+                    }
+
                 }
             } else {
                 newSql.append(sql);
@@ -257,7 +250,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         if (orderBySql != null && !orderBySql.isEmpty()) {
             String[] items = orderBySql.split(",");
             for (int i = 0, len = items.length; i < len; i++) {
-                if (!items[i].contains(".")) {
+                if (!items[i].contains(".") &&md.getTableAlias()!=null) {
                     newSql.append(md.getTableAlias()).append(".");
                 }
                 newSql.append(items[i]);
@@ -280,7 +273,9 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
                 field = items[1];
             }
         } else {
-            sb.append(md.getTableAlias()).append(".");
+            if(md.getTableAlias()!=null){
+                sb.append(md.getTableAlias()).append(".");
+            }
         }
         if (isKeywords(field)) {
             sb.append("'");

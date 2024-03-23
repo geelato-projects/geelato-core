@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author geemeta
  */
 public abstract class AbstractScriptLexer {
-    private Logger logger = LoggerFactory.getLogger(AbstractScriptLexer.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractScriptLexer.class);
 
     /**
      * 简单解析，解析出模板内容段，便于下一步对模板内容段进一步解析
@@ -84,8 +84,6 @@ public abstract class AbstractScriptLexer {
     /**
      * 匹配的分割行，statementId就在行内
      *
-     * @param matchedSplitLine
-     * @return
      */
     protected abstract String parseStatementId(String matchedSplitLine);
 
@@ -95,7 +93,6 @@ public abstract class AbstractScriptLexer {
      * 有效的内容行，如js脚本的解析,function foo(){}是statementId行，
      * 同时也是内容行)。若是返回true，若不是返回false。
      *
-     * @return
      */
     protected abstract boolean statementIdLineIsContent();
 }

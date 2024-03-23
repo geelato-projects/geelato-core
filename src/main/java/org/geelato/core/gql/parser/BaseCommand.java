@@ -1,6 +1,7 @@
 package org.geelato.core.gql.parser;
 
 import org.geelato.core.Ctx;
+import org.geelato.core.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,15 +112,16 @@ public class BaseCommand<E extends BaseCommand> {
     }
 
     public BaseCommand appendFrom(String tablaName, String alias) {
-        this.from.append(tablaName).append(" ").append(alias);
+        this.from.append(tablaName);
+        if(!StringUtils.isEmpty(alias)) {
+            this.from.append(" ").append(alias);
+        }
         return this;
     }
 
     /**
      * from中是否已join该表
      *
-     * @param alias
-     * @return
      */
     public boolean hasNotJoin(String alias) {
         return this.from.indexOf(alias) == -1;
