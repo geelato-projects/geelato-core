@@ -1,5 +1,6 @@
 package org.geelato.core.meta;
 
+import org.geelato.core.AbstractManager;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.CommandType;
 import org.geelato.core.gql.parser.SaveCommand;
@@ -17,14 +18,13 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author geemeta
  */
-public class EntityManager {
-    private static Lock lock = new ReentrantLock();
+public class EntityManager extends AbstractManager {
     private static EntityManager instance;
-    private EntitySaveParser entitySaveParser = new EntitySaveParser();
-    private MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
-    private MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
-    private MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
-    private MetaDeleteSqlProvider metaDeleteSqlProvider = new MetaDeleteSqlProvider();
+    private final EntitySaveParser entitySaveParser = new EntitySaveParser();
+    private final MetaQuerySqlProvider metaQuerySqlProvider = new MetaQuerySqlProvider();
+    private final MetaInsertSqlProvider metaInsertSqlProvider = new MetaInsertSqlProvider();
+    private final MetaUpdateSqlProvider metaUpdateSqlProvider = new MetaUpdateSqlProvider();
+    private final MetaDeleteSqlProvider metaDeleteSqlProvider = new MetaDeleteSqlProvider();
 
     public static EntityManager singleInstance() {
         lock.lock();

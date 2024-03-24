@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MetaManager  extends AbstractManager {
 
-    private Dao MetaDao;
+    private Dao dao;
     private static MetaManager instance;
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(MetaManager.class);
     private final HashMap<String, EntityMeta> entityMetadataMap = new HashMap<>();
@@ -73,19 +73,19 @@ public class MetaManager  extends AbstractManager {
     }
 
     public void parseDBMeta(Dao dao) {
-        this.MetaDao = dao;
-        logger.info("解析数据库保存得实体元数据");
-        List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
+        this.dao = dao;
+        logger.info("parse meta data in database...");
+        List<Map<String, Object>> tableList = dao.getJdbcTemplate().queryForList(MetaDaoSql.SQL_TABLE_LIST);
         for (Map<String,Object> map : tableList) {
-            List<Map<String, Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
-            List<Map<String, Object>> viewList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
+            List<Map<String, Object>> columnList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            List<Map<String, Object>> viewList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and entity_name='%s'", map.get("entity_name")));
             parseTableEntity(map, columnList, viewList);
             parseViewEntity(viewList);
         }
     }
 
     public void refreshDBMeta(String entityName) {
-        logger.info("刷新实体元数据");
+        logger.info("refresh meta...");
         refreshTableMeta(entityName);
         refreshViewMeta(entityName);
 
@@ -96,7 +96,7 @@ public class MetaManager  extends AbstractManager {
         if (Strings.isNotEmpty(entityName)) {
             viewListSql = String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and view_name='%s'", entityName);
         }
-        List<Map<String, Object>> viewList = MetaDao.getJdbcTemplate().queryForList(viewListSql);
+        List<Map<String, Object>> viewList = dao.getJdbcTemplate().queryForList(viewListSql);
         for (Map<String,Object> map : viewList) {
             removeOne(entityName);
             parseViewEntity(map);
@@ -108,9 +108,9 @@ public class MetaManager  extends AbstractManager {
         if (Strings.isNotEmpty(entityName)) {
             tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
         }
-        List<Map<String, Object>> tableList = MetaDao.getJdbcTemplate().queryForList(tableListSql);
+        List<Map<String, Object>> tableList = dao.getJdbcTemplate().queryForList(tableListSql);
         for (Map<String,Object> map : tableList) {
-            List<Map<String,Object>> columnList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
+            List<Map<String,Object>> columnList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_COLUMN_LIST_BY_TABLE + " and table_id='%s'", map.get("id")));
             removeOne(entityName);
             parseOne(map, columnList);
         }
@@ -121,7 +121,7 @@ public class MetaManager  extends AbstractManager {
         if (Strings.isEmpty(tableName)) {
             return indexList;
         }
-        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
+        List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
         indexList = SchemaIndex.buildData(mapList);
         return indexList;
     }
@@ -129,7 +129,7 @@ public class MetaManager  extends AbstractManager {
     public List<SchemaIndex> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
         List<SchemaIndex> indexList = new ArrayList<>();
         if (!Strings.isEmpty(tableName)) {
-            List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
+            List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
             indexList = SchemaIndex.buildData(mapList);
         }
         return indexList;
@@ -140,7 +140,7 @@ public class MetaManager  extends AbstractManager {
         if (Strings.isEmpty(tableName)) {
             return keyList;
         }
-        List<Map<String, Object>> mapList = MetaDao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
+        List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
         keyList = SchemaForeign.buildTableForeignKeys(mapList);
         return keyList;
     }
