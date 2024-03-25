@@ -133,10 +133,18 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         String[] fields = command.getFields();
         Map alias = command.getAlias();
         if (fields == null || fields.length == 0) {
-            sb.append(super.getTableAlias(md.getTableName())).append(".*");
+            if(super.getTableAlias(md.getTableName())!=null){
+                sb.append(super.getTableAlias(md.getTableName())).append(".*");
+            }else{
+                sb.append("*");
+            }
             return;
         } else if (fields.length == 1 && "*".equals(fields[0])) {
-            sb.append(super.getTableAlias(md.getTableName())).append(".*");
+            if (super.getTableAlias(md.getTableName()) != null) {
+                sb.append(super.getTableAlias(md.getTableName())).append(".*");
+            } else {
+                sb.append("*");
+            }
             return;
         }
 
