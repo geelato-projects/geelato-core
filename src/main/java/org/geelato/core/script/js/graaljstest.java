@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.*;
 
 public class graaljstest {
-    public static void  main(String[] args){
+    public static void  test(String args){
         System.out.println("[Java] Hello, Java!");
         try (Context context = Context.newBuilder("js").option("js.ecmascript-version", "2020").build()) {
             Value jsFunction = context.eval("js", "" +
@@ -21,7 +21,7 @@ public class graaljstest {
                     "    return parameter.toUpperCase();                 \n" +
                     "})                                                  \n");
 
-            Value result = jsFunction.execute("111",new Ctx());
+            Value result = jsFunction.execute(args);
             if (result.isString()) {
                 System.out.println("[Java] result: " + result.asString());
             } else {
@@ -30,5 +30,19 @@ public class graaljstest {
         }
     }
 
+
+    public static void  main(String[] args){
+        Context context = Context.newBuilder("js")
+                .allowHostAccess(HostAccess.ALL)
+                //allows access to all Java classes
+                .allowHostClassLookup(className -> true)
+                .build();
+        Value value = context.eval("js",
+                "" +
+                        "var DbOp = Java.type('org.geelato.core.script.js.DbOp');var dbop = new DbOp();" +
+                        "var HashMap = Java.type('java.util.HashMap');var map = new HashMap();" +
+                        "map.put('login_name', 'admin');" +
+                        "dbop.test(map);"); //执行类中方法并传递map参数
+    }
 
 }
