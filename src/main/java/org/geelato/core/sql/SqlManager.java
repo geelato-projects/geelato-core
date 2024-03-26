@@ -58,8 +58,8 @@ public class SqlManager extends AbstractManager {
 
     public BoundPageSql generatePageQuerySql(QueryCommand command) {
         BoundPageSql boundPageSql = new BoundPageSql();
-        boundPageSql.setBoundSql(metaQuerySqlMultiProvider.generate(command));
-        boundPageSql.setCountSql(metaQuerySqlMultiProvider.buildCountSql(command));
+        boundPageSql.setBoundSql(metaQuerySqlProvider.generate(command));
+        boundPageSql.setCountSql(metaQuerySqlProvider.buildCountSql(command));
         return boundPageSql;
     }
 

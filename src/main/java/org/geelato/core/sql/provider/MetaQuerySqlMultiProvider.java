@@ -39,7 +39,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         StringBuilder sb = new StringBuilder();
         EntityMeta md = getEntityMeta(command);
         //计算主表别名
-//        md.setTableAlias(super.buildTableAlias(md.getTableName()));
+        //md.setTableAlias(super.buildTableAlias(md.getTableName()));
         sb.append("select ");
         buildSelectFields(sb, md, command);
         sb.append(" from ");
