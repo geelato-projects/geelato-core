@@ -368,6 +368,7 @@ public class MetaManager  extends AbstractManager {
      * @param clazz 待解析的类
      */
     public void parseOne(Class clazz) {
+        logger.info("parse meta from class :"+clazz.getName());
         String entityName = MetaRelf.getEntityName(clazz);
         if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);

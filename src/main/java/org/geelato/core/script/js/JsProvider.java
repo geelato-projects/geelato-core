@@ -20,12 +20,12 @@ import org.graalvm.polyglot.*;
  */
 public class JsProvider {
 
-    private static Logger logger = LoggerFactory.getLogger(JsProvider.class);
-    private ScriptEngineManager engineManager = new ScriptEngineManager();
+    private static final Logger logger = LoggerFactory.getLogger(JsProvider.class);
+    private final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
-    private Map<String, JsFunctionInfo> jsFunctionInfoMap = new HashMap<>();
+    private final Map<String, JsFunctionInfo> jsFunctionInfoMap = new HashMap<>();
     // 格式例如：funName(a,b,c)
-    private static Pattern callScriptPattern = Pattern.compile("[\\S]*[\\s]?\\([\\S]*\\)");
+    private static final Pattern callScriptPattern = Pattern.compile("[\\S]*[\\s]?\\([\\S]*\\)");
 
 
     public JsProvider() {
@@ -34,14 +34,12 @@ public class JsProvider {
     /**
      * 编译多个js函数（function）片段
      *
-     * @param jsFuncMap
-     * @throws ScriptException
      */
     public void compile(Map<String, String> jsFuncMap) throws ScriptException {
         if (jsFuncMap == null){ return;}
         for (Map.Entry<String, String> entry : jsFuncMap.entrySet()) {
             if (jsFunctionInfoMap.containsKey(entry.getKey())) {
-                logger.warn("存在同名称key：{},不进行解析！", entry.getKey());
+                logger.warn("collection exists key：{}", entry.getKey());
             } else {
                 jsFunctionInfoMap.put(entry.getKey(), new JsFunctionInfo(entry.getKey(), entry.getValue(), ""));
             }
@@ -76,7 +74,6 @@ public class JsProvider {
 //    }
 
     /**
-     * @param fnScriptText 完整的function脚本
      * @return 匹配脚本中的第一个function，取functionName(args..)，用于作调用function的执行脚本
      */
 //    private String matcherFnCallScript(String fnScriptText) {
