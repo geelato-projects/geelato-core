@@ -100,7 +100,7 @@ public class User {
     public Permission getDataPermissionByEntity(String entity) {
         //根据weight权重排序，取第一条
         return this.dataPermissions.stream().filter(x -> x.getEntity().equals(entity)).
-                max(Comparator.comparing(Permission::getWeight)).stream().max(Comparator.comparing(Permission::getRoleWeight)).orElse(null);
+                max(Comparator.comparing(Permission::getRoleWeight)).stream().max(Comparator.comparing(Permission::getWeight)).orElse(null);
     }
     public void setDataPermissions(List<Permission> dataPermissions) {
         this.dataPermissions = dataPermissions;
