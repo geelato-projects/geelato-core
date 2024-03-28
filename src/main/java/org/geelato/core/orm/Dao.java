@@ -80,16 +80,23 @@ public class Dao extends SqlIdDao {
      * @param withMeta     是否需同时查询带出元数据
      */
     public ApiPagedResult queryForMapList(BoundPageSql boundPageSql, boolean withMeta) {
+        ApiPagedResult result = new ApiPagedResult();
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         logger.info(boundPageSql.getBoundSql().getSql());
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(boundPageSql.getBoundSql().getSql(), boundPageSql.getBoundSql().getParams());
-        ApiPagedResult result = new ApiPagedResult();
-        list = convert(list, metaManager.getByEntityName(command.getEntityName()));
-        result.setData(list);
-        result.setTotal(jdbcTemplate.queryForObject(boundPageSql.getCountSql(), boundPageSql.getBoundSql().getParams(), Long.class));
-        result.setPage(command.getPageNum());
-        result.setSize(command.getPageSize());
-        result.setDataSize(list.size());
+        BoundSql boundSql=boundPageSql.getBoundSql();
+        Object[] sqlParams=boundSql.getParams();
+        try{
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(),sqlParams);
+            Long total=jdbcTemplate.queryForObject(boundPageSql.getCountSql(),sqlParams, Long.class);
+            result.setData(convert(list, metaManager.getByEntityName(command.getEntityName())));
+            result.setTotal(total);
+            result.setPage(command.getPageNum());
+            result.setSize(command.getPageSize());
+            result.setDataSize(list.size());
+        }catch (DataAccessException exception){
+            throw new DaoException("queryForMapList exception :"+exception.getCause().getMessage());
+        }
+
         if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         }
@@ -155,7 +162,7 @@ public class Dao extends SqlIdDao {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
             e.printStackTrace();
-            throw  new DaoException("dao exception:"+e.getMessage());
+            throw new DaoException("dao exception:"+e.getMessage());
         }
         return command.getPK();
     }
