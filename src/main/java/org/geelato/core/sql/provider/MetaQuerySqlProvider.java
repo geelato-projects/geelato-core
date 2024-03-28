@@ -40,7 +40,7 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         FilterGroup fg = command.getWhere();
         if (fg != null && fg.getFilters() != null && !fg.getFilters().isEmpty()) {
             sb.append(" where ");
-            buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+            buildConditions(sb, md, fg);
         }
         if(command.getOriginalWhere()!=null) {
             sb.append("  and  ");
@@ -95,9 +95,9 @@ public class MetaQuerySqlProvider extends MetaBaseSqlProvider<QueryCommand> {
         sb.append(md.getTableName());
         //where
         FilterGroup fg = command.getWhere();
-        if (fg != null && fg.getFilters() != null && fg.getFilters().size() > 0) {
+        if (fg != null && fg.getFilters() != null && !fg.getFilters().isEmpty()) {
             sb.append(" where ");
-            buildConditions(sb, md, fg.getFilters(), fg.getLogic());
+            buildConditions(sb, md, fg);
         }
         //group by
         if (StringUtils.hasText(command.getGroupBy())) {

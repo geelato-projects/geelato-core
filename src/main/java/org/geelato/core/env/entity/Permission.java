@@ -35,7 +35,7 @@ public class Permission {
             case "dept_id=#currentUser.deptId#":
                 this.weight=2;
                 break;
-            case "bu_id=#currentUser.deptId#":
+            case "bu_id=#currentUser.buId#":
                 this.weight=3;
                 break;
             case "1=1":
