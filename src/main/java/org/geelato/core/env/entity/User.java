@@ -11,9 +11,8 @@ public class User {
     private String loginName;
     private String defaultOrgId;
     private String defaultOrgName;
-    
     private String buId;
-
+    private String cooperatingOrgId;
     private List<UserOrg> orgs;
     private List<UserRole> roles;
 
@@ -113,5 +112,13 @@ public class User {
 
     public void setElementPermissions(List<Permission> elementPermissions) {
         this.elementPermissions = elementPermissions;
+    }
+
+    public String getCooperatingOrgId() {
+        return cooperatingOrgId;
+    }
+
+    public void setCooperatingOrgId(String cooperatingOrgId) {
+        this.cooperatingOrgId = cooperatingOrgId;
     }
 }

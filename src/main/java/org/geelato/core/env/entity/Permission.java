@@ -48,7 +48,9 @@ public class Permission {
 
     public String getRuleReplaceVariable(){
        return  this.rule.replace("#currentUser.userId#", String.format("'%s'",Ctx.getCurrentUser().getUserId()))
-               .replace("#currentUser.deptId#",String.format("'%s'",Ctx.getCurrentUser().getDefaultOrgId()));
+               .replace("#currentUser.deptId#",String.format("'%s'",Ctx.getCurrentUser().getDefaultOrgId()))
+               .replace("#currentUser.buId#",String.format("'%s'",Ctx.getCurrentUser().getBuId()))
+               .replace("#currentUser.cooperatingOrgId#",String.format("'%s'",Ctx.getCurrentUser().getCooperatingOrgId()));
     }
 
     public Integer getWeight() {

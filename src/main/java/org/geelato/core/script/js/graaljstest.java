@@ -31,18 +31,24 @@ public class graaljstest {
     }
 
 
-    public static void  main(String[] args){
+    public static void  test1(String gql){
         Context context = Context.newBuilder("js")
                 .allowHostAccess(HostAccess.ALL)
                 //allows access to all Java classes
                 .allowHostClassLookup(className -> true)
                 .build();
-        Value value = context.eval("js",
-                "" +
-                        "var DbOp = Java.type('org.geelato.core.script.js.DbOp');var dbop = new DbOp();" +
-                        "var HashMap = Java.type('java.util.HashMap');var map = new HashMap();" +
-                        "map.put('login_name', 'admin');" +
-                        "dbop.test(map);"); //执行类中方法并传递map参数
+//        Value value = context.eval("js",
+//                "" +
+//                        "var DbOp = Java.type('org.geelato.core.script.js.DbOp');var dbop = new DbOp();" +
+//                        "var HashMap = Java.type('java.util.HashMap');var map = new HashMap();" +
+//                        "map.put('login_name', 'admin');" +
+//                        "dbop.test(map);"); //执行类中方法并传递map参数
+
+                Value value = context.eval("js",
+                        "var metaOperator = Java.type('org.geelato.web.platform.script.MetaOperator');" +
+                        "var gql='"+gql+"';" +
+                        "var data=metaOperator.list(gql);"+
+                        "console.log(JSON.stringify(data))"); //执行类中方法并传递map参数
     }
 
 }

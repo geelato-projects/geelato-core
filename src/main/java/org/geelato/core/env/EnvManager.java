@@ -65,7 +65,9 @@ public class EnvManager  extends AbstractManager {
         return sysConfigMap;
     }
     public void InitCurrentUser(String loginName) {
-        String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName,name as userName,bu_id as buId,dept_id as deptId from platform_user  where login_name =?";
+        String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName," +
+                "name as userName,bu_id as buId,dept_id as deptId," +
+                " cooperating_org_id as cooperatingOrgId from platform_user  where login_name =?";
         User dbUser = EnvDao.getJdbcTemplate().queryForObject(sql,new BeanPropertyRowMapper<User>(User.class),new Object[]{loginName});
         dbUser.setMenus(StructUserMenu(dbUser.getUserId()));
         dbUser.setDataPermissions(StructDataPermission(dbUser.getUserId()));
@@ -80,7 +82,7 @@ public class EnvManager  extends AbstractManager {
                 "left join platform_role t3 on t1.role_id =t3.id \n" +
                 "left join platform_role_r_user t4 on t4.role_id =t3.id \n" +
                 "left join platform_user t5 on t5.id =t4.user_id \n" +
-                "where  t2.type='dp' and t1.del_status=0 and t2.del_status=0 and t3.del_status=0 and t5.id =?";
+                "where  t2.type='dp' and t1.del_status=0 and t2.del_status=0 and t3.del_status=0 and t4.del_status=0 and t5.id =?";
         return EnvDao.getJdbcTemplate().query(sql,
                 new BeanPropertyRowMapper<>(Permission.class),new Object[]{userId});
     }
