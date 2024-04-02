@@ -100,7 +100,7 @@ public class MetaQuerySqlMultiProvider extends MetaBaseSqlProvider<QueryCommand>
         String selectSql = command.getSelectSql();
         int seq = selectSql.indexOf("limit");
         if (seq != -1) {
-            sb.append(selectSql.substring(0, seq));
+            sb.append(selectSql, 0, seq);
         } else {
             sb.append(selectSql);
         }
