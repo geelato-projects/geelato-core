@@ -93,7 +93,6 @@ public class Dao extends SqlIdDao {
         } catch (DataAccessException exception) {
             throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
         }
-
         if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         }

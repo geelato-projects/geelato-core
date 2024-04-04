@@ -69,7 +69,12 @@ public class SqlManager extends AbstractManager {
         boundPageSql.setCountSql(metaQueryTreeSqlProvider.buildCountSql(command));
         return boundPageSql;
     }
-
+    public BoundPageSql generatePageQuerySqlMulti(QueryCommand command) {
+        BoundPageSql boundPageSql = new BoundPageSql();
+        boundPageSql.setBoundSql(metaQuerySqlMultiProvider.generate(command));
+        boundPageSql.setCountSql(metaQuerySqlMultiProvider.buildCountSql(command));
+        return boundPageSql;
+    }
     public BoundSql generateSaveSql(SaveCommand command) {
         if (command.getCommandType() == CommandType.Update) {
             return metaUpdateSqlProvider.generate(command);
@@ -138,17 +143,6 @@ public class SqlManager extends AbstractManager {
         queryCommand.setWhere(filterGroup);
         queryCommand.setOrderBy(orderBy);
         return metaQuerySqlProvider.generate(queryCommand);
-    }
-
-    /**
-     * 多表查询
-     *
-     */
-    public BoundPageSql generatePageQuerySqlMulti(QueryCommand command) {
-        BoundPageSql boundPageSql = new BoundPageSql();
-        boundPageSql.setBoundSql(metaQuerySqlMultiProvider.generate(command));
-        boundPageSql.setCountSql(metaQuerySqlMultiProvider.buildCountSql(command));
-        return boundPageSql;
     }
 
     /**

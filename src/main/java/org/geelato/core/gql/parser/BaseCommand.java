@@ -91,7 +91,7 @@ public class BaseCommand<E extends BaseCommand> {
     }
 
     public boolean hasCommands() {
-        return commands == null || commands.size() == 0 ? false : true;
+        return commands != null && !commands.isEmpty();
     }
 
     public CommandType getCommandType() {
