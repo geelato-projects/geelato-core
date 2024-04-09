@@ -72,7 +72,7 @@
     "value": "entity",
     "mysql": "varchar",
     "disabled": false,
-    "fixed": true,
+    "fixed": false,
     "extent": 19,
     "seqNo": 108
   },
@@ -307,6 +307,14 @@
     "mysql": "json",
     "disabled": false,
     "seqNo": 503
+  },
+  {
+    "group": "JSON",
+    "label": "级联选择",
+    "value": "cascadeSelection",
+    "mysql": "json",
+    "disabled": false,
+    "seqNo": 504
   },
   {
     "group": "二进制",

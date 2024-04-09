@@ -45,27 +45,27 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String tableName;
     @Col(name = "table_catalog")
     private String tableCatalog;
-    //COLUMN_NAME
+    // COLUMN_NAME
     @Col(name = "column_name")
     private String name = "";
-    //COLUMN_COMMENT
+    // COLUMN_COMMENT
     @Col(name = "column_comment")
     private String comment = "";
-    //ORDINAL_POSITION
+    // ORDINAL_POSITION
     @Col(name = "ordinal_position")
     private int ordinalPosition = 0;
-    //COLUMN_DEFAULT
+    // COLUMN_DEFAULT
     // 数据字典编码、流水号id、实体id、多组件[{"label":"","code":"","value":""}]
     @Col(name = "default_value")
     private String defaultValue = null;
-    //COLUMN_TYPE  --varchar(100)
+    // COLUMN_TYPE  --varchar(100)
     @Col(name = "column_type")
     private String type;
-    //COLUMN_KEY,-- PRI
+    // COLUMN_KEY,-- PRI
     @Col(name = "column_key")
     private boolean key = false;
 
-    //isNullable
+    // isNullable
     @Col(name = "is_nullable")
     private boolean nullable = true;
     @Col(name = "data_type")
@@ -77,23 +77,22 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     @Col(name = "is_unique")
     private boolean uniqued = false;
 
-    //CHARACTER_MAXIMUM_LENGTH
+    // CHARACTER_MAXIMUM_LENGTH
     @Col(name = "character_maxinum_length")
-    private long charMaxLength = 64;//默认长度
-    //NUMERIC_PRECISION
+    private long charMaxLength = 64;// 默认长度
+    // NUMERIC_PRECISION
     @Col(name = "numeric_precision")
-    private int numericPrecision = 19; //默认长度
-    //NUMERIC_SCALE
+    private int numericPrecision = 19; // 默认长度
+    // NUMERIC_SCALE
     @Col(name = "numeric_scale")
     private int numericScale = 0;
 
-    //MySQL的information_schema.column中没有该字段，该信息体现在type字段中，numericPrecision无符号比有符号长1
+    // MySQL的information_schema.column中没有该字段，该信息体现在type字段中，numericPrecision无符号比有符号长1
     @Col(name = "numeric_signed")
-    private boolean numericSigned = false; //是否有符号，默认有，若无符号，则需在type中增加：unsigned
-    //DATETIME_PRECISION
+    private boolean numericSigned = false; // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
+    // DATETIME_PRECISION
     @Col(name = "datetime_precision")
-    private int datetimePrecision = 0; //datetime 长度
-
+    private int datetimePrecision = 0; // datetime 长度
 
     //`DATETIME_PRECISION` bigint(21) unsigned DEFAULT NULL,
     // private int datetime_precision;,
@@ -106,16 +105,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     @Col(name = "description")
     private String description;
 
-    //1-外表字段，默认0
+    // 1-外表字段，默认0
     @Col(name = "is_foreign_column")
     private boolean isRefColumn;
-    //isRefColumn为true时，需要通过本表引用字段
+    // isRefColumn为true时，需要通过本表引用字段
     @Col(name = "ref_local_col")
     private String refLocalCol;
-    //外表字段名称
+    // 外表字段名称
     @Col(name = "foreign_col_name")
     private String refColName;
-    //外表表名
+    // 外表表名
     @Col(name = "foreign_table")
     private String refTables;
     private boolean abstractColumn;
@@ -133,6 +132,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private boolean synced = false;
     @Col(name = "encrypted")
     private boolean encrypted = false;
+    @Col(name = "marker")
+    private String marker; // 特殊标记
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -526,6 +527,15 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.encrypted = encrypted;
     }
 
+    @Col(name = "marker")
+    @Title(title = "特殊标记")
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
+    }
 
     @Override
     public void afterSet() {

@@ -466,6 +466,7 @@ public class MetaRelf {
                 cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));
                 cfm.getColumn().setSynced(c_map.get("synced") != null && Boolean.parseBoolean(c_map.get("synced").toString()));
                 cfm.getColumn().setEncrypted(c_map.get("encrypted") != null && Boolean.parseBoolean(c_map.get("encrypted").toString()));
+                cfm.getColumn().setMarker(c_map.get("marker") == null ? null : c_map.get("marker").toString());
                 cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
                 cfm.getColumn().setAppId(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
 
