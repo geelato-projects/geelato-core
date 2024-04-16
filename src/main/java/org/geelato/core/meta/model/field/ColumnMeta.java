@@ -124,6 +124,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     // 数据类型选择 额外字段。
     @Col(name = "type_extra")
     private String typeExtra;
+    @Col(name = "extra_value")
+    private String extraValue;
     @Col(name = "auto_add")
     private boolean autoAdd = false;
     @Col(name = "auto_name")
@@ -485,6 +487,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setTypeExtra(String typeExtra) {
         this.typeExtra = typeExtra;
+    }
+
+    @Col(name = "extra_value")
+    @Title(title = "选择类型额外数据")
+    public String getExtraValue() {
+        return extraValue;
+    }
+
+    public void setExtraValue(String extraValue) {
+        this.extraValue = extraValue;
     }
 
     @Col(name = "auto_add")
