@@ -4,6 +4,7 @@ import org.geelato.core.meta.model.entity.EntitySortable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class User {
     private String userId;
@@ -99,8 +100,21 @@ public class User {
     }
     public Permission getDataPermissionByEntity(String entity) {
         //根据weight权重排序，取第一条
-        return this.dataPermissions.stream().filter(x -> x.getEntity().equals(entity)).
-                max(Comparator.comparing(Permission::getRoleWeight)).stream().max(Comparator.comparing(Permission::getWeight)).orElse(null);
+        List<Permission> entityPermission = this.dataPermissions.stream().filter(x -> x.getEntity().equals(entity)).toList();
+        List<Permission> maxRoleWeightPermissionList=null;
+        Permission rtnPermission=null;
+        if(entityPermission!=null){
+            Optional<Permission> maxRoleWeightPermission=entityPermission.stream().max(Comparator.comparing(Permission::getRoleWeight));
+            if(maxRoleWeightPermission.isPresent()){
+               int maxRoleWeight=maxRoleWeightPermission.get().getRoleWeight();
+               maxRoleWeightPermissionList=entityPermission.stream().filter(x->x.getRoleWeight()==maxRoleWeight).toList();
+            }
+        }
+        if(maxRoleWeightPermissionList!=null){
+            Permission maxRoleWeightPermission=maxRoleWeightPermissionList.stream().max(Comparator.comparing(Permission::getWeight)).orElse(null);
+            rtnPermission=maxRoleWeightPermission;
+        }
+        return rtnPermission;
     }
     public void setDataPermissions(List<Permission> dataPermissions) {
         this.dataPermissions = dataPermissions;
