@@ -30,15 +30,15 @@ public class EntityMeta {
     private Collection<TableForeign> tableForeigns;
 
     private Map<String, DictDataSource> dictDataSourceMap;
-    //冗余，用于快速获取列信息
+    // 冗余，用于快速获取列信息
     private LinkedHashMap<String, FieldMeta> fieldMetaMap;
-    //冗余，用于快速获取模型视图信息
+    // 冗余，用于快速获取模型视图信息
     private LinkedHashMap<String, ViewMeta> viewMetaMap;
-    //冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
+    // 冗余，用于快速获取列元数据，json格式，用于对外展示，过滤掉了一些数据库字段
     private LinkedHashMap<String, SimpleFieldMeta> simpleFieldMetaMap;
-    //冗余，用于快速获取外键关系
+    // 冗余，用于快速获取外键关系
     private final Map<String, TableForeign> tableForeignsMap = new HashMap<>();
-    //不更新的字段
+    // 不更新的字段
     private final Map<String, Boolean> ignoreUpdateFieldMap;
 
     public EntityMeta() {
@@ -51,7 +51,6 @@ public class EntityMeta {
     /**
      * 对于基于java类解析的实体，则返回类名（不包括包名）
      * 对于基于页面配置的实体，则返回配置的实体名称
-     *
      */
     public String getEntityName() {
         return entityName;
@@ -72,7 +71,6 @@ public class EntityMeta {
     /**
      * 对于基于java类解析的实体，则有具体的类类型
      * 对于基于页面配置的实体，则返回值为空
-     *
      */
     public EntityType getEntityType() {
         return entityType;
@@ -84,7 +82,6 @@ public class EntityMeta {
 
     /**
      * 基于@Id获取实体中的主键字段名
-     *
      */
     public FieldMeta getId() {
         return id;
@@ -221,6 +218,7 @@ public class EntityMeta {
         meta.setDefaultValue(fm.getColumn().getDefaultValue());
         meta.setSelectType(fm.getColumn().getSelectType());
         meta.setTypeExtra(fm.getColumn().getTypeExtra());
+        meta.setExtraValue(fm.getColumn().getExtraValue());
         return meta;
     }
 
@@ -269,7 +267,6 @@ public class EntityMeta {
 
     /**
      * 过滤掉数据库表名等信息，用于对外发布元数据服务的字段信息
-     *
      */
     public Collection<SimpleFieldMeta> getAllSimpleFieldMetas() {
         return simpleFieldMetaMap.values();

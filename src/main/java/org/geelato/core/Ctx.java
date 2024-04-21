@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * 上下文件参数，可用于sqlTemplate解析构建时的语句的默认内置参数
- *
+ * 也可用于mql命名执行时，获取上下文变量，如$ctx.userId
  * @author geemeta
  *
  */

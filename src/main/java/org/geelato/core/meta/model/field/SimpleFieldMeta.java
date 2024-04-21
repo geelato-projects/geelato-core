@@ -18,6 +18,7 @@ public class SimpleFieldMeta implements Serializable {
     private int scale;
     private String selectType;
     private String typeExtra;
+    private String extraValue;
     private String defaultValue;
 
     public String getName() {
@@ -94,6 +95,14 @@ public class SimpleFieldMeta implements Serializable {
 
     public String getTypeExtra() {
         return typeExtra;
+    }
+
+    public String getExtraValue() {
+        return extraValue;
+    }
+
+    public void setExtraValue(String extraValue) {
+        this.extraValue = extraValue;
     }
 
     public void setTypeExtra(String typeExtra) {

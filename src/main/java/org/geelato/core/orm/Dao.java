@@ -3,20 +3,17 @@ package org.geelato.core.orm;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.logging.log4j.util.Strings;
+import org.geelato.core.Ctx;
 import org.geelato.core.aop.annotation.MethodLog;
 import org.geelato.core.api.ApiMultiPagedResult;
 import org.geelato.core.api.ApiPagedResult;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
-import org.geelato.core.gql.parser.FilterGroup;
-import org.geelato.core.gql.parser.QueryCommand;
-import org.geelato.core.gql.parser.QueryViewCommand;
-import org.geelato.core.gql.parser.SaveCommand;
+import org.geelato.core.gql.parser.*;
 import org.geelato.core.meta.model.CommonRowMapper;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.Ctx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -39,15 +36,17 @@ public class Dao extends SqlIdDao {
 
     private Boolean defaultFilterOption = false;
     private FilterGroup defaultFilterGroup;
+
     /**
      * <p>注意: 在使用之前，需先设置JdbcTemplate
-     *
      */
     public Dao() {
     }
+
     public Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
@@ -63,8 +62,6 @@ public class Dao extends SqlIdDao {
     }
 
 
-
-
     //========================================================
     //                  基于元数据  gql                      ==
     //========================================================
@@ -77,24 +74,24 @@ public class Dao extends SqlIdDao {
     }
 
     /**
-     * @param withMeta     是否需同时查询带出元数据
+     * @param withMeta 是否需同时查询带出元数据
      */
     public ApiPagedResult queryForMapList(BoundPageSql boundPageSql, boolean withMeta) {
         ApiPagedResult result = new ApiPagedResult();
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         logger.info(boundPageSql.getBoundSql().getSql());
-        BoundSql boundSql=boundPageSql.getBoundSql();
-        Object[] sqlParams=boundSql.getParams();
-        try{
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(),sqlParams);
-            Long total=jdbcTemplate.queryForObject(boundPageSql.getCountSql(),sqlParams, Long.class);
+        BoundSql boundSql = boundPageSql.getBoundSql();
+        Object[] sqlParams = boundSql.getParams();
+        try {
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(), sqlParams);
+            Long total = jdbcTemplate.queryForObject(boundPageSql.getCountSql(), sqlParams, Long.class);
             result.setData(convert(list, metaManager.getByEntityName(command.getEntityName())));
             result.setTotal(total);
             result.setPage(command.getPageNum());
             result.setSize(command.getPageSize());
             result.setDataSize(list.size());
-        }catch (DataAccessException exception){
-            throw new DaoException("queryForMapList exception :"+exception.getCause().getMessage());
+        } catch (DataAccessException exception) {
+            throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
         }
         if (withMeta) {
             result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
@@ -126,7 +123,7 @@ public class Dao extends SqlIdDao {
     }
 
     /**
-     * @param withMeta     是否需同时查询带出元数据
+     * @param withMeta 是否需同时查询带出元数据
      */
     public ApiMultiPagedResult.PageData queryForMapListToPageData(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
@@ -161,33 +158,33 @@ public class Dao extends SqlIdDao {
             jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         } catch (DataAccessException e) {
             e.printStackTrace();
-            throw new DaoException("dao exception:"+e.getMessage());
+            throw new DaoException("dao exception:" + e.getMessage());
         }
         return command.getPK();
     }
 
     /**
      * 批量保存
-     *
      */
     public List<String> batchSave(List<BoundSql> boundSqlList) {
-        List<Object[]> paramsObjs=new ArrayList<>();
-        List<String> returnPks=new ArrayList<>();
-        for (BoundSql bs:boundSqlList) {
+        List<Object[]> paramsObjs = new ArrayList<>();
+        List<String> returnPks = new ArrayList<>();
+        for (BoundSql bs : boundSqlList) {
             paramsObjs.add(bs.getParams());
-            SaveCommand saveCommand=(SaveCommand)bs.getCommand();
+            SaveCommand saveCommand = (SaveCommand) bs.getCommand();
             returnPks.add(saveCommand.getPK());
         }
-        try{
-            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(),paramsObjs);
-        }catch (DataAccessException e) {
+        try {
+            jdbcTemplate.batchUpdate(boundSqlList.get(0).getSql(), paramsObjs);
+        } catch (DataAccessException e) {
             e.printStackTrace();
         }
         return returnPks;
     }
+
     public List<String> multiSave(List<BoundSql> boundSqlList) {
-        DataSourceTransactionManager dataSourceTransactionManager=new DataSourceTransactionManager(this.jdbcTemplate.getDataSource());
-        TransactionStatus transactionStatus=TransactionHelper.beginTransaction(dataSourceTransactionManager);
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(this.jdbcTemplate.getDataSource());
+        TransactionStatus transactionStatus = TransactionHelper.beginTransaction(dataSourceTransactionManager);
         List<String> returnPks = new ArrayList<>();
         try {
             for (BoundSql bs : boundSqlList) {
@@ -195,10 +192,10 @@ public class Dao extends SqlIdDao {
                 returnPks.add(saveCommand.getPK());
                 jdbcTemplate.update(bs.getSql(), bs.getParams());
             }
-            TransactionHelper.commitTransaction(dataSourceTransactionManager,transactionStatus);
+            TransactionHelper.commitTransaction(dataSourceTransactionManager, transactionStatus);
         } catch (DataAccessException e) {
             e.printStackTrace();
-            TransactionHelper.rollbackTransaction(dataSourceTransactionManager,transactionStatus);
+            TransactionHelper.rollbackTransaction(dataSourceTransactionManager, transactionStatus);
             returnPks.clear();
         }
         return returnPks;
@@ -309,7 +306,7 @@ public class Dao extends SqlIdDao {
 
 
     public <E extends IdEntity> Map save(E entity) {
-        BoundSql boundSql = entityManager.generateSaveSql(entity,new Ctx());
+        BoundSql boundSql = entityManager.generateSaveSql(entity, new Ctx());
         logger.info(boundSql.toString());
         jdbcTemplate.update(boundSql.getSql(), boundSql.getParams());
         SaveCommand command = (SaveCommand) boundSql.getCommand();
@@ -318,8 +315,13 @@ public class Dao extends SqlIdDao {
 
 
     /**
-     * 常用全量查询
+     * 全量查询，特殊的查询条件
      *
+     * @param entityType
+     * @param filterGroup
+     * @param orderBy
+     * @param <T>
+     * @return
      */
     public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, String orderBy) {
         if (defaultFilterOption && defaultFilterGroup != null) {
@@ -333,7 +335,7 @@ public class Dao extends SqlIdDao {
     }
 
     /**
-     * 常用全量查询
+     * 常用全量查询，全等式查询
      *
      * @param entityType
      * @param params
@@ -355,25 +357,39 @@ public class Dao extends SqlIdDao {
     }
 
     /**
-     * 常用分页查询
+     * 分页查询，特殊条件查询
      *
+     * @param entityType
+     * @param filterGroup
+     * @param request
+     * @param <T>
+     * @return
      */
-    public <T> List<T> queryList(Class<T> entityType, FilterGroup filterGroup, int pageNum, int pageSize, String orderBy) {
+    public <T> List<T> pageQueryList(Class<T> entityType, FilterGroup filterGroup, PageQueryRequest request) {
         if (defaultFilterOption && defaultFilterGroup != null) {
             for (FilterGroup.Filter filter : defaultFilterGroup.getFilters()) {
                 filterGroup.addFilter(filter);
             }
         }
         QueryCommand command = new QueryCommand();
-        command.setPageNum(pageNum);
-        command.setPageSize(pageSize);
-        command.setOrderBy(orderBy);
+        command.setPageNum(request.getPageNum());
+        command.setPageSize(request.getPageSize());
+        command.setOrderBy(request.getOrderBy());
         BoundSql boundSql = sqlManager.generatePageQuerySql(command, entityType, true, filterGroup, null);
         logger.info(boundSql.toString());
         return jdbcTemplate.query(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
     }
-    
-    public <T> List<T> queryList(Class<T> entityType, Map<String, Object> params, int pageNum, int pageSize, String orderBy) {
+
+    /**
+     * 分页查询，全量查询
+     *
+     * @param entityType
+     * @param params
+     * @param request
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> pageQueryList(Class<T> entityType, Map<String, Object> params, PageQueryRequest request) {
         FilterGroup filterGroup = new FilterGroup();
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -383,7 +399,7 @@ public class Dao extends SqlIdDao {
             }
         }
 
-        return queryList(entityType, filterGroup, pageNum, pageSize, orderBy);
+        return pageQueryList(entityType, filterGroup, request);
     }
 
     @MethodLog(type = "queryListByView")

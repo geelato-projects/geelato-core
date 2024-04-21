@@ -4,6 +4,7 @@ import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
+import org.geelato.core.meta.annotation.Transient;
 import org.geelato.core.meta.model.entity.BaseEntity;
 import org.geelato.core.meta.model.entity.EntityEnableAble;
 
@@ -24,6 +25,7 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble {
     private int dbPort;
     private String dbHostnameIp;
     private int enableStatus = ColumnDefault.ENABLE_STATUS_VALUE;
+    private String apps;
 
     @Title(title = "应用Id")
     @Col(name = "app_id")
@@ -125,5 +127,14 @@ public class ConnectMeta extends BaseEntity implements EntityEnableAble {
     @Override
     public void setEnableStatus(int enableStatus) {
         this.enableStatus = enableStatus;
+    }
+
+    @Transient
+    public String getApps() {
+        return apps;
+    }
+
+    public void setApps(String apps) {
+        this.apps = apps;
     }
 }
