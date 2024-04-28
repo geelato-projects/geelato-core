@@ -27,6 +27,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private String description;
     private Boolean synced = false;
     private String sourceType;
+    private Boolean packBusData = false;
 
     private String viewSql;
 
@@ -53,6 +54,8 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
         this.linked = map.get("linked") == null ? null : Integer.parseInt(map.get("linked").toString());
         this.description = map.get("description") == null ? null : map.get("description").toString();
         this.synced = map.get("synced") == null ? false : Boolean.parseBoolean(map.get("synced").toString());
+        this.sourceType = map.get("source_type") == null ? null : map.get("source_type").toString();
+        this.packBusData = map.get("pack_bus_data") == null ? false : Boolean.parseBoolean(map.get("pack_bus_data").toString());
         this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
     }
 
@@ -186,5 +189,15 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
 
     public void setSourceType(String sourceType) {
         this.sourceType = sourceType;
+    }
+
+    @Col(name = "pack_bus_data")
+    @Title(title = "是否打包业务数据")
+    public Boolean getPackBusData() {
+        return packBusData;
+    }
+
+    public void setPackBusData(Boolean packBusData) {
+        this.packBusData = packBusData;
     }
 }
