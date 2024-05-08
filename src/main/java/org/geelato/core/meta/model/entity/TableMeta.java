@@ -42,6 +42,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     }
 
     public TableMeta(Map map) {
+        this.appId = map.get("app_id") == null ? null : map.get("app_id").toString();
         this.title = map.get("title") == null ? null : map.get("title").toString();
         this.connectId = map.get("connect_id") == null ? null : map.get("connect_id").toString();
         this.tableName = map.get("table_name") == null ? null : map.get("table_name").toString();
@@ -49,10 +50,10 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
         this.tableType = map.get("table_type") == null ? null : map.get("table_type").toString();
         this.tableComment = map.get("table_comment") == null ? null : map.get("table_comment").toString();
         Boolean enableStatus = map.get("enable_status") == null ? null : Boolean.parseBoolean(map.get("enable_status").toString());
-        this.enableStatus = enableStatus ? 1 : 0;
+        this.enableStatus = Boolean.TRUE.equals(enableStatus) ? 1 : 0;
         this.linked = map.get("linked") == null ? null : Integer.parseInt(map.get("linked").toString());
         this.description = map.get("description") == null ? null : map.get("description").toString();
-        this.synced = map.get("synced") == null ? false : Boolean.parseBoolean(map.get("synced").toString());
+        this.synced = map.get("synced") != null && Boolean.parseBoolean(map.get("synced").toString());
         this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
     }
 

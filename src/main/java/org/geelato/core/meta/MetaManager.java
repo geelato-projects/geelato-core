@@ -109,7 +109,7 @@ public class MetaManager extends AbstractManager {
     }
 
     public void refreshDBMeta(String entityName) {
-        logger.info("refresh meta...");
+        logger.info("refresh meta..."+entityName);
         refreshTableMeta(entityName);
         refreshViewMeta(entityName);
 
