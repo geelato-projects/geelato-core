@@ -1,23 +1,23 @@
-package org.geelato.core.orm;
+package org.geelato.core.exception;
+
 
 import org.geelato.core.constants.ApiResultCode;
-import org.geelato.core.exception.CoreException;
 
-public class DaoException extends CoreException {
+public class CoreException extends RuntimeException {
     private String msg;
     private int code;
 
-    public DaoException() {
+    public CoreException() {
         super();
     }
 
-    public DaoException(String msg) {
+    public CoreException(String msg) {
         super(msg);
         this.msg = msg;
         this.code = ApiResultCode.ERROR;
     }
 
-    public DaoException(String msg, int code) {
+    public CoreException(String msg, int code) {
         super(msg);
         this.msg = msg;
         this.code = code;
