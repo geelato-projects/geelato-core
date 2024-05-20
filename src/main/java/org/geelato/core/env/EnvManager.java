@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class EnvManager  extends AbstractManager {
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(EnvManager.class);
+    private final Map<String ,Map<String ,SysConfig>> sysConfigClassifyMap;
     private final Map<String ,SysConfig> sysConfigMap;
     private Dao  EnvDao;
     private static EnvManager instance;
@@ -25,7 +26,10 @@ public class EnvManager  extends AbstractManager {
     private EnvManager(){
         logger.info("EnvManager Instancing...");
         sysConfigMap=new HashMap<>();
+        sysConfigClassifyMap=new HashMap<>();
+
     }
+
 
     public static EnvManager singleInstance() {
         lock.lock();
@@ -61,7 +65,7 @@ public class EnvManager  extends AbstractManager {
         }
     }
 
-    public Map<String ,SysConfig> getConfigMap(){
+    public Map<String ,SysConfig> getConfigMap(String purpose){
         return sysConfigMap;
     }
     public void InitCurrentUser(String loginName) {

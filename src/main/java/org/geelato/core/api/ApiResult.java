@@ -3,7 +3,7 @@ package org.geelato.core.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.geelato.core.constants.ApiResultCode;
 import org.geelato.core.constants.ApiResultStatus;
-import org.geelato.core.exception.TestException;
+import org.geelato.core.exception.CoreException;
 
 /**
  * @author geemeta
@@ -79,9 +79,9 @@ public class ApiResult<E> {
      */
     public <T extends Exception> ApiResult<E> error(T exception) {
         this.status = ApiResultStatus.FAIL;
-        if (exception instanceof TestException) {
-            this.code = ((TestException) exception).getCode();
-            this.msg = ((TestException) exception).getMsg();
+        if (exception instanceof CoreException) {
+            this.code = ((CoreException) exception).getCode();
+            this.msg = ((CoreException) exception).getMsg();
         } else {
             this.code = ApiResultCode.ERROR;
             this.msg = exception.getMessage();

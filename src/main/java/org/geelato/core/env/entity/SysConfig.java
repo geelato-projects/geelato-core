@@ -9,7 +9,7 @@ public class SysConfig {
     private String configKey;
 
     private String configValue;
-
+    private String purpose;
     public String getAppId() {
         return appId;
     }
