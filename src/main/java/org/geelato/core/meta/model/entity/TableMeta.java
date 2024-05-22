@@ -27,7 +27,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     private String description;
     private Boolean synced = false;
     private String sourceType;
-    private Boolean packBusData = false;
+    private int packBusData = 0;// 0 不打包，1 增量，2 全量
 
     private String viewSql;
 
@@ -57,7 +57,7 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
         this.synced = map.get("synced") != null && Boolean.parseBoolean(map.get("synced").toString());
         this.synced = map.get("synced") == null ? false : Boolean.parseBoolean(map.get("synced").toString());
         this.sourceType = map.get("source_type") == null ? null : map.get("source_type").toString();
-        this.packBusData = map.get("pack_bus_data") == null ? false : Boolean.parseBoolean(map.get("pack_bus_data").toString());
+        this.packBusData = map.get("pack_bus_data") == null ? 0 : Integer.parseInt(map.get("pack_bus_data").toString());
         this.viewSql = map.get("view_sql") == null ? null : map.get("view_sql").toString();
     }
 
@@ -194,12 +194,12 @@ public class TableMeta extends BaseSortableEntity implements EntityEnableAble {
     }
 
     @Col(name = "pack_bus_data")
-    @Title(title = "是否打包业务数据")
-    public Boolean getPackBusData() {
+    @Title(title = "数据打包策略：0 不打包，1 增量，2 全量")
+    public int getPackBusData() {
         return packBusData;
     }
 
-    public void setPackBusData(Boolean packBusData) {
+    public void setPackBusData(int packBusData) {
         this.packBusData = packBusData;
     }
 }
