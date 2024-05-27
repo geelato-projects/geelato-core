@@ -1,4 +1,4 @@
-package org.geelato.core.script.js;
+package org.geelato.core.graaljs;
 
 import java.sql.*;
 import java.util.Map;
