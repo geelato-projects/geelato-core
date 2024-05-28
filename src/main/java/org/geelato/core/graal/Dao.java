@@ -1,4 +1,4 @@
-package org.geelato.core.graaljs;
+package org.geelato.core.graal;
 
 import org.geelato.core.Ctx;
 import org.geelato.core.api.ApiPagedResult;
@@ -7,8 +7,6 @@ import org.geelato.core.gql.GqlManager;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.parser.QueryCommand;
 import org.geelato.core.sql.SqlManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;

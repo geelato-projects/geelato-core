@@ -1,4 +1,4 @@
-package org.geelato.core.graaljs;
+package org.geelato.core.graal;
 
 public class GraaljsTestObj {
     private String prop1;
