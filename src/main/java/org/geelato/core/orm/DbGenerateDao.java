@@ -406,9 +406,9 @@ public class DbGenerateDao {
             stmt = conn.createStatement();
         }
         // 使用 Statement 对象的 setQueryTimeout() 方法设置查询超时时间，以确保 SQL 语句在一定时间内执行完毕。
-        // 设置查询超时时间为 1 秒
+        // 设置查询超时时间为 60 秒
         if (stmt != null) {
-            stmt.setQueryTimeout(1);
+            stmt.setQueryTimeout(60);
         }
         // 使用 Statement 对象的 execute() 方法执行 SQL 语句。如果 SQL 语句正确，execute() 方法将返回 true，否则返回 false。
         boolean isValid = false;
