@@ -1,8 +1,6 @@
-package org.geelato.core.graaljs;
+package org.geelato.core.graal;
 
 import com.alibaba.fastjson2.JSON;
-import com.oracle.truffle.js.nodes.unary.JSUnaryMinusNode;
-import com.oracle.truffle.js.runtime.builtins.JSFunction;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;

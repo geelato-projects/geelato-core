@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.xml.validation.Validator;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -87,20 +88,19 @@ public class JsonTextSaveParser extends JsonTextParser {
         SaveCommand command = new SaveCommand();
         command.setEntityName(commandName);
         EntityMeta entityMeta = metaManager.getByEntityName(commandName);
-        Map<String, Object> params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
 
         jo.keySet().forEach(key -> {
             if (key.startsWith(SUB_ENTITY_FLAG)) {
-                // 解析子实体
-                // 子实体是数组还是实体
                 Object sub = jo.get(key);
+                CommandValidator subValidator = new CommandValidator();
                 if (sub instanceof JSONObject) {
-                    SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) sub, validator);
+                    SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) sub, subValidator);
                     subCommand.setParentCommand(command);
                     command.getCommands().add(subCommand);
                 } else if (sub instanceof JSONArray) {
                     ((JSONArray) sub).forEach(subJo -> {
-                        SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) subJo, validator);
+                        SaveCommand subCommand = parse(ctx, key.substring(1), (JSONObject) subJo, subValidator);
                         subCommand.setParentCommand(command);
                         command.getCommands().add(subCommand);
                     });

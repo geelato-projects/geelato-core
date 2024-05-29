@@ -92,7 +92,7 @@ public class MetaManager extends AbstractManager {
         this.dao = dao;
         logger.info("parse meta data in database...", params);
         String sql = MetaDaoSql.SQL_TABLE_LIST;
-        if (params != null && params.size() > 0) {
+        if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 if (Strings.isNotBlank(entry.getValue())) {
                     sql = String.format("%s and find_in_set(%s, '%s')", sql, entry.getKey(), entry.getValue());
@@ -333,6 +333,7 @@ public class MetaManager extends AbstractManager {
     public void scanAndParse(String packageName, boolean isUpdateMetadataFormDb) {
         scanAndParse(packageName);
         if (isUpdateMetadataFormDb) {
+            //todo 解析实体类，写入到数据库
             updateMetadataFromDbAfterParse(null);
         }
     }
