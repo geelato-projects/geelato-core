@@ -18,6 +18,7 @@ public class GraalManager extends AbstractManager {
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(GraalManager.class);
 
     private final Map<String,Object> graalServiceMap=new HashMap<>();
+    private final Map<String,Object> graalVariableMap=new HashMap<>();
     private GraalManager() {
         logger.info("GraalManager Instancing...");
     }
@@ -35,7 +36,7 @@ public class GraalManager extends AbstractManager {
         List<Class<?>> classes = ClassScanner.scan(parkeName, true, GraalService.class);
         for (Class<?> clazz : classes) {
             try {
-                initGraalScript(clazz);
+                initGraalServiceBean(clazz);
             } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
                      IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -43,7 +44,20 @@ public class GraalManager extends AbstractManager {
         }
     }
 
-    private void initGraalScript(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public void initGraalVariable(String parkeName){
+        logger.info("开始从包{}中扫描到包含注解{}的实体......", parkeName, GraalVariable.class);
+        List<Class<?>> classes = ClassScanner.scan(parkeName, true, GraalVariable.class);
+        for (Class<?> clazz : classes) {
+            try {
+                initGraalVariableBean(clazz);
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void initGraalServiceBean(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         GraalService graalService = clazz.getAnnotation(GraalService.class);
         if (graalService != null) {
             String serviceName=graalService.name();
@@ -52,7 +66,19 @@ public class GraalManager extends AbstractManager {
         }
     }
 
+    private void initGraalVariableBean(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        GraalVariable graalVariable = clazz.getAnnotation(GraalVariable.class);
+        if (graalVariable != null) {
+            String variableName=graalVariable.name();
+            Object variableBean= clazz.getDeclaredConstructor().newInstance();
+            graalVariableMap.put(variableName,variableBean);
+        }
+    }
+
     public Map<String,Object> getGraalServiceMap(){
         return graalServiceMap;
+    }
+    public Map<String,Object> getGraalVariableMap(){
+        return graalVariableMap;
     }
 }
