@@ -83,7 +83,7 @@ public class JsonTextSaveParser extends JsonTextParser {
      * 递归解析保存操作命令，里面变更在执行期再解析，不在此解析
      *
      */
-    private SaveCommand parse(Ctx ctx, String commandName, JSONObject jo, CommandValidator validator) {
+    private SaveCommand     parse(Ctx ctx, String commandName, JSONObject jo, CommandValidator validator) {
         Assert.isTrue(validator.validateEntity(commandName), validator.getMessage());
         SaveCommand command = new SaveCommand();
         command.setEntityName(commandName);

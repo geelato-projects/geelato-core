@@ -62,7 +62,7 @@ public class FilterGroup {
             filter.setField(filter.getField());
             renameIndex++;
         }
-        params.put(filter.getField() + renameIndex, filter.getValue());
+        params.put(filter.getField(), filter.getValue());
         return this;
     }
 
