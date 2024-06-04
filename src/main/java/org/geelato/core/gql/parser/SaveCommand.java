@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public class SaveCommand extends BaseCommand<SaveCommand> {
 
+    // 主键的值，如19位的数字
     private String PK;
     private Map<String, Object> valueMap;
 
@@ -17,7 +18,6 @@ public class SaveCommand extends BaseCommand<SaveCommand> {
     /**
      * 与fields同步，冗余。
      * @see #fields
-     * @return
      */
     public Map<String, Object> getValueMap() {
         return valueMap;
