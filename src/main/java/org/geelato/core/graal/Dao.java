@@ -23,12 +23,6 @@ public class Dao {
         this.ormDao=new org.geelato.core.orm.Dao(jdbcTemplate);
     }
 
-    public ApiPagedResult list(String gql){
-        QueryCommand command = gqlManager.generateQuerySql(gql, getSessionCtx());
-        BoundPageSql boundPageSql = sqlManager.generatePageQuerySql(command);
-        return ormDao.queryForMapList(boundPageSql, false);
-    }
-
 
 
     public String save(String gql){

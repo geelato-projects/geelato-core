@@ -73,32 +73,32 @@ public class Dao extends SqlIdDao {
         return jdbcTemplate.queryForObject(boundSql.getSql(), boundSql.getParams(), requiredType);
     }
 
-    /**
-     * @param withMeta 是否需同时查询带出元数据
-     */
-    public ApiPagedResult queryForMapList(BoundPageSql boundPageSql, boolean withMeta) {
-        ApiPagedResult result = new ApiPagedResult();
-        QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
+    public List<Map<String, Object>> queryForMapList(BoundPageSql boundPageSql) {
         logger.info(boundPageSql.getBoundSql().getSql());
+        QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         BoundSql boundSql = boundPageSql.getBoundSql();
         Object[] sqlParams = boundSql.getParams();
+        List<Map<String, Object>> result=null;
         try {
             List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(), sqlParams);
-            Long total = jdbcTemplate.queryForObject(boundPageSql.getCountSql(), sqlParams, Long.class);
-            result.setData(convert(list, metaManager.getByEntityName(command.getEntityName())));
-            result.setTotal(total);
-            result.setPage(command.getPageNum());
-            result.setSize(command.getPageSize());
-            result.setDataSize(list.size());
+            result=convert(list, metaManager.getByEntityName(command.getEntityName()));
         } catch (DataAccessException exception) {
             throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
-        }
-        if (withMeta) {
-            result.setMeta(metaManager.getByEntityName(command.getEntityName()).getSimpleFieldMetas(command.getFields()));
         }
         return result;
     }
 
+    public Long queryTotal(BoundPageSql boundPageSql){
+        BoundSql boundSql = boundPageSql.getBoundSql();
+        Object[] sqlParams = boundSql.getParams();
+        Long total=0L;
+        try {
+            total = jdbcTemplate.queryForObject(boundPageSql.getCountSql(), sqlParams, Long.class);
+        } catch (DataAccessException exception) {
+            throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
+        }
+        return total;
+    }
     private List<Map<String, Object>> convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
         for (Map<String, Object> map : data) {
             for (String key : map.keySet()) {
@@ -125,6 +125,7 @@ public class Dao extends SqlIdDao {
     /**
      * @param withMeta 是否需同时查询带出元数据
      */
+    //todo rewrite
     public ApiMultiPagedResult.PageData queryForMapListToPageData(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         logger.info(boundPageSql.getBoundSql().getSql());

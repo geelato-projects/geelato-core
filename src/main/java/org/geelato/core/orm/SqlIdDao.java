@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 @Component
 public class SqlIdDao extends BaseDao{
     public void execute(String sqlId, Map<String, Object> paramMap) {
