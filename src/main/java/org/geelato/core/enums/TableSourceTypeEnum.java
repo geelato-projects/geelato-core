@@ -4,7 +4,6 @@ import org.apache.logging.log4j.util.Strings;
 
 /**
  * @author diabl
- * @description: TODO
  * @date 2024/1/30 16:38
  */
 public enum TableSourceTypeEnum {
