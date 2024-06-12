@@ -243,6 +243,22 @@ public class Dao extends SqlIdDao {
     }
 
     /**
+     * 依据两个条件查询实体
+     * @param entityType 实体类型
+     * @param fieldName1 实体的属性名1
+     * @param value1     实体属性1的值
+     * @param fieldName2 实体的属性名2
+     * @param value2     实体属性2的值
+     * @return           返回泛型
+     */
+    public <T> T queryForObject(Class<T> entityType, String fieldName1, Object value1, String fieldName2, Object value2) {
+        FilterGroup filterGroup = new FilterGroup().addFilter(fieldName1, value1.toString()).addFilter(fieldName2, value2.toString());
+        BoundSql boundSql = sqlManager.generateQueryForObjectOrMapSql(entityType, filterGroup, null);
+        logger.info(boundSql.toString());
+        return jdbcTemplate.queryForObject(boundSql.getSql(), boundSql.getParams(), new CommonRowMapper<T>());
+    }
+
+    /**
      * 依据单个条件查询实体
      *
      * @param entityType 实体类型
