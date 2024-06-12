@@ -22,14 +22,14 @@ import java.util.*;
 public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
     protected  Boolean LogicDelete=true;  //是否开启软删除
     protected  Boolean PermissionControl=true;
-    private static Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaBaseSqlProvider.class);
     protected static final Map<String, Boolean> keywordsMap = new HashedMap();
     protected static final Map<FilterGroup.Operator, String> enumToSignString = new HashMap<FilterGroup.Operator, String>();
     protected MetaManager metaManager = MetaManager.singleInstance();
 
 
     //表别名MAP
-    private Map<String, String> tableAlias = new HashMap<>(8);
+    private final Map<String, String> tableAlias = new HashMap<>(8);
 
     static {
         // TODO 待添加所有的关键字、保留字
