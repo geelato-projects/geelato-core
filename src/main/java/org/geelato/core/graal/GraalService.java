@@ -12,4 +12,5 @@ import java.lang.annotation.Target;
 public @interface GraalService {
     String name();
     String type() default "simple";
+    String built() default "false";
 }

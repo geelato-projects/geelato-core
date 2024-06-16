@@ -19,6 +19,7 @@ public class GraalManager extends AbstractManager {
 
     private final Map<String,Object> graalServiceMap=new HashMap<>();
     private final Map<String,Object> graalVariableMap=new HashMap<>();
+    private final Map<String,Object> globalGraalServiceMap=new HashMap<>();
     private GraalManager() {
         logger.info("GraalManager Instancing...");
     }
@@ -61,8 +62,13 @@ public class GraalManager extends AbstractManager {
         GraalService graalService = clazz.getAnnotation(GraalService.class);
         if (graalService != null) {
             String serviceName=graalService.name();
+            String built=graalService.built();
             Object serviceBean= clazz.getDeclaredConstructor().newInstance();
-            graalServiceMap.put(serviceName,serviceBean);
+            if(built.equals("true")){
+                globalGraalServiceMap.put(serviceName,serviceBean);
+            }else{
+                graalServiceMap.put(serviceName,serviceBean);
+            }
         }
     }
 
@@ -80,5 +86,8 @@ public class GraalManager extends AbstractManager {
     }
     public Map<String,Object> getGraalVariableMap(){
         return graalVariableMap;
+    }
+    public Map<String,Object> getGlobalGraalVariableMap(){
+        return globalGraalServiceMap;
     }
 }
