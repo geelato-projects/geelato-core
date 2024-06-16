@@ -68,7 +68,7 @@ public class EnvManager  extends AbstractManager {
     public Map<String ,SysConfig> getConfigMap(String purpose){
         return sysConfigMap;
     }
-    public void InitCurrentUser(String loginName) {
+    public User InitCurrentUser(String loginName) {
         String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName," +
                 "name as userName,bu_id as buId,dept_id as deptId," +
                 " cooperating_org_id as cooperatingOrgId from platform_user  where login_name =?";
@@ -78,6 +78,7 @@ public class EnvManager  extends AbstractManager {
         dbUser.setElementPermissions(StructElementPermission(dbUser.getUserId()));
         Ctx.setCurrentUser(dbUser);
         Ctx.setCurrentTenant("geelato");
+        return dbUser;
     }
 
     private List<Permission> StructDataPermission(String userId) {
