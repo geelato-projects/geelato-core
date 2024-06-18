@@ -1,41 +1,27 @@
 package org.geelato.core.exception;
 
 
-import org.geelato.core.constants.ApiResultCode;
+public abstract class CoreException extends RuntimeException {
+    private final String errorMsg;
+    private final int errorCode;
 
-public class CoreException extends RuntimeException {
-    private String msg;
-    private int code;
-
-    public CoreException() {
-        super();
-    }
-
-    public CoreException(String msg) {
+    public CoreException(int code, String msg) {
         super(msg);
-        this.msg = msg;
-        this.code = ApiResultCode.ERROR;
+        this.errorMsg = msg;
+        this.errorCode=code;
+    }
+    public CoreException(int code, String msg,Throwable cause) {
+        super(msg,cause);
+        this.errorMsg = msg;
+        this.errorCode=code;
     }
 
-    public CoreException(String msg, int code) {
-        super(msg);
-        this.msg = msg;
-        this.code = code;
+
+    public int getErrorCode() {
+        return errorCode;
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
+    public String getErrorMsg() {
+        return errorMsg;
     }
 }

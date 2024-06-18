@@ -4,17 +4,13 @@ import org.geelato.core.constants.ApiResultCode;
 import org.geelato.core.exception.CoreException;
 
 public class DaoException extends CoreException {
-    private String msg;
-    private int code;
-
-    public DaoException() {
-        super();
-    }
+    private static final int code=1000;
 
     public DaoException(String msg) {
-        super(msg);
-        this.msg = msg;
-        this.code = ApiResultCode.ERROR;
+        super(code,msg);
+    }
+    public DaoException(String msg,Throwable throwable) {
+        super(code,msg,throwable);
     }
 
 }

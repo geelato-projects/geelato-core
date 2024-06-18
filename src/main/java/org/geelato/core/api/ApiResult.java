@@ -80,8 +80,8 @@ public class ApiResult<E> {
     public <T extends Exception> ApiResult<E> error(T exception) {
         this.status = ApiResultStatus.FAIL;
         if (exception instanceof CoreException) {
-            this.code = ((CoreException) exception).getCode();
-            this.msg = ((CoreException) exception).getMsg();
+            this.code = ((CoreException) exception).getErrorCode();
+            this.msg = ((CoreException) exception).getErrorMsg();
         } else {
             this.code = ApiResultCode.ERROR;
             this.msg = exception.getMessage();
