@@ -28,12 +28,12 @@
   },
   {
     "group": "字符串",
-    "label": "数据字典[1024]",
+    "label": "数据字典[64]",
     "value": "dictionary",
     "mysql": "varchar",
     "disabled": false,
     "fixed": false,
-    "extent": 1024,
+    "extent": 64,
     "seqNo": 104
   },
   {
