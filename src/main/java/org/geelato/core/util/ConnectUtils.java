@@ -9,7 +9,6 @@ import org.springframework.util.Assert;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Locale;
 
 /**
  * @author diabl
@@ -47,8 +46,7 @@ public class ConnectUtils {
     public static boolean connectionTest(ConnectMeta meta) throws SQLException {
         Assert.notNull(meta, ApiErrorMsg.IS_NULL);
         if (Strings.isNotBlank(meta.getDbType())) {
-            String dialect = meta.getDbType().toUpperCase(Locale.ENGLISH);
-            if (Dialects.MYSQL.name().equals(dialect)) {
+            if (Dialects.MYSQL.name().equalsIgnoreCase(meta.getDbType())) {
                 return ConnectUtils.mysqlConnectionTest(meta.getDbHostnameIp(), Integer.toString(meta.getDbPort()), meta.getDbName(), meta.getDbUserName(), meta.getDbPassword());
             }
         }
@@ -59,8 +57,7 @@ public class ConnectUtils {
     public static Connection getConnection(ConnectMeta meta) throws SQLException {
         Assert.notNull(meta, ApiErrorMsg.IS_NULL);
         if (Strings.isNotBlank(meta.getDbType())) {
-            String dialect = meta.getDbType().toUpperCase(Locale.ENGLISH);
-            if (Dialects.MYSQL.name().equals(dialect)) {
+            if (Dialects.MYSQL.name().equalsIgnoreCase(meta.getDbType())) {
                 String url = String.format(ConnectUtils.MYSQL_URL, meta.getDbHostnameIp(), Integer.toString(meta.getDbPort()), meta.getDbName());
                 return DriverManager.getConnection(url, meta.getDbUserName(), meta.getDbPassword());
             }
