@@ -80,7 +80,7 @@ public class Dao extends SqlIdDao {
         Object[] sqlParams = boundSql.getParams();
         List<Map<String, Object>> result=null;
         try {
-                List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(), sqlParams);
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(), sqlParams);
             result=convert(list, metaManager.getByEntityName(command.getEntityName()));
         } catch (DataAccessException exception) {
             throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
