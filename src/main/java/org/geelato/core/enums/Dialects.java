@@ -7,5 +7,7 @@ public enum Dialects {
     MYSQL,
     SQLSERVER,
     ORACLE,
-    POSTGRESQL
+    POSTGRESQL,
+    ELASTICsEARCH,
+    MONGODB
 }
