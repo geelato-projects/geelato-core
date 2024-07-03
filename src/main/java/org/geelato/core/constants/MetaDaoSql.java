@@ -58,5 +58,9 @@ public class MetaDaoSql {
      * 数据库表，重命名表，第一个：旧表名；第二个：新表名
      */
     public static final String SQL_RENAME_TABLE = "RENAME TABLE %s TO %s;";
+    /**
+     * 查询视图信息
+     */
+    public static final String SQL_SHOW_CREATE_VIEW = "SHOW CREATE VIEW %s;";
 
 }
