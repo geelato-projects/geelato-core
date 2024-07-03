@@ -28,6 +28,7 @@ public class MetaDaoSql {
      * 查询 所有表信息
      */
     public static final String INFORMATION_SCHEMA_TABLES = "SELECT * FROM information_schema.tables WHERE 1 = 1 AND TABLE_SCHEMA = %s AND TABLE_TYPE = 'BASE TABLE' %s ORDER BY TABLE_NAME ASC;";
+    public static final String INFORMATION_SCHEMA_VIEWS = "SELECT * FROM information_schema.tables WHERE 1 = 1 AND TABLE_SCHEMA = %s AND TABLE_TYPE = 'VIEW' %s ORDER BY TABLE_NAME ASC;";
     public static final String INFORMATION_SCHEMA_COLUMNS = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE 1 = 1 AND TABLE_SCHEMA = %s %s ORDER BY ORDINAL_POSITION ASC;";
     /**
      * 查询表单（%s）中非主键的唯一约束索引
