@@ -1,6 +1,5 @@
 package org.geelato.core.graal;
 
-import com.sun.istack.Interned;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

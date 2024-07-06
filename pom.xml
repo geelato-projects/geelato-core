@@ -10,7 +10,6 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>geelato-core</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>geelato-core</name>
 
@@ -97,32 +96,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
-    </dependency>
-    <!-- 阿里云短信测试 -->
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>dysmsapi20170525</artifactId>
-      <version>2.0.24</version>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>tea-openapi</artifactId>
-      <version>0.2.8</version>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>tea-console</artifactId>
-      <version>0.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>tea-util</artifactId>
-      <version>0.2.16</version>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>tea</artifactId>
-      <version>1.1.14</version>
     </dependency>
     <!-- sm2加解密 -->
     <dependency>
