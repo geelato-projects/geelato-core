@@ -71,6 +71,27 @@ public class EnvManager  extends AbstractManager {
         }
     }
 
+    public void refreshConfig(String configKey){
+        String sql = "select config_key as configKey,config_value as configValue,app_Id as appId,tenant_code as tenantCode,purpose as purpose from platform_sys_config " +
+                "where enable_status =1 and del_status =0 and config_key='%s'";
+        SysConfig sysConfig = EnvDao.getJdbcTemplate().queryForObject(String.format(sql,configKey),
+                new BeanPropertyRowMapper<>(SysConfig.class));
+        if(sysConfig!=null){
+            String key=sysConfig.getConfigKey();
+            String purpose=sysConfig.getPurpose();
+            if(sysConfigMap.containsKey(key)){
+                sysConfigMap.replace(key,sysConfig);
+            }else{
+                sysConfigMap.put(key,sysConfig);
+            }
+            if(sysConfigClassifyMap.get(purpose).containsKey(key)){
+                sysConfigClassifyMap.get(purpose).replace(key,sysConfig);
+            }else {
+                sysConfigClassifyMap.get(purpose).put(key,sysConfig);
+            }
+        }
+    }
+
     public Map<String ,SysConfig> getConfigMap(String purpose){
         return sysConfigClassifyMap.get(purpose);
     }
