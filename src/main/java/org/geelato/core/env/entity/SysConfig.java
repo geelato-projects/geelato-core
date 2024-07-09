@@ -42,4 +42,12 @@ public class SysConfig {
     public void setConfigValue(String configValue) {
         this.configValue = configValue;
     }
+
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
 }
