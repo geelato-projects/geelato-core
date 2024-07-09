@@ -27,7 +27,6 @@ public class EnvManager  extends AbstractManager {
         logger.info("EnvManager Instancing...");
         sysConfigMap=new HashMap<>();
         sysConfigClassifyMap=new HashMap<>();
-
     }
 
 
@@ -53,6 +52,13 @@ public class EnvManager  extends AbstractManager {
             if(!sysConfigMap.containsKey(config.getConfigKey())){
                 sysConfigMap.put(config.getConfigKey(),config);
             }
+            if(sysConfigClassifyMap.containsKey(config.getPurpose())){
+                sysConfigClassifyMap.get(config.getPurpose()).put(config.getConfigKey(),config);
+            }else{
+                Map<String,SysConfig> map=new HashMap<>();
+                map.put(config.getConfigKey(),config);
+                sysConfigClassifyMap.put(config.getPurpose(),map);
+            }
         }
     }
 
@@ -66,7 +72,7 @@ public class EnvManager  extends AbstractManager {
     }
 
     public Map<String ,SysConfig> getConfigMap(String purpose){
-        return sysConfigMap;
+        return sysConfigClassifyMap.get(purpose);
     }
     public User InitCurrentUser(String loginName) {
         String sql = "select id as userId,org_id as defaultOrgId,login_name as loginName," +
@@ -94,7 +100,6 @@ public class EnvManager  extends AbstractManager {
 
     private List<Permission> StructElementPermission(String userId) {
         List<Permission> elementPermissionList=new ArrayList<>();
-
         return elementPermissionList;
     }
 
