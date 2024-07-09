@@ -219,6 +219,7 @@ public class EntityMeta {
         meta.setSelectType(fm.getColumn().getSelectType());
         meta.setTypeExtra(fm.getColumn().getTypeExtra());
         meta.setExtraValue(fm.getColumn().getExtraValue());
+        meta.setExtraMap(fm.getColumn().getExtraMap());
         return meta;
     }
 

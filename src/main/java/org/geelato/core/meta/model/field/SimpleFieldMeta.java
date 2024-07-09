@@ -19,6 +19,7 @@ public class SimpleFieldMeta implements Serializable {
     private String selectType;
     private String typeExtra;
     private String extraValue;
+    private String extraMap;
     private String defaultValue;
 
     public String getName() {
@@ -107,6 +108,14 @@ public class SimpleFieldMeta implements Serializable {
 
     public void setTypeExtra(String typeExtra) {
         this.typeExtra = typeExtra;
+    }
+
+    public String getExtraMap() {
+        return extraMap;
+    }
+
+    public void setExtraMap(String extraMap) {
+        this.extraMap = extraMap;
     }
 
     public String getDefaultValue() {

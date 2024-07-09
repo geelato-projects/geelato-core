@@ -126,6 +126,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private String typeExtra;
     @Col(name = "extra_value")
     private String extraValue;
+    @Col(name = "extra_map")
+    private String extraMap;
     @Col(name = "auto_add")
     private boolean autoAdd = false;
     @Col(name = "auto_name")
@@ -136,6 +138,8 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     private boolean encrypted = false;
     @Col(name = "marker")
     private String marker; // 特殊标记
+    @Col(name = "drawed")
+    private boolean drawed = false;
 
     /**
      * @return e.g. sum(columnName) as aliasColumnName
@@ -499,6 +503,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
         this.extraValue = extraValue;
     }
 
+    @Col(name = "extra_map")
+    @Title(title = "字段与额外字段的映射关系")
+    public String getExtraMap() {
+        return extraMap;
+    }
+
+    public void setExtraMap(String extraMap) {
+        this.extraMap = extraMap;
+    }
+
     @Col(name = "auto_add")
     @Title(title = "选择类型")
     public boolean isAutoAdd() {
@@ -547,6 +561,16 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
 
     public void setMarker(String marker) {
         this.marker = marker;
+    }
+
+    @Col(name = "drawed")
+    @Title(title = "drawDB字段显示")
+    public boolean isDrawed() {
+        return drawed;
+    }
+
+    public void setDrawed(boolean drawed) {
+        this.drawed = drawed;
     }
 
     @Override

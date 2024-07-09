@@ -412,6 +412,7 @@ public class MetaRelf {
             String selectType = c_map.get("select_type") == null ? null : c_map.get("select_type").toString().toUpperCase(Locale.ENGLISH);
             String typeExtra = c_map.get("type_extra") == null ? null : c_map.get("type_extra").toString();
             String extraValue = c_map.get("extra_value") == null ? null : c_map.get("extra_value").toString();
+            String extraMap = c_map.get("extra_map") == null ? null : c_map.get("extra_map").toString();
             String dataType = c_map.get("data_type") == null ? null : c_map.get("data_type").toString().toUpperCase(Locale.ENGLISH);
             String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
             String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
@@ -442,6 +443,7 @@ public class MetaRelf {
                 cfm.getColumn().setSelectType(selectType);
                 cfm.getColumn().setTypeExtra(typeExtra);
                 cfm.getColumn().setExtraValue(extraValue);
+                cfm.getColumn().setExtraMap(extraMap);
                 if (c_map.get("ordinal_position") != null) cfm.getColumn().setOrdinalPosition(Integer.parseInt(c_map.get("ordinal_position").toString()));
 
                 cfm.getColumn().setName(columnName);
@@ -456,6 +458,7 @@ public class MetaRelf {
                 cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                 cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));
                 cfm.getColumn().setSynced(c_map.get("synced") != null && Boolean.parseBoolean(c_map.get("synced").toString()));
+                cfm.getColumn().setDrawed(c_map.get("drawed") != null && Boolean.parseBoolean(c_map.get("drawed").toString()));
                 cfm.getColumn().setEncrypted(c_map.get("encrypted") != null && Boolean.parseBoolean(c_map.get("encrypted").toString()));
                 cfm.getColumn().setMarker(c_map.get("marker") == null ? null : c_map.get("marker").toString());
                 cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
