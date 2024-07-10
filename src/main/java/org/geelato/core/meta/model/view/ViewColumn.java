@@ -5,7 +5,6 @@ import org.geelato.core.meta.model.field.ColumnMeta;
 /**
  * @author diabl
  * @description: 视图字段
- * @date 2023/6/30 9:29
  */
 public class ViewColumn {
     private String table_name;

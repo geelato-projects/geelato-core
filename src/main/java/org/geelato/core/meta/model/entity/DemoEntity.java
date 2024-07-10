@@ -6,7 +6,6 @@ import org.geelato.core.meta.annotation.Title;
 
 /**
  * @author geelato
- * @date 2018/7/14
  */
 @Entity(name = "platform_demo_entity", table = "platform_demo_entity")
 @Title(title = "示例实体")
