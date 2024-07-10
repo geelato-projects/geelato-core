@@ -19,7 +19,7 @@ import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaForeign;
 import org.geelato.core.meta.schema.SchemaIndex;
 import org.geelato.core.orm.Dao;
-import org.geelato.core.util.FastJsonUtils;
+import org.geelato.utils.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
 import org.geelato.utils.MapUtils;
 import org.slf4j.LoggerFactory;

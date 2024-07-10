@@ -9,7 +9,7 @@ import org.geelato.core.gql.parser.FilterGroup;
 import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
-import org.geelato.core.meta.model.view.ViewMeta;
+import org.geelato.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -269,13 +269,13 @@ public abstract class MetaBaseSqlProvider<E extends BaseCommand> {
             tryAppendKeywords(em, sb, fm);
             Object[] ary = filter.getValueAsArray();
             sb.append(" in(");
-            sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
+            sb.append(StringUtils.join(ary.length, "?", ","));
             sb.append(")");
         }else if (operator == FilterGroup.Operator.notin) {
             tryAppendKeywords(em, sb, fm);
             Object[] ary = filter.getValueAsArray();
             sb.append(" not in(");
-            sb.append(org.geelato.core.util.StringUtils.join(ary.length, "?", ","));
+            sb.append(StringUtils.join(ary.length, "?", ","));
             sb.append(")");
         }else if(operator==FilterGroup.Operator.nil){
             tryAppendKeywords(em, sb, fm);

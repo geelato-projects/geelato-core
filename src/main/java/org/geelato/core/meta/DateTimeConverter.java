@@ -7,7 +7,7 @@ package org.geelato.core.meta;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geelato.core.util.DateUtils;
+import org.geelato.utils.DateUtils;
 
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
