@@ -72,6 +72,9 @@ public class DataSourceManager extends AbstractManager {
         config.setDriverClassName(dbDriver);
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(3);
+        config.setPoolName(dbConnectMap.get("db_name").toString());
+        config.addDataSourceProperty("autoReconnect","true");
+        config.addDataSourceProperty("maxReconnects","10");
         return new HikariDataSource(config);
     }
 }
