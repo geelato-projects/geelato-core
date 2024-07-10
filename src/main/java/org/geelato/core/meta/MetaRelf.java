@@ -5,7 +5,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.enums.MysqlDataTypeEnum;
 import org.geelato.core.enums.MysqlToJavaEnum;
 import org.geelato.core.gql.TypeConverter;
@@ -249,7 +248,7 @@ public class MetaRelf {
                     String firstChar = "" + fieldName.charAt(0);
                     fieldName = fieldName.replaceFirst(firstChar, firstChar.toLowerCase());
                     Title cn = method.getAnnotation(Title.class);
-                    String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                    String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                     String columnName = fieldName;
                     Col col = method.getAnnotation(Col.class);
                     if (col != null) {
@@ -309,7 +308,7 @@ public class MetaRelf {
 
                             // 列的中文信息
                             Title cn = method.getAnnotation(Title.class);
-                            String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                            String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                             String description = cn != null ? cn.description() : "";
                             FieldMeta cfm = null;
                             if (column != null && column.name() != null) {
@@ -363,7 +362,7 @@ public class MetaRelf {
                             }
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());
-                            if (Strings.isEmpty(cfm.getColumn().getDataType())) {
+                            if (StringUtils.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             }
                             cfm.getColumn().afterSet();
@@ -389,7 +388,7 @@ public class MetaRelf {
                     String viewColumn = v_map.get("view_column") == null ? null : v_map.get("view_column").toString();
                     String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
                     String entityName = v_map.get("entity_name") == null ? null : v_map.get("entity_name").toString();
-                    if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
+                    if (StringUtils.isNotBlank(viewName) && !map.containsKey(viewName)) {
                         ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct, viewColumn, entityName);
                         map.put(viewName, vm);
                         ViewManager.singleInstance().addViewMeta(viewName, vm);
@@ -417,12 +416,12 @@ public class MetaRelf {
             String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
             String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
             Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
-            if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
+            if (StringUtils.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
                 FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
                 cfm.getColumn().setFieldName(fieldName);
                 cfm.getColumn().setUniqued(c_map.get("is_unique") != null && Boolean.parseBoolean(c_map.get("is_unique").toString()));
                 cfm.getColumn().setNullable(c_map.get("is_nullable") == null || Boolean.parseBoolean(c_map.get("is_nullable").toString()));
-                cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
+                cfm.getColumn().setDefaultValue(StringUtils.isNotBlank(defaultValue) ? defaultValue : null);
                 cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
                 cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
                 cfm.getColumn().setTitle(title);
@@ -438,7 +437,7 @@ public class MetaRelf {
                 cfm.getColumn().setName(columnName);
                 cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
                 cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
-                cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
+                cfm.getColumn().setComment(StringUtils.isNotBlank(comment) ? comment : title);
                 cfm.getColumn().setEnableStatus(Boolean.TRUE.equals(enableStatus) ? 1 : 0);
                 cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                 cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));

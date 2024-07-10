@@ -1,8 +1,8 @@
 package org.geelato.core.util;
 
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.enums.Dialects;
 import org.geelato.core.meta.model.connect.ConnectMeta;
+import org.geelato.utils.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,10 +29,10 @@ public class ConnectUtils {
      */
     private static Boolean mysqlConnectionTest(String ip, String port, String name, String user, String password) throws SQLException {
         Boolean isConnected = false;
-        if (Strings.isBlank(ip) || Strings.isBlank(name) || Strings.isBlank(port)) {
+        if (StringUtils.isBlank(ip) || StringUtils.isBlank(name) || StringUtils.isBlank(port)) {
             return false;
         }
-        if (Strings.isBlank(user) || Strings.isBlank(password)) {
+        if (StringUtils.isBlank(user) || StringUtils.isBlank(password)) {
             return false;
         }
         String url = String.format(ConnectUtils.MYSQL_URL, ip, port, name);
@@ -60,7 +60,7 @@ public class ConnectUtils {
      * @throws SQLException
      */
     public static boolean connectionTest(ConnectMeta meta) throws SQLException {
-        if (Strings.isNotBlank(meta.getDbType())) {
+        if (StringUtils.isNotBlank(meta.getDbType())) {
             if (Dialects.MYSQL.name().equalsIgnoreCase(meta.getDbType())) {
                 return ConnectUtils.mysqlConnectionTest(meta.getDbHostnameIp(), Integer.toString(meta.getDbPort()), meta.getDbName(), meta.getDbUserName(), meta.getDbPassword());
             }
@@ -77,9 +77,9 @@ public class ConnectUtils {
      * @throws SQLException
      */
     public static Connection getConnection(ConnectMeta meta) throws SQLException {
-        if (Strings.isNotBlank(meta.getDbType())) {
+        if (StringUtils.isNotBlank(meta.getDbType())) {
             if (Dialects.MYSQL.name().equalsIgnoreCase(meta.getDbType())) {
-                String url = String.format(ConnectUtils.MYSQL_URL, meta.getDbHostnameIp(), Integer.toString(meta.getDbPort()), meta.getDbName());
+                String url = String.format(ConnectUtils.MYSQL_URL, meta.getDbHostnameIp(), meta.getDbPort(), meta.getDbName());
                 return DriverManager.getConnection(url, meta.getDbUserName(), meta.getDbPassword());
             }
         }

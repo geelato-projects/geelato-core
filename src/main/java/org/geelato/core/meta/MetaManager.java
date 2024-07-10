@@ -1,7 +1,6 @@
 package org.geelato.core.meta;
 
 import com.alibaba.fastjson2.JSON;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.AbstractManager;
 import org.geelato.core.constants.MetaDaoSql;
 import org.geelato.core.constants.ResourcesFiles;
@@ -19,9 +18,10 @@ import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaForeign;
 import org.geelato.core.meta.schema.SchemaIndex;
 import org.geelato.core.orm.Dao;
-import org.geelato.utils.FastJsonUtils;
 import org.geelato.utils.ClassScanner;
+import org.geelato.utils.FastJsonUtils;
 import org.geelato.utils.MapUtils;
+import org.geelato.utils.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class MetaManager extends AbstractManager {
         String sql = MetaDaoSql.SQL_TABLE_LIST;
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                if (Strings.isNotBlank(entry.getValue())) {
+                if (StringUtils.isNotBlank(entry.getValue())) {
                     sql = String.format("%s and find_in_set(%s, '%s')", sql, entry.getKey(), entry.getValue());
                 }
             }
@@ -109,7 +109,7 @@ public class MetaManager extends AbstractManager {
     }
 
     public void refreshDBMeta(String entityName) {
-        logger.info("refresh meta..."+entityName);
+        logger.info("refresh meta..." + entityName);
         refreshTableMeta(entityName);
         refreshViewMeta(entityName);
 
@@ -117,7 +117,7 @@ public class MetaManager extends AbstractManager {
 
     private void refreshViewMeta(String entityName) {
         String viewListSql = MetaDaoSql.SQL_VIEW_LIST_BY_TABLE;
-        if (Strings.isNotEmpty(entityName)) {
+        if (StringUtils.isNotEmpty(entityName)) {
             viewListSql = String.format(MetaDaoSql.SQL_VIEW_LIST_BY_TABLE + " and view_name='%s'", entityName);
         }
         List<Map<String, Object>> viewList = dao.getJdbcTemplate().queryForList(viewListSql);
@@ -129,7 +129,7 @@ public class MetaManager extends AbstractManager {
 
     private void refreshTableMeta(String entityName) {
         String tableListSql = MetaDaoSql.SQL_TABLE_LIST;
-        if (Strings.isNotEmpty(entityName)) {
+        if (StringUtils.isNotEmpty(entityName)) {
             tableListSql = String.format(MetaDaoSql.SQL_TABLE_LIST + " and entity_name='%s'", entityName);
         }
         List<Map<String, Object>> tableList = dao.getJdbcTemplate().queryForList(tableListSql);
@@ -142,7 +142,7 @@ public class MetaManager extends AbstractManager {
 
     public List<SchemaIndex> queryIndexes(String tableName) {
         List<SchemaIndex> indexList = new ArrayList<>();
-        if (Strings.isEmpty(tableName)) {
+        if (StringUtils.isEmpty(tableName)) {
             return indexList;
         }
         List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
@@ -152,7 +152,7 @@ public class MetaManager extends AbstractManager {
 
     public List<SchemaIndex> queryIndexes(String tableName, String columnName, Boolean isUnique, Boolean isPrimary) {
         List<SchemaIndex> indexList = new ArrayList<>();
-        if (!Strings.isEmpty(tableName)) {
+        if (!StringUtils.isEmpty(tableName)) {
             List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_INDEXES_NO_PRIMARY, tableName));
             indexList = SchemaIndex.buildData(mapList);
         }
@@ -161,7 +161,7 @@ public class MetaManager extends AbstractManager {
 
     public List<SchemaForeign> queryForeignKeys(String tableName) {
         List<SchemaForeign> keyList = new ArrayList<>();
-        if (Strings.isEmpty(tableName)) {
+        if (StringUtils.isEmpty(tableName)) {
             return keyList;
         }
         List<Map<String, Object>> mapList = dao.getJdbcTemplate().queryForList(String.format(MetaDaoSql.SQL_FOREIGN_KEY, tableName));
@@ -237,7 +237,7 @@ public class MetaManager extends AbstractManager {
             ColumnMeta cm = fm.getColumn();
             if (cm.getEnableStatus() == EnableStatusEnum.ENABLED.getCode() && cm.getDelStatus() == DeleteStatusEnum.NO.getCode()) {
                 if (boolean.class.equals(fm.getFieldType()) || Boolean.class.equals(fm.getFieldType())) {
-                    map.put(fm.getFieldName(), Strings.isNotBlank(cm.getDefaultValue()) ? Integer.parseInt(cm.getDefaultValue()) : null);
+                    map.put(fm.getFieldName(), StringUtils.isNotBlank(cm.getDefaultValue()) ? Integer.parseInt(cm.getDefaultValue()) : null);
                 } else {
                     map.put(fm.getFieldName(), cm.getDefaultValue());
                 }
@@ -333,7 +333,7 @@ public class MetaManager extends AbstractManager {
     public void scanAndParse(String packageName, boolean isUpdateMetadataFormDb) {
         scanAndParse(packageName);
         if (isUpdateMetadataFormDb) {
-            //todo 解析实体类，写入到数据库
+            // todo 解析实体类，写入到数据库
             updateMetadataFromDbAfterParse(null);
         }
     }
@@ -380,7 +380,7 @@ public class MetaManager extends AbstractManager {
                 fm.getColumn().setNumericPrecision(Integer.parseInt(NUMERIC_PRECISION));
                 fm.getColumn().setNumericScale(Integer.parseInt(NUMERIC_SCALE));
                 fm.getColumn().setComment(COLUMN_COMMENT);
-                if (Strings.isEmpty(fm.getColumn().getTitle())) {
+                if (StringUtils.isEmpty(fm.getColumn().getTitle())) {
                     fm.getColumn().setTitle(COLUMN_COMMENT);
                 }
                 fm.getColumn().setOrdinalPosition(Integer.parseInt(ORDINAL_POSITION));
@@ -396,7 +396,7 @@ public class MetaManager extends AbstractManager {
     public void parseOne(Class clazz) {
         logger.info("parse meta from class :" + clazz.getName());
         String entityName = MetaRelf.getEntityName(clazz);
-        if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+        if (StringUtils.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMeta(clazz);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
             entityLiteMetaList.add(new EntityLiteMeta(entityMeta.getEntityName(), entityMeta.getEntityTitle(), EntityType.Class));
@@ -426,7 +426,7 @@ public class MetaManager extends AbstractManager {
 
     public void parseTableEntity(Map<String, Object> map, List<Map<String, Object>> columnList, List<Map<String, Object>> viewList, List<Map<String, Object>> foreignList) {
         String entityName = map.get("entity_name").toString();
-        if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+        if (StringUtils.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
             EntityMeta entityMeta = MetaRelf.getEntityMetaByTable(map, columnList, viewList, foreignList);
             entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
             removeLiteMeta(entityMeta.getEntityName());
@@ -445,7 +445,7 @@ public class MetaManager extends AbstractManager {
         String viewType = view.get("view_type").toString();
         if (viewType.equals("custom")) {
             String entityName = view.get("view_name").toString();
-            if (Strings.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
+            if (StringUtils.isNotBlank(entityName) && !entityMetadataMap.containsKey(entityName)) {
                 EntityMeta entityMeta = MetaRelf.getEntityMetaByView(view);
                 entityMetadataMap.put(entityMeta.getEntityName(), entityMeta);
                 removeLiteMeta(entityMeta.getEntityName());
@@ -505,7 +505,7 @@ public class MetaManager extends AbstractManager {
             List<ColumnSelectType> selectTypeList = JSON.parseArray(jsonStr, ColumnSelectType.class);
             if (selectTypeList != null && !selectTypeList.isEmpty()) {
                 for (ColumnSelectType selectType : selectTypeList) {
-                    if (Strings.isBlank(selectType.getLabel()) || Strings.isBlank(selectType.getValue()) || Strings.isBlank(selectType.getMysql())) {
+                    if (StringUtils.isBlank(selectType.getLabel()) || StringUtils.isBlank(selectType.getValue()) || StringUtils.isBlank(selectType.getMysql())) {
                         continue;
                     }
                     selectType.setValue(selectType.getValue().toUpperCase(Locale.ENGLISH));

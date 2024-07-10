@@ -1,7 +1,6 @@
 package org.geelato.core.orm;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.enums.DeleteStatusEnum;
 import org.geelato.core.enums.EnableStatusEnum;
 import org.geelato.core.enums.TableTypeEnum;
@@ -15,6 +14,7 @@ import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.schema.SchemaIndex;
 import org.geelato.core.util.ConnectUtils;
 import org.geelato.utils.SqlParams;
+import org.geelato.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -63,7 +63,7 @@ public class DbGenerateDao {
      * 内部调用了sqlId:createOneTable来创建表</p>
      * 创建完表之后，将元数据信息保存到数据库中
      *
-     * @param dropBeforeCreate     存在表时，是否删除
+     * @param dropBeforeCreate 存在表时，是否删除
      */
     public void createAllTables(boolean dropBeforeCreate, List<String> ignoreEntityNameList) {
         Collection<EntityMeta> entityMetas = metaManager.getAll();
@@ -105,7 +105,6 @@ public class DbGenerateDao {
 
     /**
      * 将元数据信息保存到服务端，一般用于开发环境初始化，创建完表之后执行
-     *
      */
     private void saveJavaMetaToDb(String id, Collection<EntityMeta> entityMetas) {
         for (EntityMeta em : entityMetas) {
@@ -136,7 +135,7 @@ public class DbGenerateDao {
      * @param dropBeforeCreate 存在表时，是否删除
      */
     public void createOrUpdateOneTable(String entityName, boolean dropBeforeCreate) {
-        //createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
+        // createOrUpdateOneTable(metaManager.getByEntityName(entityName,false), dropBeforeCreate);
         EntityMeta entityMeta = metaManager.getByEntityName(entityName, false);
         if (TableTypeEnum.TABLE.getCode().equals(entityMeta.getTableMeta().getTableType())) {
             createOrUpdateOneTable(entityMeta);
@@ -148,7 +147,7 @@ public class DbGenerateDao {
     private void createOrUpdateOneTable(EntityMeta em) {
         boolean isExistsTable = true;
         Map existscolumnMap = new HashMap();
-        String tableName = Strings.isEmpty(em.getTableName()) ? em.getEntityName() : em.getTableName();
+        String tableName = StringUtils.isEmpty(em.getTableName()) ? em.getEntityName() : em.getTableName();
         List<Map<String, Object>> columns = dao.queryForMapList("queryColumnsByTableName", SqlParams.map("tableName", tableName));
         if (columns == null || columns.isEmpty()) {
             isExistsTable = false;
@@ -194,7 +193,7 @@ public class DbGenerateDao {
                     createList.add(jsonColumn);
                 }
                 // primary key
-                if (fm.getColumn().isKey() && Strings.isNotEmpty(fm.getColumn().getName())) {
+                if (fm.getColumn().isKey() && StringUtils.isNotEmpty(fm.getColumn().getName())) {
                     primaryList.add(fm.getColumn().getName());
                 }
                 // unique index
@@ -299,7 +298,6 @@ public class DbGenerateDao {
 
     /**
      * 创建数据库表
-     *
      */
     private void createTable(TableMeta tableMeta, List<JSONObject> createColumnList, List<JSONObject> foreignList, boolean hasDelStatus) {
         Map<String, Object> map = new HashMap<>();
@@ -328,7 +326,6 @@ public class DbGenerateDao {
 
     /**
      * 更新数据库表
-     *
      */
     private void upgradeTable(TableMeta tableMeta, List<JSONObject> addList, List<JSONObject> modifyList, List<JSONObject> indexList,
                               List<JSONObject> uniqueList, String primaryKey, boolean hasDelStatus) {
@@ -374,7 +371,7 @@ public class DbGenerateDao {
     private String getPrimaryColumn(List<JSONObject> jsonObjectList) {
         Set<String> columnNames = new HashSet<>();
         for (JSONObject jsonObject : jsonObjectList) {
-            if (jsonObject.getBoolean("key") && Strings.isNotEmpty(jsonObject.getString("name"))) {
+            if (jsonObject.getBoolean("key") && StringUtils.isNotEmpty(jsonObject.getString("name"))) {
                 columnNames.add(jsonObject.getString("name"));
             }
         }
@@ -383,17 +380,17 @@ public class DbGenerateDao {
 
 
     public void createOrUpdateView(String view, String sql) {
-        if (Strings.isBlank(view) || Strings.isBlank(sql)) {
+        if (StringUtils.isBlank(view) || StringUtils.isBlank(sql)) {
             return;
         }
         Map<String, Object> map = new HashMap<>();
         map.put("viewName", view);
-        map.put("viewSql", sql);   //TODO 对sql进行检查
+        map.put("viewSql", sql);   // TODO 对sql进行检查
         dao.execute("createOneView", map);
     }
 
     public boolean validateViewSql(String connectId, String sql) throws SQLException {
-        if (Strings.isBlank(connectId) || Strings.isBlank(sql)) {
+        if (StringUtils.isBlank(connectId) || StringUtils.isBlank(sql)) {
             return false;
         }
         // 查询数据库连接信息

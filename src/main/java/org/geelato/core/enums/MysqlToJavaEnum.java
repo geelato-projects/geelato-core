@@ -1,6 +1,6 @@
 package org.geelato.core.enums;
 
-import org.apache.logging.log4j.util.Strings;
+import org.geelato.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -50,7 +50,7 @@ public enum MysqlToJavaEnum {
      * @return
      */
     public static Class getJava(String type) {
-        if (Strings.isNotBlank(type)) {
+        if (StringUtils.isNotBlank(type)) {
             for (MysqlToJavaEnum value : MysqlToJavaEnum.values()) {
                 if (Arrays.asList(value.getMysql()).contains(MysqlDataTypeEnum.getEnum(type))) {
                     return value.getJava();

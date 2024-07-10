@@ -1,7 +1,6 @@
 package org.geelato.core.meta.model.parser;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.Ctx;
 import org.geelato.core.gql.parser.CommandType;
 import org.geelato.core.gql.parser.FilterGroup;
@@ -10,6 +9,7 @@ import org.geelato.core.meta.MetaManager;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.utils.StringUtils;
 import org.geelato.utils.UIDGenerator;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +35,7 @@ public class EntitySaveParser {
                 entity.put(fm.getFieldName(), PropertyUtils.getProperty(object, fm.getFieldName()));
             }
             String PK = entityMeta.getId().getFieldName();
-            if (Strings.isNotBlank(object.getId())) {
+            if (StringUtils.isNotBlank(object.getId())) {
                 command.setCommandType(CommandType.Update);
 
                 FilterGroup fg = new FilterGroup();

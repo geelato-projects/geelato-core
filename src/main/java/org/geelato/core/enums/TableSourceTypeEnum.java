@@ -1,6 +1,6 @@
 package org.geelato.core.enums;
 
-import org.apache.logging.log4j.util.Strings;
+import org.geelato.utils.StringUtils;
 
 /**
  * @author diabl
@@ -10,8 +10,8 @@ public enum TableSourceTypeEnum {
     SYSTEM("系统内置", "system"),
     PLATFORM("平台内置", "platform");
 
-    private final String label;//选项内容
-    private final String value;//选项值
+    private final String label;// 选项内容
+    private final String value;// 选项值
 
     TableSourceTypeEnum(String label, String value) {
         this.label = label;
@@ -27,7 +27,7 @@ public enum TableSourceTypeEnum {
     }
 
     public static String getLabel(String value) {
-        if (Strings.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             for (TableSourceTypeEnum enums : TableSourceTypeEnum.values()) {
                 if (enums.getValue().equals(value)) {
                     return enums.getLabel();
