@@ -1,6 +1,6 @@
 package org.geelato.core.enums;
 
-import org.apache.logging.log4j.util.Strings;
+import org.geelato.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -12,7 +12,6 @@ import java.util.Set;
 /**
  * @author diabl
  * @description: Mysql数据类型对应的Java对象
- * @date 2023/6/20 12:00
  */
 public enum MysqlToJavaEnum {
     // 字符串
@@ -51,7 +50,7 @@ public enum MysqlToJavaEnum {
      * @return
      */
     public static Class getJava(String type) {
-        if (Strings.isNotBlank(type)) {
+        if (StringUtils.isNotBlank(type)) {
             for (MysqlToJavaEnum value : MysqlToJavaEnum.values()) {
                 if (Arrays.asList(value.getMysql()).contains(MysqlDataTypeEnum.getEnum(type))) {
                     return value.getJava();

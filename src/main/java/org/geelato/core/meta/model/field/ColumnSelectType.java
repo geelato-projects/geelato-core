@@ -3,7 +3,6 @@ package org.geelato.core.meta.model.field;
 /**
  * @author diabl
  * @description: 字段可供选择的数据类型
- * @date 2023/6/19 11:04
  */
 public class ColumnSelectType {
     private String group;// 分组名称

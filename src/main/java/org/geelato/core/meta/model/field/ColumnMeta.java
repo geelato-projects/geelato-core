@@ -1,6 +1,5 @@
 package org.geelato.core.meta.model.field;
 
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.enums.DataTypeRadiusEnum;
 import org.geelato.core.enums.MysqlDataTypeEnum;
@@ -10,7 +9,7 @@ import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
 import org.geelato.core.meta.model.entity.BaseSortableEntity;
 import org.geelato.core.meta.model.entity.EntityEnableAble;
-import org.springframework.util.StringUtils;
+import org.geelato.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -576,9 +575,9 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
     @Override
     public void afterSet() {
         // 更加数据类型dataType 设置 type
-        if (Strings.isNotBlank(dataType)) {
+        if (StringUtils.isNotBlank(dataType)) {
             dataType = dataType.toUpperCase(Locale.ENGLISH);
-            selectType = Strings.isNotBlank(selectType) ? selectType.toUpperCase(Locale.ENGLISH) : dataType;
+            selectType = StringUtils.isNotBlank(selectType) ? selectType.toUpperCase(Locale.ENGLISH) : dataType;
             DataTypeRadius radius = DataTypeRadiusEnum.getRadius(dataType);
             String columnType = null;
             if (MysqlDataTypeEnum.getBooleans().contains(dataType)) {
@@ -628,7 +627,7 @@ public class ColumnMeta extends BaseSortableEntity implements EntityEnableAble, 
             }
             setExtra(String.join(",", extras));
             // 设置默认值
-            setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
+            setDefaultValue(StringUtils.isNotBlank(defaultValue) ? defaultValue : null);
         }
     }
 }

@@ -1,9 +1,9 @@
 package org.geelato.core.meta.schema;
 
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.enums.MysqlDataTypeEnum;
 import org.geelato.core.meta.model.field.ColumnMeta;
+import org.geelato.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -12,7 +12,6 @@ import java.util.Locale;
  * @author diabl
  * @description: 数据库中字段信息
  * SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE 1 = 1 AND TABLE_SCHEMA = '' AND TABLE_NAME = '';
- * @date 2023/6/16 13:28
  */
 public class SchemaColumn implements Serializable {
     private String tableCatalog;
@@ -227,9 +226,9 @@ public class SchemaColumn implements Serializable {
         meta = meta == null ? new ColumnMeta() : meta;
         meta.setTableCatalog(this.tableCatalog);
         meta.setTableSchema(this.tableSchema);
-        meta.setTitle(Strings.isBlank(this.getColumnComment()) ? this.columnName : this.columnComment);
+        meta.setTitle(StringUtils.isBlank(this.getColumnComment()) ? this.columnName : this.columnComment);
         meta.setComment(this.columnComment);
-        meta.setOrdinalPosition(Strings.isBlank(this.ordinalPosition) ? 1 : Integer.parseInt(this.ordinalPosition));
+        meta.setOrdinalPosition(StringUtils.isBlank(this.ordinalPosition) ? 1 : Integer.parseInt(this.ordinalPosition));
         meta.setSeqNo(meta.getOrdinalPosition());
         meta.setDefaultValue(this.columnDefault == null ? null : this.columnDefault);
         if ("b'0'".equals(this.columnDefault)) {
@@ -239,21 +238,21 @@ public class SchemaColumn implements Serializable {
         }
         meta.setType(this.columnType);
         meta.setKey("PRI".equals(this.columnKey));
-        meta.setNullable(Strings.isBlank(this.isNullable) || "YES".equals(this.isNullable));
+        meta.setNullable(StringUtils.isBlank(this.isNullable) || "YES".equals(this.isNullable));
         meta.setDataType(this.dataType);
         // meta.setExtra(this.extra);
-        meta.setAutoIncrement(Strings.isNotEmpty(this.extra) && this.extra.toUpperCase(Locale.ENGLISH).indexOf("AUTO_INCREMENT") != -1);
+        meta.setAutoIncrement(StringUtils.isNotEmpty(this.extra) && this.extra.toUpperCase(Locale.ENGLISH).indexOf("AUTO_INCREMENT") != -1);
         meta.setUniqued(this.unique);
-        meta.setDatetimePrecision(Strings.isBlank(this.datetimePrecision) ? 0 : Integer.parseInt(this.datetimePrecision));
-        meta.setCharMaxLength(Strings.isBlank(this.characterMaximumLength) ? 0 : Long.parseLong(this.characterMaximumLength));
+        meta.setDatetimePrecision(StringUtils.isBlank(this.datetimePrecision) ? 0 : Integer.parseInt(this.datetimePrecision));
+        meta.setCharMaxLength(StringUtils.isBlank(this.characterMaximumLength) ? 0 : Long.parseLong(this.characterMaximumLength));
         if (MysqlDataTypeEnum.getDecimals().contains(dataType)) {
-            meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
-            meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision) - meta.getNumericScale());
+            meta.setNumericScale(StringUtils.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
+            meta.setNumericPrecision(StringUtils.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision) - meta.getNumericScale());
         } else {
-            meta.setNumericPrecision(Strings.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision));
-            meta.setNumericScale(Strings.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
+            meta.setNumericPrecision(StringUtils.isBlank(this.numericPrecision) ? 0 : Integer.parseInt(this.numericPrecision));
+            meta.setNumericScale(StringUtils.isBlank(this.numericScale) ? 0 : Integer.parseInt(this.numericScale));
         }
-        meta.setNumericSigned(Strings.isNotEmpty(this.columnType) && this.columnType.toUpperCase(Locale.ENGLISH).indexOf("UNSIGNED") == -1);
+        meta.setNumericSigned(StringUtils.isNotEmpty(this.columnType) && this.columnType.toUpperCase(Locale.ENGLISH).indexOf("UNSIGNED") == -1);
         meta.setEnableStatus(ColumnDefault.ENABLE_STATUS_VALUE);
         meta.setSelectType(this.dataType);
         meta.afterSet();

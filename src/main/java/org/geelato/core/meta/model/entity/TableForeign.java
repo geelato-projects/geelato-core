@@ -10,7 +10,6 @@ import java.util.Map;
 /**
  * @author liuwq
  * @Description 实体外键关系
- * @Date 2020/3/20 14:42
  */
 @Title(title = "实体外键关系")
 @Entity(name = "platform_dev_table_foreign")

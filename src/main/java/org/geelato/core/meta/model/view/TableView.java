@@ -1,12 +1,12 @@
 package org.geelato.core.meta.model.view;
 
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.constants.ColumnDefault;
 import org.geelato.core.meta.annotation.Col;
 import org.geelato.core.meta.annotation.Entity;
 import org.geelato.core.meta.annotation.Title;
 import org.geelato.core.meta.model.entity.BaseSortableEntity;
 import org.geelato.core.meta.model.entity.EntityEnableAble;
+import org.geelato.utils.StringUtils;
 
 import java.util.Locale;
 
@@ -143,7 +143,7 @@ public class TableView extends BaseSortableEntity implements EntityEnableAble {
 
     @Override
     public void afterSet() {
-        if (Strings.isNotBlank(this.viewName)) {
+        if (StringUtils.isNotBlank(this.viewName)) {
             this.setViewName(this.viewName.toLowerCase(Locale.ENGLISH));
         }
     }

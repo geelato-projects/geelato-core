@@ -2,11 +2,9 @@ package org.geelato.core.orm;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.Ctx;
 import org.geelato.core.aop.annotation.MethodLog;
 import org.geelato.core.api.ApiMultiPagedResult;
-import org.geelato.core.api.ApiPagedResult;
 import org.geelato.core.gql.execute.BoundPageSql;
 import org.geelato.core.gql.execute.BoundSql;
 import org.geelato.core.gql.parser.*;
@@ -14,6 +12,7 @@ import org.geelato.core.meta.model.CommonRowMapper;
 import org.geelato.core.meta.model.entity.EntityMeta;
 import org.geelato.core.meta.model.entity.IdEntity;
 import org.geelato.core.meta.model.field.FieldMeta;
+import org.geelato.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -78,20 +77,20 @@ public class Dao extends SqlIdDao {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         BoundSql boundSql = boundPageSql.getBoundSql();
         Object[] sqlParams = boundSql.getParams();
-        List<Map<String, Object>> result=null;
+        List<Map<String, Object>> result = null;
         try {
             List<Map<String, Object>> list = jdbcTemplate.queryForList(boundSql.getSql(), sqlParams);
-            result=convert(list, metaManager.getByEntityName(command.getEntityName()));
+            result = convert(list, metaManager.getByEntityName(command.getEntityName()));
         } catch (DataAccessException exception) {
             throw new DaoException("queryForMapList exception :" + exception.getCause().getMessage());
         }
         return result;
     }
 
-    public Long queryTotal(BoundPageSql boundPageSql){
+    public Long queryTotal(BoundPageSql boundPageSql) {
         BoundSql boundSql = boundPageSql.getBoundSql();
         Object[] sqlParams = boundSql.getParams();
-        Long total=0L;
+        Long total = 0L;
         try {
             total = jdbcTemplate.queryForObject(boundPageSql.getCountSql(), sqlParams, Long.class);
         } catch (DataAccessException exception) {
@@ -99,6 +98,7 @@ public class Dao extends SqlIdDao {
         }
         return total;
     }
+
     private List<Map<String, Object>> convert(List<Map<String, Object>> data, EntityMeta entityMeta) {
         for (Map<String, Object> map : data) {
             for (String key : map.keySet()) {
@@ -125,7 +125,7 @@ public class Dao extends SqlIdDao {
     /**
      * @param withMeta 是否需同时查询带出元数据
      */
-    //todo rewrite
+    // todo rewrite
     public ApiMultiPagedResult.PageData queryForMapListToPageData(BoundPageSql boundPageSql, boolean withMeta) {
         QueryCommand command = (QueryCommand) boundPageSql.getBoundSql().getCommand();
         logger.info(boundPageSql.getBoundSql().getSql());
@@ -244,12 +244,13 @@ public class Dao extends SqlIdDao {
 
     /**
      * 依据两个条件查询实体
+     *
      * @param entityType 实体类型
      * @param fieldName1 实体的属性名1
      * @param value1     实体属性1的值
      * @param fieldName2 实体的属性名2
      * @param value2     实体属性2的值
-     * @return           返回泛型
+     * @return 返回泛型
      */
     public <T> T queryForObject(Class<T> entityType, String fieldName1, Object value1, String fieldName2, Object value2) {
         FilterGroup filterGroup = new FilterGroup().addFilter(fieldName1, value1.toString()).addFilter(fieldName2, value2.toString());
@@ -364,7 +365,7 @@ public class Dao extends SqlIdDao {
         FilterGroup filterGroup = new FilterGroup();
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
-                if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                if (entry.getValue() != null && StringUtils.isNotBlank(entry.getValue().toString())) {
                     filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
                 }
             }
@@ -410,7 +411,7 @@ public class Dao extends SqlIdDao {
         FilterGroup filterGroup = new FilterGroup();
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
-                if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+                if (entry.getValue() != null && StringUtils.isNotBlank(entry.getValue().toString())) {
                     filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
                 }
             }
@@ -423,7 +424,7 @@ public class Dao extends SqlIdDao {
     public List<Map<String, Object>> queryListByView(String entityName, String viewName, int pageNum, int pageSize, Map<String, Object> params) {
         FilterGroup filterGroup = new FilterGroup();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (entry.getValue() != null && Strings.isNotBlank(entry.getValue().toString())) {
+            if (entry.getValue() != null && StringUtils.isNotBlank(entry.getValue().toString())) {
                 filterGroup.addFilter(entry.getKey(), entry.getValue().toString());
             }
         }

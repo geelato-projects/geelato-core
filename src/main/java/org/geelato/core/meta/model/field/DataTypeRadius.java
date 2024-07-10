@@ -3,7 +3,6 @@ package org.geelato.core.meta.model.field;
 /**
  * @author diabl
  * @description: 数据库类型范围
- * @date 2023/6/20 14:29
  */
 public class DataTypeRadius {
 

@@ -1,7 +1,6 @@
 package org.geelato.core.gql.parser;
 
-import org.geelato.core.Ctx;
-import org.geelato.core.util.StringUtils;
+import org.geelato.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +112,7 @@ public class BaseCommand<E extends BaseCommand> {
 
     public BaseCommand appendFrom(String tablaName, String alias) {
         this.from.append(tablaName);
-        if(!StringUtils.isEmpty(alias)) {
+        if(StringUtils.isNotEmpty(alias)) {
             this.from.append(" ").append(alias);
         }
         return this;

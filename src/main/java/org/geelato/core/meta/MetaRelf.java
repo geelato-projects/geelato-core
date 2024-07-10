@@ -5,7 +5,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.logging.log4j.util.Strings;
 import org.geelato.core.enums.MysqlDataTypeEnum;
 import org.geelato.core.enums.MysqlToJavaEnum;
 import org.geelato.core.gql.TypeConverter;
@@ -15,11 +14,11 @@ import org.geelato.core.meta.model.entity.TableForeign;
 import org.geelato.core.meta.model.entity.TableMeta;
 import org.geelato.core.meta.model.field.FieldMeta;
 import org.geelato.core.meta.model.view.ViewMeta;
+import org.geelato.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -105,7 +104,7 @@ public class MetaRelf {
         TableMeta tableMeta = new TableMeta(map);
         Integer delStatus = map.get("del_status") == null ? null : Integer.parseInt(map.get("del_status").toString());
         String id = map.get("id") == null ? null : map.get("id").toString();
-        String title = StringUtils.hasText(tableMeta.getTitle()) ? tableMeta.getTitle() : (org.geelato.core.util.StringUtils.isEmpty(tableMeta.getTableName()) ? tableMeta.getEntityName() : tableMeta.getTableName());
+        String title = StringUtils.hasText(tableMeta.getTitle()) ? tableMeta.getTitle() : (StringUtils.isEmpty(tableMeta.getTableName()) ? tableMeta.getEntityName() : tableMeta.getTableName());
         tableMeta.setId(id);
         tableMeta.setDelStatus(delStatus);
         tableMeta.setTitle(title);
@@ -249,7 +248,7 @@ public class MetaRelf {
                     String firstChar = "" + fieldName.charAt(0);
                     fieldName = fieldName.replaceFirst(firstChar, firstChar.toLowerCase());
                     Title cn = method.getAnnotation(Title.class);
-                    String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                    String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                     String columnName = fieldName;
                     Col col = method.getAnnotation(Col.class);
                     if (col != null) {
@@ -309,7 +308,7 @@ public class MetaRelf {
 
                             // 列的中文信息
                             Title cn = method.getAnnotation(Title.class);
-                            String title = cn != null ? (Strings.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
+                            String title = cn != null ? (StringUtils.isEmpty(cn.title()) ? fieldName : cn.title()) : fieldName;
                             String description = cn != null ? cn.description() : "";
                             FieldMeta cfm = null;
                             if (column != null && column.name() != null) {
@@ -363,7 +362,7 @@ public class MetaRelf {
                             }
                             cfm.getColumn().setDescription(description);
                             cfm.setFieldType(method.getReturnType());
-                            if (Strings.isEmpty(cfm.getColumn().getDataType())) {
+                            if (StringUtils.isEmpty(cfm.getColumn().getDataType())) {
                                 cfm.getColumn().setDataType(TypeConverter.toSqlTypeString(method.getReturnType()));
                             }
                             cfm.getColumn().afterSet();
@@ -389,7 +388,7 @@ public class MetaRelf {
                     String viewColumn = v_map.get("view_column") == null ? null : v_map.get("view_column").toString();
                     String viewType = v_map.get("view_type") == null ? null : v_map.get("view_type").toString();
                     String entityName = v_map.get("entity_name") == null ? null : v_map.get("entity_name").toString();
-                    if (Strings.isNotBlank(viewName) && !map.containsKey(viewName)) {
+                    if (StringUtils.isNotBlank(viewName) && !map.containsKey(viewName)) {
                         ViewMeta vm = new ViewMeta(viewName, viewType, viewConstruct, viewColumn, entityName);
                         map.put(viewName, vm);
                         ViewManager.singleInstance().addViewMeta(viewName, vm);
@@ -417,26 +416,17 @@ public class MetaRelf {
             String defaultValue = c_map.get("column_default") == null ? null : c_map.get("column_default").toString();
             String comment = c_map.get("column_comment") == null ? null : c_map.get("column_comment").toString();
             Boolean enableStatus = c_map.get("enable_status") == null ? null : Boolean.parseBoolean(c_map.get("enable_status").toString());
-            if (Strings.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
+            if (StringUtils.isNotBlank(fieldName) && !map.containsKey(fieldName)) {
                 FieldMeta cfm = new FieldMeta(columnName, fieldName, title);
                 cfm.getColumn().setFieldName(fieldName);
                 cfm.getColumn().setUniqued(c_map.get("is_unique") != null && Boolean.parseBoolean(c_map.get("is_unique").toString()));
                 cfm.getColumn().setNullable(c_map.get("is_nullable") == null || Boolean.parseBoolean(c_map.get("is_nullable").toString()));
-                cfm.getColumn().setDefaultValue(Strings.isNotBlank(defaultValue) ? defaultValue : null);
+                cfm.getColumn().setDefaultValue(StringUtils.isNotBlank(defaultValue) ? defaultValue : null);
                 cfm.getColumn().setDescription(c_map.get("description") == null ? null : c_map.get("description").toString());
                 cfm.getColumn().setType(c_map.get("column_type") == null ? null : c_map.get("column_type").toString());
                 cfm.getColumn().setTitle(title);
-
-                if (c_map.get("character_maxinum_length") != null)
-                    cfm.getColumn().setCharMaxLength(Long.parseLong(c_map.get("character_maxinum_length").toString()));
-                if (c_map.get("datetime_precision") != null) cfm.getColumn().setDatetimePrecision(Integer.parseInt(c_map.get("datetime_precision").toString()));
-
                 cfm.getColumn().setId(c_map.get("id") == null ? null : c_map.get("id").toString());
                 cfm.getColumn().setKey(c_map.get("column_key") != null && Boolean.parseBoolean(c_map.get("column_key").toString()));
-                if (c_map.get("linked") != null) cfm.getColumn().setLinked(Integer.parseInt(c_map.get("linked").toString()));
-
-                if (c_map.get("numeric_precision") != null) cfm.getColumn().setNumericPrecision(Integer.parseInt(c_map.get("numeric_precision").toString()));
-
                 cfm.getColumn().setNumericSigned(c_map.get("numeric_signed") != null && Boolean.parseBoolean(c_map.get("numeric_signed").toString()));
                 cfm.getColumn().setAutoIncrement(c_map.get("auto_increment") != null && Boolean.parseBoolean(c_map.get("auto_increment").toString()));
                 cfm.getColumn().setDataType(dataType);
@@ -444,16 +434,10 @@ public class MetaRelf {
                 cfm.getColumn().setTypeExtra(typeExtra);
                 cfm.getColumn().setExtraValue(extraValue);
                 cfm.getColumn().setExtraMap(extraMap);
-                if (c_map.get("ordinal_position") != null) cfm.getColumn().setOrdinalPosition(Integer.parseInt(c_map.get("ordinal_position").toString()));
-
                 cfm.getColumn().setName(columnName);
                 cfm.getColumn().setTableId(c_map.get("table_id") == null ? null : c_map.get("table_id").toString());
                 cfm.getColumn().setTableName(c_map.get("table_name") == null ? null : c_map.get("table_name").toString());
-                cfm.getColumn().setComment(Strings.isNotBlank(comment) ? comment : title);
-                if (c_map.get("numeric_scale") != null) cfm.getColumn().setNumericScale(Integer.parseInt(c_map.get("numeric_scale").toString()));
-
-                if (c_map.get("del_status") != null) cfm.getColumn().setDelStatus(Integer.parseInt(c_map.get("del_status").toString()));
-
+                cfm.getColumn().setComment(StringUtils.isNotBlank(comment) ? comment : title);
                 cfm.getColumn().setEnableStatus(Boolean.TRUE.equals(enableStatus) ? 1 : 0);
                 cfm.getColumn().setAutoName(c_map.get("auto_name") == null ? null : c_map.get("auto_name").toString());
                 cfm.getColumn().setAutoAdd(c_map.get("auto_add") != null && Boolean.parseBoolean(c_map.get("auto_add").toString()));
@@ -463,6 +447,28 @@ public class MetaRelf {
                 cfm.getColumn().setMarker(c_map.get("marker") == null ? null : c_map.get("marker").toString());
                 cfm.getColumn().setTenantCode(c_map.get("tenant_code") == null ? null : c_map.get("tenant_code").toString());
                 cfm.getColumn().setAppId(c_map.get("app_id") == null ? null : c_map.get("app_id").toString());
+
+                if (c_map.get("numeric_scale") != null) {
+                    cfm.getColumn().setNumericScale(Integer.parseInt(c_map.get("numeric_scale").toString()));
+                }
+                if (c_map.get("ordinal_position") != null) {
+                    cfm.getColumn().setOrdinalPosition(Integer.parseInt(c_map.get("ordinal_position").toString()));
+                }
+                if (c_map.get("del_status") != null) {
+                    cfm.getColumn().setDelStatus(Integer.parseInt(c_map.get("del_status").toString()));
+                }
+                if (c_map.get("character_maxinum_length") != null) {
+                    cfm.getColumn().setCharMaxLength(Long.parseLong(c_map.get("character_maxinum_length").toString()));
+                }
+                if (c_map.get("datetime_precision") != null) {
+                    cfm.getColumn().setDatetimePrecision(Integer.parseInt(c_map.get("datetime_precision").toString()));
+                }
+                if (c_map.get("linked") != null) {
+                    cfm.getColumn().setLinked(Integer.parseInt(c_map.get("linked").toString()));
+                }
+                if (c_map.get("numeric_precision") != null) {
+                    cfm.getColumn().setNumericPrecision(Integer.parseInt(c_map.get("numeric_precision").toString()));
+                }
 
                 if (MysqlDataTypeEnum.getTexts().contains(dataType)) {
                     cfm.getColumn().setDefaultValue(null);
