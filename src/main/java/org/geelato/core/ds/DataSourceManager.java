@@ -70,6 +70,8 @@ public class DataSourceManager extends AbstractManager {
         config.setUsername(dbUserName);
         config.setPassword(dbPassWord);
         config.setDriverClassName(dbDriver);
+        config.setMinimumIdle(1);
+        config.setMaximumPoolSize(3);
         return new HikariDataSource(config);
     }
 }
