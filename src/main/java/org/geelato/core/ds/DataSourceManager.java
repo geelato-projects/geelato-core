@@ -61,7 +61,7 @@ public class DataSourceManager extends AbstractManager {
         String serverHost=dbConnectMap.get("db_hostname_ip").toString();
         String serverPort=dbConnectMap.get("db_port").toString();
         String dbName=dbConnectMap.get("db_name").toString();;
-        String commonParams="useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true";
+        String commonParams="useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&maxReconnects=10";
         String jdbcUrl=String.format("jdbc:mysql://%s:%s/%s?%s",serverHost,serverPort,dbName,commonParams);
         String dbUserName=dbConnectMap.get("db_user_name").toString();
         String dbPassWord=dbConnectMap.get("db_password").toString();
@@ -73,8 +73,8 @@ public class DataSourceManager extends AbstractManager {
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(3);
         config.setPoolName(dbConnectMap.get("db_name").toString());
-        config.addDataSourceProperty("autoReconnect","true");
-        config.addDataSourceProperty("maxReconnects","10");
+//        config.addDataSourceProperty("autoReconnect","true");
+//        config.addDataSourceProperty("maxReconnects","10");
         return new HikariDataSource(config);
     }
 }
